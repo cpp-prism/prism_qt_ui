@@ -1,0 +1,7 @@
+prism-qt-ui provides CMake targets:
+    befor run `vcpkg install`,you need to add `set (VCPKG_ENV_PASSTHROUGH QT_DIR  Qt5_DIR)` to  <you current triplet>.cmake
+
+    find_package(prism COMPONENTS prism::qt::ui [components ...])
+    target_link_libraries(main PRIVATE prism::qt::ui [components ...])
+
+    more infomation: https://github.com/cpp-prism/prism_qt_ui

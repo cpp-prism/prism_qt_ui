@@ -1,0 +1,19 @@
+{
+  "name": "prism-qt-ui",
+  "version": "1.0.3",
+  "port-version": 1,
+  "description": "prism qt ui",
+  "homepage": "https://github.com/cpp-prism/prism_qt_ui",
+  "supports": "(windows & !arm & !uwp) | osx | (linux & !arm)",
+  "dependencies": [
+    "catch2",
+    "prism",
+    "prism-container",
+    "prism-qt-modular",
+    "prism-qt-core",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
+  ]
+}

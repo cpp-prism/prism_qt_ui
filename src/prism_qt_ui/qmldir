@@ -1,0 +1,27 @@
+singleton   Style 1.0 theme/Style.qml
+            JsEx 1.0  js/Js_extension.js
+            LiveLoader 1.0  debug/Live_loader.qml
+
+            BorderIconButton 1.0 button/BorderIconButton.qml
+            DropButton 1.0 button/DropdownButton.qml
+            IconButton 1.0 button/IconButton.qml
+
+            BorderlessWindow_win 1.0 window/BorderlessWindow_win.qml
+            BorderlessWindow_mac 1.0 window/BorderlessWindow_mac.qml
+            BorderlessWindow_linux 1.0 window/BorderlessWindow_linux.qml
+
+            QmlWindowRoot  1.0 window/QmlWindowRoot.qml
+
+            DesktopPopup 1.0 window/DesktopPopup.qml
+            DesktopMenuItem 1.0 window/DesktopMenuItem.qml
+            DesktopMenuSeparator 1.0 window/DesktopMenuSeparator.qml
+            DesktopMenu 1.0 window/DesktopMenu.qml
+            ResizeRecRing 1.0 window/ResizeRecRing.qml
+            DefaultPopup 1.0 window/DefaultPopup.qml
+
+            CusCornersRec 1.0 shapes/CusCornersRec.qml
+            CusCornersImage 1.0 shapes/CusCornersImage.qml
+
+            SvgIcon 1.0 shapes/SvgIcon.qml
+
+            DoubleSpinbox 1.0 spinbox/DoubleSpinbox.qml
