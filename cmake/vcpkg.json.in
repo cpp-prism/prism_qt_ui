@@ -9,8 +9,8 @@
     "catch2",
     "prism",
     "prism-container",
-    "prism-qt-modular",
     "prism-qt-core",
+    "prism-qt-modular",
     {
       "name": "vcpkg-cmake",
       "host": true

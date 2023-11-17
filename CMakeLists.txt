@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
+if(NOT DEFINED PRISM_VERSION)
+    file(READ "${CMAKE_CURRENT_LIST_DIR}/vcpkg.json" _contents)
+    string(JSON PRISM_VERSION GET "${_contents}" version)
+endif()
 
 project(prism_qt_ui VERSION ${PRISM_VERSION} LANGUAGES CXX)
 
@@ -71,6 +75,7 @@ add_library(prism::qt::ui  ALIAS ${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE PRISM_QT_UI_LIBRARY)
 
@@ -129,15 +134,15 @@ install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
 #
 
 # vcpkg
-execute_process( COMMAND git rev-parse --abbrev-ref HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE GIT_BRANCH_RESULT )
-execute_process( COMMAND git rev-parse  HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE )
-string(REPLACE "_" "-" PORT_NAME "${PROJECT_NAME}")
-configure_file(${PROJECT_SOURCE_DIR}/cmake/vcpkg_cus_info.json.in ${PROJECT_SOURCE_DIR}/vcpkg_cus_info.json @ONLY)
-configure_file(${PROJECT_SOURCE_DIR}/cmake/vcpkg.json.in ${PROJECT_SOURCE_DIR}/vcpkg.json @ONLY)
-
-#file(READ "${CMAKE_CURRENT_LIST_DIR}/vcpkg.json" _contents)
-#string(JSON BUILD_VERSION GET "${_contents}" version)
-#message("${BUILD_VERSION}")
+if(EXISTS ${VCPKG_ROOT})
+    execute_process( COMMAND git rev-parse --abbrev-ref HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE GIT_BRANCH_RESULT )
+    execute_process( COMMAND git rev-parse HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string(REPLACE "_" "-" PORT_NAME "${PROJECT_NAME}")
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/vcpkg.json.in ${VCPKG_ROOT}/ports/${PORT_NAME}/vcpkg.json @ONLY NEWLINE_STYLE LF)
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/vcpkg.json.in ${PROJECT_SOURCE_DIR}/vcpkg.json @ONLY NEWLINE_STYLE LF)
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/vcpkg_cus_info.json.in ${VCPKG_ROOT}/ports/${PORT_NAME}/vcpkg_cus_info.json @ONLY NEWLINE_STYLE LF)
+    file(COPY ${PROJECT_SOURCE_DIR}/cmake/portfile.cmake DESTINATION ${VCPKG_ROOT}/ports/${PORT_NAME})
+endif()
 
 #execute_process(COMMAND ${CMAKE_COMMAND} -E echo "
 #----------
