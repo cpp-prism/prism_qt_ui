@@ -138,8 +138,6 @@ public slots:
             m_logoRenderer->texture_height =buf->height;
             m_logoRenderer->buffer = buf->buffers.back();
             buf->buffers.clear();
-            //std::cout << "texture_width" << texture_width << std::endl;
-            //std::cout << "texture_height" << texture_height << std::endl;
         }
 
         //如果纹理宽不变保持比例放大到和控件一样，纹理高<=控件高

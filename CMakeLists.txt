@@ -46,7 +46,11 @@ elseif(WIN32)
         add_definitions(-DWIN32GPP)
         set(WIN32_LIBS  user32 dwmapi)
     endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
+
+
+
 
 add_library(${PROJECT_NAME} SHARED
   ${MAC_SOURCE}
@@ -144,6 +148,7 @@ if(EXISTS ${VCPKG_ROOT})
     file(COPY ${PROJECT_SOURCE_DIR}/cmake/portfile.cmake DESTINATION ${VCPKG_ROOT}/ports/${PORT_NAME})
 endif()
 
-#execute_process(COMMAND ${CMAKE_COMMAND} -E echo "
+execute_process(COMMAND ${CMAKE_COMMAND} -E echo "
 #----------
+  ${MAC_SOURCE}
 #----------" )

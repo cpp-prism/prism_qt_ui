@@ -39,10 +39,25 @@ bool prismQt_ui::register_types()
     //注册qml中使用的实用工具类到ioc container 和qml engine
     std::shared_ptr<cpp_utility> sp_cpputility = std::make_shared<cpp_utility>(new cpp_utility());
     prism::Container::get()->register_instance<cpp_utility>(sp_cpputility);
-    qmlRegisterSingletonInstance<cpp_utility>("prismCpp", 1, 0, "CppUtility",sp_cpputility.get());
 
-    //qml菜单
-    qmlRegisterSingletonInstance<MenuHelper>("prismCpp", 1, 0, "MenuHelper", new MenuHelper());
+    //注册单例 到qml engine  qt 5.15的语法
+    //qmlRegisterSingletonInstance<cpp_utility>("prismCpp", 1, 0, "CppUtility",sp_cpputility.get());
+    //注册单例 到qml engine  qt 5.12的语法
+    qmlRegisterSingletonType<cpp_utility>("prismCpp",1,0 ,"CppUtility",[](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+        Q_UNUSED(engine)
+        Q_UNUSED(scriptEngine)
+
+        return prism::Container::get()->resolve_object<cpp_utility>().get();
+    });
+
+    //注册单例 到qml engine  qt 5.15的语法
+    //qmlRegisterSingletonInstance<MenuHelper>("prismCpp", 1, 0, "MenuHelper", new MenuHelper());
+    //注册单例 到qml engine  qt 5.12的语法
+    qmlRegisterSingletonType<MenuHelper>("prismCpp",1,0 ,"MenuHelper",[](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+            Q_UNUSED(engine)
+            Q_UNUSED(scriptEngine)
+            return  new MenuHelper();
+    });
 
 
     return true;
@@ -98,8 +113,11 @@ bool prismQt_ui::uninit()
 #include "platform/os_win/borderless_window_helpe_win.h"
 #include "platform/os_win/borderless_window_win.h"
 #include "platform/os_win/multi_screen_helper_win.h"
+#endif
 
-namespace prism::qt::ui{
+namespace prism::qt::ui {
+
+#ifdef Q_OS_WIN
 static void registerBorderlessHleper()
 {
     // dpi evn
@@ -116,7 +134,6 @@ static void registerBorderlessHleper()
     qmlRegisterRevision<QWindow, 1>("prism_qt_ui", 1, 0);
     qmlRegisterRevision<QQuickWindow, 1>("prism_qt_ui", 1, 0);
 }
-}//namespace prism::qt::ui
 #endif
 
 #ifdef Q_OS_MACX
@@ -136,3 +153,4 @@ static void registerBorderlessHleper()
 #endif
 
 
+}//namespace prism::qt::ui

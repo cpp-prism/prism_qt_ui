@@ -73,7 +73,8 @@ QUrl cpp_utility::transUrl(QString url)
             relativePath = "../";
         auto rx = QRegExp(QString::fromStdString(R"(^qrc:/(\w+)(.*))"));
         rx.lastIndexIn(url);
-        QString url_replaced = QString("file:///%1/%2%3/src/%4%5").arg(root).arg(relativePath).arg(rx.cap(1)).arg(rx.cap(1)).arg(rx.cap(2));
+        QString url_replaced = QString("file://%1/%2%3/src/%4%5").arg(root).arg(relativePath).arg(rx.cap(1)).arg(rx.cap(1)).arg(rx.cap(2));
+        //qDebug()<< "trans url :" << url_replaced;
         return QUrl(url_replaced);
     }
     return url;
@@ -138,7 +139,7 @@ std::shared_ptr<bool> cpp_utility::showQmlDialog(QString qmlUrl,QObject* viewMod
     else
     {
         qWarning() << component.errorString();
-        throw std::exception(component.errorString().toStdString().c_str());
+        throw component.errorString().toStdString().c_str();
     }
 
     return result;

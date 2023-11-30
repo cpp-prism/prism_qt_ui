@@ -17,7 +17,7 @@ function setColorAlpha(color, alpha) {
 function getFont(size) {
     return Qt.font({
                        "pixelSize": size,
-                       "family": "幼圆"
+                       "family": "微软雅黑"
                    })
 }
 

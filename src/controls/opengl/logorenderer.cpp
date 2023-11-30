@@ -118,6 +118,11 @@ void LogoRenderer::paintQtLogo()
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR) {
+        qDebug() << "OpenGL Error:" << error;
+    }
+
 }
 
 
