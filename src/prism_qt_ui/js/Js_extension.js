@@ -1,5 +1,7 @@
 .pragma library
 .import QtQuick 2.15   as QtQuick2
+.import Qt.labs.platform 1.1  as QtLabsPlatform
+
 function prismTimer(parent) {
     return Qt.createQmlObject("import QtQuick 2.0; Timer {}", parent)
 }
@@ -72,3 +74,10 @@ function collapseTree(t) {
         collapseTreeNode(t,idx);
     }
 }
+
+
+//function cerateTipsDialog(parent,title,message, buttonText) {
+//    //var dialog = QtLabsPlatform.Dialog;
+//    var dialog = Qt.createQmlObject('import QtQuick.Controls 2.15; QtLabsPlatform.Dialog { title: "Message"; text: message; standardButtons: StandardButton.' + buttonText + ' }', parent);
+//    return dialog
+//}
