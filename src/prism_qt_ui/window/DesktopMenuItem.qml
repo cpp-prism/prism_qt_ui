@@ -9,6 +9,7 @@ import QtQuick.Controls 2.15
 import "../theme"
 
 Q1.MenuItem {
+    property bool showIcon: false
     property bool iconMipmap: false
     property real iconWidth: 20
     property real iconHeight: 20

@@ -43,7 +43,6 @@ Q1.Menu {
         enabled: menuItem.enabled
         SvgIcon {
             id: svg
-            visible: showIcon
             width: itemComponentRoot.menuItem.iconWidth
             height: itemComponentRoot.menuItem.iconHeight
             Layout.preferredWidth: width
@@ -51,6 +50,7 @@ Q1.Menu {
             Layout.rightMargin: itemComponentRoot.menuItem.iconRM
             Layout.leftMargin: itemComponentRoot.menuItem.iconLM
             svgPath: parent.parent.data.iconSource
+            visible: itemComponentRoot.menuItem.showIcon
             color: itemComponentRoot.menuItem.iconColor
             opacity: itemComponentRoot.menuItem.iconOpacity
             mipmap: itemComponentRoot.menuItem.iconMipmap
