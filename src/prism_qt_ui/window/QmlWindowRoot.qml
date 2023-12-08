@@ -14,6 +14,7 @@ Item {
     id:ro
     width: 800
     height: 400
+    property bool resizeable:true
     property string windowTitle: "窗口标题"
     property var viewModel: Window.window.viewModel
     onViewModelChanged: {
@@ -23,8 +24,18 @@ Item {
 
     Component.onCompleted: {
         console.log("window content created")
-        Window.window.width = width
-        Window.window.height = height
+        if(resizeable)
+        {
+            Window.window.width = width
+            Window.window.height = height
+        }
+        else
+        {
+            Window.window.maximumHeight = height
+            Window.window.minimumHeight = height
+            Window.window.maximumWidth = width
+            Window.window.minimumWidth = width
+        }
         Window.window.x = Screen.width/2 - width/2
         Window.window.y = Screen.height/2 - height/2
         Window.window.title = windowTitle
