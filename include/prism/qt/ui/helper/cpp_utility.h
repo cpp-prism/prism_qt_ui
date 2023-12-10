@@ -31,6 +31,8 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     std::shared_ptr<bool> showQmlDialog(QString qmlUrl,QObject* viewModel);
     void showQmlWindow(QString qmlUrl, QObject* viewModel =nullptr);
 
+    bool load_language_qm(QString filePath);
+
   signals:
 };
 

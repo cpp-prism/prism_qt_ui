@@ -5,6 +5,8 @@
 #include <QCoreApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
+#include <QTranslator>
+#include <QDebug>
 
 namespace prism::qt::ui {
 cpp_utility::cpp_utility(QObject* parent)
@@ -169,6 +171,53 @@ void cpp_utility::showQmlWindow(QString qmlUrl,QObject* viewModel)
 
 }
 
+bool cpp_utility::load_language_qm(QString filePath)
+{
+    try
+    {
+        std::shared_ptr<QTranslator> translator =  prism::Container::get()->resolve_object<QTranslator>();
+        if(!translator)
+        {
+            if(!QCoreApplication::removeTranslator(translator.get()))
+            {
+                std::shared_ptr<QTranslator> empty ;
+                prism::Container::get()->register_instance(empty);
+            }
+            else
+                throw std::string("卸载多语言翻译器失败");
+        }
+
+        if(!filePath.isEmpty())
+        {
+            std::shared_ptr<QTranslator> tr = std::make_shared<QTranslator>();
+            if(tr->load(filePath))
+            {
+                if(QCoreApplication::installTranslator(tr.get()))
+                    prism::Container::get()->register_instance(tr);
+                else
+                    throw std::string("安装多语言翻译器失败");
+
+            }
+            else
+                throw std::string("加载多语言文件失败:") + filePath.toStdString();
+
+        }
+        else
+        {
+            qInfo()<<"正在卸载非中文的多语言翻译器";
+        }
+        //通知qml engine，如果有的话
+        std::shared_ptr<QQmlApplicationEngine> engine = Container::get()->resolve_object<QQmlApplicationEngine>();
+        if(engine)
+            engine->retranslate();
+    }
+    catch(std::string & mes)
+    {
+        qCritical()<< QString::fromStdString(mes);
+        return false;
+    }
+    return true;
+}
 
 
 }// namespace prism::qt::ui
