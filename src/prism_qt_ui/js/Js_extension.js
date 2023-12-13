@@ -32,8 +32,8 @@ function expandTreeNode(t,ni) {
             var nni = t.model.index(i,0,ni)
             //if(!t.isExpanded(nni))
             //这里不样全部展开了,节点太多卡卡的,只展开两层就将将好
-            //expandTreeNode(t,nni)
-            t.expand(nni)
+            expandTreeNode(t,nni)
+            //t.expand(nni)
 
 
 
