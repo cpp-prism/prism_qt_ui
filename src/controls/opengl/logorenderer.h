@@ -75,7 +75,7 @@ public:
 
     GLsizei  texture_width = 0;
     GLsizei  texture_height = 0;
-    std::shared_ptr<unsigned char> buffer ;
+    img_frame_info frame ;
 
     qreal   m_fAngle = 0;
     qreal   m_fxScale = 0;
@@ -86,13 +86,15 @@ private:
 
     void paintQtLogo();
 
-    QOpenGLShaderProgram program1;
+    QOpenGLShaderProgram program_mono8;
+    QOpenGLShaderProgram program_rgb;
     GLuint textuniformID;
     GLuint textuniformUL;
     GLuint vertexInAL;
     GLuint textureInAL;
 
     int matrixUL;
+    bool inited_ = false;
 
 
 };

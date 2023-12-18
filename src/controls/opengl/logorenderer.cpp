@@ -83,11 +83,18 @@ void LogoRenderer::paintQtLogo()
         1.0f,  0.0f,
     };
 
-    program1.enableAttributeArray(vertexInAL);
-    program1.setAttributeArray(vertexInAL,GL_FLOAT,squareVertices,2);
+    QOpenGLShaderProgram* program;
+    if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
+        program = &program_mono8;
+    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+        program = &program_rgb;
 
-    program1.enableAttributeArray(textureInAL);
-    program1.setAttributeArray(textureInAL,GL_FLOAT, coordVertices,2);
+
+    program->enableAttributeArray(vertexInAL);
+    program->setAttributeArray(vertexInAL,GL_FLOAT,squareVertices,2);
+
+    program->enableAttributeArray(textureInAL);
+    program->setAttributeArray(textureInAL,GL_FLOAT, coordVertices,2);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textuniformID);
@@ -98,23 +105,18 @@ void LogoRenderer::paintQtLogo()
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RED,
-                 texture_width,
-                 texture_height,
-                 0,
-                 GL_RED,
-                 GL_UNSIGNED_BYTE,
-                 buffer.get());
+    if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer.get());
+    else  if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer.get());
 
     glUniform1i(textuniformUL, 0);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    program1.disableAttributeArray(vertexInAL);
+    program->disableAttributeArray(vertexInAL);
 
-    program1.disableAttributeArray(textureInAL);
+    program->disableAttributeArray(textureInAL);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -128,52 +130,80 @@ void LogoRenderer::paintQtLogo()
 
 void LogoRenderer::initialize()
 {
-    initializeOpenGLFunctions();
+    if(!inited_)
+    {
+        initializeOpenGLFunctions();
 
-    glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
 
-    const char *vsrc1 =
-            "attribute vec4 vertexIn;\n"
-            "attribute vec2 textureIn;\n"
-            "varying vec2 textureOut;\n"
-            "uniform mediump mat4 matrix;\n"
-            "void main(void)\n"
-            "{\n"
-            "    gl_Position = matrix * vertexIn;\n"
-            "    textureOut = vec2(textureIn.x,1.0 -textureIn.y);"
-            "}\n";
+        const char *vsrc1 =
+                "attribute vec4 vertexIn;\n"
+                "attribute vec2 textureIn;\n"
+                "varying vec2 textureOut;\n"
+                "uniform mediump mat4 matrix;\n"
+                "void main(void)\n"
+                "{\n"
+                "    gl_Position = matrix * vertexIn;\n"
+                "    textureOut = vec2(textureIn.x,1.0 -textureIn.y);"
+                "}\n";
 
-    const char *fsrc1 =
-            "varying vec2 textureOut;\n"
-            "uniform sampler2D tex_gvsp_mono8;\n"
-            "void main(void)\n"
-            "{\n"
-            "    float mono8 = texture2D(tex_gvsp_mono8, textureOut).r ; \n"
-            "    gl_FragColor = vec4(mono8,mono8,mono8, 1.0);\n"
-            "}\n";
+        const char *fsrc_nono8 =
+                "varying vec2 textureOut;\n"
+                "uniform sampler2D tex_;\n"
+                "void main(void)\n"
+                "{\n"
+                "    float mono8 = texture2D(tex_, textureOut).r ; \n"
+                "    gl_FragColor = vec4(mono8,mono8,mono8, 1.0);\n"
+                "}\n";
+        program_mono8.addCacheableShaderFromSourceCode(QOpenGLShader::Vertex, vsrc1);
+        program_mono8.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc_nono8);
+        program_mono8.link();
 
-    program1.addCacheableShaderFromSourceCode(QOpenGLShader::Vertex, vsrc1);
-    program1.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc1);
-    program1.link();
 
-    vertexInAL = program1.attributeLocation("vertexIn");
-    textureInAL = program1.attributeLocation("textureIn");
-    matrixUL = program1.uniformLocation("matrix");
 
-    // 创建纹理对象
-    glGenTextures(1, &textuniformID);
-    glBindTexture(GL_TEXTURE_2D, textuniformID);
+        const char *fsrc_rgb =
+                "varying vec2 textureOut;\n"
+                "uniform sampler2D tex_;\n"
+                "void main(void)\n"
+                "{\n"
+                "    vec3 rgb_ = texture2D(tex_, textureOut).rgb ; \n"
+                "    gl_FragColor = vec4(rgb_,1.0);\n"
+                "}\n";
+        program_rgb.addCacheableShaderFromSourceCode(QOpenGLShader::Vertex, vsrc1);
+        program_rgb.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc_rgb);
+        program_rgb.link();
+    }
+    QOpenGLShaderProgram* program;
+    if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
+        program = &program_mono8;
+    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+        program = &program_rgb;
 
-    // 设置纹理参数
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    vertexInAL = program->attributeLocation("vertexIn");
+    textureInAL = program->attributeLocation("textureIn");
+    matrixUL = program->uniformLocation("matrix");
+
+    if(!inited_)
+    {
+        // 创建纹理对象
+        glGenTextures(1, &textuniformID);
+        glBindTexture(GL_TEXTURE_2D, textuniformID);
+
+        // 设置纹理参数
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    }
+
     // 获取纹理位置
-    textuniformUL = glGetUniformLocation(program1.programId(), "tex_gvsp_mono8");
+    textuniformUL = glGetUniformLocation(program->programId(), "tex_");
 
     m_fAngle = 0;
     m_fxScale = 1;
     m_fyScale = 1;
+    inited_ = true;
 }
+
 
 void LogoRenderer::setCamSn(const std::string& sn)
 {
@@ -207,10 +237,17 @@ void LogoRenderer::render()
     QMatrix4x4 modelview;
     modelview.scale(m_fxScale,m_fyScale);
 
-    program1.bind();
-    program1.setUniformValue(matrixUL, modelview);
+    QOpenGLShaderProgram* program;
+
+    if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
+        program = &program_mono8;
+    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+        program = &program_rgb;
+
+    program->bind();
+    program->setUniformValue(matrixUL, modelview);
     paintQtLogo();
-    program1.release();
+    program->release();
 
     //glDisable(GL_DEPTH_TEST);
     //glDisable(GL_CULL_FACE);

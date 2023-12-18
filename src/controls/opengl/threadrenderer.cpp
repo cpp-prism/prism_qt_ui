@@ -123,6 +123,7 @@ public slots:
         std::shared_ptr<img_buffer_Info> buf = img_buffer_Info::infos[m_sn];
         {
             std::unique_lock<std::mutex> lk(buf->buffer_mux);
+
             buf->buffer_cv.wait(lk);
 
             if(buf->doFreeOpenGL)
@@ -132,12 +133,17 @@ public slots:
                 return;
             }
 
-            if(!buf->buffers.size())
+            if(!buf->frames.size())
                 return;
-            m_logoRenderer->texture_width = buf->width;
-            m_logoRenderer->texture_height =buf->height;
-            m_logoRenderer->buffer = buf->buffers.back();
-            buf->buffers.clear();
+            m_logoRenderer->frame = buf->frames.back();
+            m_logoRenderer->texture_width = m_logoRenderer->frame.width ;
+            m_logoRenderer->texture_height =m_logoRenderer->frame.height;
+            if(m_logoRenderer->frame.pixelType != buf->pre_frame.pixelType)
+            {
+                m_logoRenderer->initialize();
+            }
+            buf->pre_frame = m_logoRenderer->frame;
+            buf->frames.clear();
         }
 
         //如果纹理宽不变保持比例放大到和控件一样，纹理高<=控件高

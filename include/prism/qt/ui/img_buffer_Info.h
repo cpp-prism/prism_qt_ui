@@ -10,13 +10,33 @@
 namespace prism::qt::ui
 {
 
-struct PRISMQT_UI_EXPORT img_buffer_Info{
+enum  class ENUM_PixelType
+{
+    mono8,
+    rgb8,
+    bayerBG8,
+    bayerGB8,
+    bayerGR8,
+    bayerRG8
+
+};
+
+struct PRISMQT_UI_EXPORT img_frame_info{
+
     double height;
     double width;
-    int pixelType;
     int frameNum;
+    ENUM_PixelType pixelType = ENUM_PixelType::mono8;
+    std::shared_ptr<unsigned char> buffer;
+};
+
+struct PRISMQT_UI_EXPORT img_buffer_Info{
+
+    img_frame_info pre_frame;
+    std::deque<img_frame_info> frames;
+
     bool doFreeOpenGL = false;
-    std::deque<std::shared_ptr<unsigned char>> buffers;
+
     std::mutex buffer_mux;
     std::condition_variable buffer_cv;
 
