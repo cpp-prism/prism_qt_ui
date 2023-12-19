@@ -14,10 +14,10 @@ enum  class ENUM_PixelType
 {
     mono8,
     rgb8,
-    bayerBG8,
-    bayerGB8,
-    bayerGR8,
-    bayerRG8
+    bayerBG8,//not implemented
+    bayerGB8,//not implemented
+    bayerGR8,//not implemented
+    bayerRG8//not implemented
 
 };
 

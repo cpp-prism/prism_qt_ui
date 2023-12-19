@@ -88,6 +88,8 @@ void LogoRenderer::paintQtLogo()
         program = &program_mono8;
     else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
+    else
+        program = &program_mono8;
 
 
     program->enableAttributeArray(vertexInAL);
@@ -109,6 +111,8 @@ void LogoRenderer::paintQtLogo()
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer.get());
     else  if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer.get());
+    else
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer.get());
 
     glUniform1i(textuniformUL, 0);
 
@@ -174,10 +178,13 @@ void LogoRenderer::initialize()
         program_rgb.link();
     }
     QOpenGLShaderProgram* program;
+
     if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
         program = &program_mono8;
     else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
+    else
+        program = &program_mono8;
 
     vertexInAL = program->attributeLocation("vertexIn");
     textureInAL = program->attributeLocation("textureIn");
@@ -243,6 +250,8 @@ void LogoRenderer::render()
         program = &program_mono8;
     else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
+    else
+        program = &program_mono8;
 
     program->bind();
     program->setUniformValue(matrixUL, modelview);
