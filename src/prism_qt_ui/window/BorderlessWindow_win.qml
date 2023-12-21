@@ -22,8 +22,8 @@ BorderLessWindow_Win_cpp {
     minimumHeight: 670
 
     Component.onCompleted: {
-        width = 1030
-        height = 670
+        width = minimumWidth
+        height = minimumHeight
         x = Screen.width / 2 - width / 2
         y = Screen.height / 2 - height / 2
         CppUtility.enableWindowBorderless(window)

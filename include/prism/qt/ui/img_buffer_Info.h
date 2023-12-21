@@ -6,6 +6,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <deque>
+#include <prism/qt/core/hpp/prismQt.hpp>
 
 namespace prism::qt::ui
 {
@@ -23,12 +24,13 @@ enum  class ENUM_PixelType
 
 struct PRISMQT_UI_EXPORT img_frame_info{
 
-    double height;
-    double width;
-    int frameNum;
+    double height = 0.0;
+    double width = 0.0;
+    int frameNum = 0;
     ENUM_PixelType pixelType = ENUM_PixelType::mono8;
     std::shared_ptr<unsigned char> buffer;
 };
+PRISMQT_TYPE(img_frame_info)
 
 struct PRISMQT_UI_EXPORT img_buffer_Info{
 

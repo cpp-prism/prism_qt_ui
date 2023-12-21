@@ -1,3 +1,4 @@
+#include "include/prism/qt/ui/img_buffer_Info.h"
 #include "src/controls/window/qml_debug_window.h"
 #include "prismQt_ui.h"
 #include "helper/menuhelper.h"
@@ -35,6 +36,8 @@ bool prismQt_ui::register_types()
 
     //opengl渲染器
     qmlRegisterType<ThreadRenderer>("prism_qt_ui", 1, 0, "Renderer");
+    //注册相机帧信息
+    qRegisterMetaType<prism::qt::ui::img_frame_info>();
 
     //注册qml中使用的实用工具类到ioc container 和qml engine
     std::shared_ptr<cpp_utility> sp_cpputility = std::make_shared<cpp_utility>(new cpp_utility());
