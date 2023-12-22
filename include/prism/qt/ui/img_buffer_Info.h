@@ -30,7 +30,6 @@ struct PRISMQT_UI_EXPORT img_frame_info{
     ENUM_PixelType pixelType = ENUM_PixelType::mono8;
     std::shared_ptr<unsigned char> buffer;
 };
-PRISMQT_TYPE(img_frame_info)
 
 struct PRISMQT_UI_EXPORT img_buffer_Info{
 
@@ -47,4 +46,8 @@ struct PRISMQT_UI_EXPORT img_buffer_Info{
 
 }// namespace prism::qt::ui
 
+PRISMQT_TYPE(prism::qt::ui::ENUM_PixelType);
+
+PRISM_FIELDS(prism::qt::ui::img_frame_info,height,width,frameNum,pixelType);
+PRISMQT_TYPE(prism::qt::ui::img_frame_info);
 #endif // PRISM_QT_UI_OPENGL_RENDER_INFO_H

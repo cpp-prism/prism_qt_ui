@@ -2,11 +2,12 @@
 #include "src/controls/window/qml_debug_window.h"
 #include "../platform/i_borderless_window_helper.h"
 #include <prism/container.hpp>
+#include <QApplication>
 #include <QCoreApplication>
+#include <QDebug>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QTranslator>
-#include <QDebug>
 
 namespace prism::qt::ui {
 cpp_utility::cpp_utility(QObject* parent)
@@ -219,5 +220,15 @@ bool cpp_utility::load_language_qm(QString filePath)
     return true;
 }
 
+void cpp_utility::setCursor(Qt::CursorShape cs)
+{
+    std::shared_ptr<QApplication> app =  prism::Container::get()->resolve_object<QApplication>();
+    app->setOverrideCursor(QCursor(cs));
+}
+void cpp_utility::restoreCursor()
+{
+    std::shared_ptr<QApplication> app =  prism::Container::get()->resolve_object<QApplication>();
+    app->restoreOverrideCursor();
+}
 
 }// namespace prism::qt::ui

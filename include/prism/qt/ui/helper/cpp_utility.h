@@ -6,7 +6,7 @@
 #include <QUrl>
 #include <QVariant>
 #include <memory>
-#include <QPoint>
+
 
 class QQuickWindow;
 namespace prism::qt::ui {
@@ -32,6 +32,9 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     void showQmlWindow(QString qmlUrl, QObject* viewModel =nullptr);
 
     bool load_language_qm(QString filePath);
+
+    void setCursor(Qt::CursorShape cs);
+    void restoreCursor();
 
   signals:
 };
