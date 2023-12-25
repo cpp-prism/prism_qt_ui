@@ -24,11 +24,15 @@ enum  class ENUM_PixelType
 
 struct PRISMQT_UI_EXPORT img_frame_info{
 
-    double height = 0.0;
-    double width = 0.0;
+    double height = 1.0;
+    double width = 1.0;
     int frameNum = 0;
     ENUM_PixelType pixelType = ENUM_PixelType::mono8;
     std::shared_ptr<unsigned char> buffer;
+    //上位机统计
+    int receivedBufferNum=0;
+    int incompleteBufferNum =0;
+    double buffersPerSecond = 0.0;
 };
 
 struct PRISMQT_UI_EXPORT img_buffer_Info{
@@ -46,8 +50,14 @@ struct PRISMQT_UI_EXPORT img_buffer_Info{
 
 }// namespace prism::qt::ui
 
+PRISM_ENUM(prism::qt::ui::ENUM_PixelType,{{ prism::qt::ui::ENUM_PixelType::mono8,"mono8"},
+                                          { prism::qt::ui::ENUM_PixelType::rgb8,"rgb8"},
+                                          { prism::qt::ui::ENUM_PixelType::bayerBG8,"bayerBG8"},
+                                          { prism::qt::ui::ENUM_PixelType::bayerGB8,"bayerGB8"},
+                                          { prism::qt::ui::ENUM_PixelType::bayerGR8,"bayerGR8"},
+                                          { prism::qt::ui::ENUM_PixelType::bayerRG8,"bayerRG8"} });
 PRISMQT_TYPE(prism::qt::ui::ENUM_PixelType);
 
-PRISM_FIELDS(prism::qt::ui::img_frame_info,height,width,frameNum,pixelType);
+PRISM_FIELDS(prism::qt::ui::img_frame_info,height,width,frameNum,pixelType,receivedBufferNum,incompleteBufferNum,buffersPerSecond);
 PRISMQT_TYPE(prism::qt::ui::img_frame_info);
 #endif // PRISM_QT_UI_OPENGL_RENDER_INFO_H
