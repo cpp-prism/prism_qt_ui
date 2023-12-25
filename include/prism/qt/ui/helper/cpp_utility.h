@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QVariant>
 #include <memory>
+#include <QPoint>
 
 
 class QQuickWindow;
