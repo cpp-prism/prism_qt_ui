@@ -222,12 +222,12 @@ bool cpp_utility::load_language_qm(QString filePath)
 
 void cpp_utility::setCursor(Qt::CursorShape cs)
 {
-    std::shared_ptr<QApplication> app =  prism::Container::get()->resolve_object<QApplication>();
+    QApplication* app = qobject_cast<QApplication*>(QApplication::instance());
     app->setOverrideCursor(QCursor(cs));
 }
 void cpp_utility::restoreCursor()
 {
-    std::shared_ptr<QApplication> app =  prism::Container::get()->resolve_object<QApplication>();
+    QApplication* app = qobject_cast<QApplication*>(QApplication::instance());
     app->restoreOverrideCursor();
 }
 
