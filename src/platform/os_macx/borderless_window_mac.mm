@@ -1,13 +1,15 @@
-#include "windowborderlesshelper_macx.h"
+#include "borderless_window_mac.h"
 #include <Cocoa/Cocoa.h>
 #include <QGuiApplication>
 #include <QWindow>
 
-WindowBorderlessHelper_macx::WindowBorderlessHelper_macx()
+namespace prism::qt::ui {
+
+borderless_window_mac::borderless_window_mac()
 {
 }
 
-void WindowBorderlessHelper_macx::enableWindowBorderless(qulonglong wId)
+void borderless_window_mac::enableWindowBorderless(qulonglong wId)
 {
     NSView *nativeView = reinterpret_cast<NSView *>(wId);
     NSWindow *nativeWindow = [nativeView window];
@@ -17,3 +19,7 @@ void WindowBorderlessHelper_macx::enableWindowBorderless(qulonglong wId)
     [nativeWindow setTitlebarAppearsTransparent:YES];
     [nativeWindow setMovableByWindowBackground:YES];
 }
+
+
+
+}//namespace prism::qt::ui 
