@@ -42,4 +42,13 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
 
 }// namespace prism::qt::ui
 
+
+#ifdef USING_PCL
+extern "C"
+{
+PRISMQT_UI_EXPORT void initVTK();
+}
+#endif
+
+
 #endif // PRISM_QT_UI_CPP_UTILITY_H

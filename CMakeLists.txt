@@ -17,6 +17,10 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControls2 REQUIRED)
 find_package(prism COMPONENTS container qt::modular qt::core)
 
+option(USING_PCL "add pcl vtk " OFF)
+
+
+
 include_directories(${Qt${QT_VERSION_MAJOR}Quick_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt${QT_VERSION_MAJOR}Core_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt${QT_VERSION_MAJOR}Gui_PRIVATE_INCLUDE_DIRS})
@@ -89,6 +93,14 @@ get_filename_component(PARENT_DIR "${PROJECT_SOURCE_DIR}" DIRECTORY)
 target_compile_definitions(${PROJECT_NAME} PRIVATE PRISMQT_SOLUTION_SOURCEDIR="${PARENT_DIR}")
 
 
+if(USING_PCL)
+    find_package(VTK REQUIRED COMPONENTS GUISupportQtQuick)
+    include("${VTK_USE_FILE}")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_PCL)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        VTK::GUISupportQtQuick
+    )
+endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     prism::prism

@@ -9,6 +9,10 @@
 #include <QQuickWindow>
 #include <QTranslator>
 
+#ifdef USING_PCL
+#include <QQuickVTKRenderWindow.h>
+#endif
+
 namespace prism::qt::ui {
 cpp_utility::cpp_utility(QObject* parent)
     : QObject(parent)
@@ -232,3 +236,10 @@ void cpp_utility::restoreCursor()
 }
 
 }// namespace prism::qt::ui
+
+#ifdef USING_PCL
+void initVTK()
+{
+    QQuickVTKRenderWindow::setupGraphicsBackend();
+}
+#endif
