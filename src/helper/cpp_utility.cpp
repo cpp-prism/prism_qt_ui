@@ -9,8 +9,13 @@
 #include <QQuickWindow>
 #include <QTranslator>
 
+#include <QDebug>
+
 #ifdef USING_PCL
-#include <QQuickVTKRenderWindow.h>
+    #include <QQuickVTKRenderWindow.h>
+    #include <QQuickWindow>
+    #include <QSGRendererInterface>
+    #include <QSurfaceFormat>
 #endif
 
 namespace prism::qt::ui {
@@ -235,11 +240,51 @@ void cpp_utility::restoreCursor()
     app->restoreOverrideCursor();
 }
 
+
+std::string cpp_utility::openGLVersion  = "default";
 }// namespace prism::qt::ui
 
 #ifdef USING_PCL
 void initVTK()
 {
-    QQuickVTKRenderWindow::setupGraphicsBackend();
+    qDebug() << "set openGL version " << QString::fromStdString(prism::qt::ui::cpp_utility::openGLVersion);
+    if(prism::qt::ui::cpp_utility::openGLVersion =="3.2")
+    {
+        QSurfaceFormat fmt;
+        fmt.setRenderableType(QSurfaceFormat::OpenGL);
+        fmt.setVersion(3, 2);
+        fmt.setProfile(QSurfaceFormat::CoreProfile);
+        fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+        fmt.setRedBufferSize(8);
+        fmt.setGreenBufferSize(8);
+        fmt.setBlueBufferSize(8);
+        fmt.setDepthBufferSize(8);
+        fmt.setAlphaBufferSize(8);
+        fmt.setStencilBufferSize(0);
+        fmt.setStereo(false);
+        fmt.setSamples(0); // we never need multisampling in the context since the FBO can support
+        // multisamples independently
+
+        QSurfaceFormat::setDefaultFormat(fmt);
+
+        //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        //    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGLRhi);
+        //#endif
+    }
+    else if(prism::qt::ui::cpp_utility::openGLVersion == "3.0")
+    {
+        std::string mesa_gl_version = std::string("MESA_GL_VERSION_OVERRIDE=") + prism::qt::ui::cpp_utility::openGLVersion;
+
+        qDebug()<< QString::fromStdString(mesa_gl_version);
+
+        char* env = (char*)mesa_gl_version.c_str();
+        putenv(env);
+
+        putenv((char* )"MESA_GL_VERSION_OVERRIDE=3.0");
+        // Fixes decimal point issue in vtkSTLReader
+        putenv((char *)"LC_NUMERIC=C");
+
+    }
+
 }
 #endif

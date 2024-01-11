@@ -17,6 +17,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     Q_OBJECT
   public:
     explicit cpp_utility(QObject* parent = nullptr);
+    static std::string openGLVersion ;
   public slots:
     void setCppOwnership(QObject *obj);
     void setQmlOwnership(QObject *obj);
