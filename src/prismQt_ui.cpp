@@ -40,6 +40,7 @@ bool prismQt_ui::register_types()
     //注册相机帧信息
     qRegisterMetaType<prism::qt::ui::img_frame_info>();
     qRegisterMetaType<prismModelProxy<prism::qt::ui::img_frame_info>*>("prismModelProxy<prism::qt::ui::img_frame_info>*");
+    qRegisterMetaType<std::shared_ptr<bool>>("std::shared_ptr<bool>");
 
     //注册qml中使用的实用工具类到ioc container 和qml engine
     std::shared_ptr<cpp_utility> sp_cpputility = std::make_shared<cpp_utility>(new cpp_utility());
