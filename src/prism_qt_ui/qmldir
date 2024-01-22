@@ -25,3 +25,5 @@ singleton   Style 1.0 theme/Style.qml
             SvgIcon 1.0 shapes/SvgIcon.qml
 
             DoubleSpinbox 1.0 spinbox/DoubleSpinbox.qml
+            DatePicker 1.0 forms/DatePicker.qml
+            DateTimePicker 1.0 forms/DateTimePicker.qml

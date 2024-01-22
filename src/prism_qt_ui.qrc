@@ -67,5 +67,7 @@
         <file>prism_qt_ui/spinbox/DoubleSpinbox.qml</file>
         <file>prism_qt_ui/window/QmlDebugWindow.qml</file>
         <file>prism_qt_ui/window/QmlWindowRoot.qml</file>
+        <file>prism_qt_ui/forms/DatePicker.qml</file>
+        <file>prism_qt_ui/forms/DateTimePicker.qml</file>
     </qresource>
 </RCC>

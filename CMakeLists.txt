@@ -77,6 +77,12 @@ add_library(${PROJECT_NAME} SHARED
   src/controls/opengl/threadrenderer.cpp
   src/controls/window/qml_debug_window.h
   src/controls/window/qml_debug_window.cpp
+  src/controls/forms/datepickercpp.h
+  src/controls/forms/datepickercpp.cpp
+
+
+  src/validator/datetime_validator.h
+  src/validator/datetime_validator.cpp
 )
 
 add_library(prism::qt::ui  ALIAS ${PROJECT_NAME})
