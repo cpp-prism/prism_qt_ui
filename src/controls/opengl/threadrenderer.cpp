@@ -131,7 +131,8 @@ public slots:
 
             if(buf->doFreeOpenGL)
             {
-                buf->doFreeOpenGL ^=true;
+                buf->doFreeOpenGL = false;
+                buf->frames.clear();
                 shutDown();
                 return;
             }
@@ -139,15 +140,17 @@ public slots:
             if(!buf->frames.size())
                 return;
             m_logoRenderer->frame = buf->frames.back();
-            m_logoRenderer->texture_width = m_logoRenderer->frame.width ;
-            m_logoRenderer->texture_height =m_logoRenderer->frame.height;
-            if(m_logoRenderer->frame.pixelType != buf->pre_frame.pixelType)
-            {
-                m_logoRenderer->initialize();
-            }
-            buf->pre_frame = m_logoRenderer->frame;
+            //buf->frames.pop_back();
             buf->frames.clear();
         }
+
+        m_logoRenderer->texture_width = m_logoRenderer->frame.width ;
+        m_logoRenderer->texture_height =m_logoRenderer->frame.height;
+        if(m_logoRenderer->frame.pixelType != buf->pre_frame.pixelType)
+        {
+            m_logoRenderer->initialize();
+        }
+        buf->pre_frame = m_logoRenderer->frame;
 
         //如果纹理宽不变保持比例放大到和控件一样，纹理高<=控件高
         double height = m_logoRenderer->texture_height *  mp_render->width() / m_logoRenderer->texture_width;

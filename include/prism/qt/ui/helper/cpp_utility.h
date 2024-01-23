@@ -7,6 +7,8 @@
 #include <QVariant>
 #include <memory>
 #include <QPoint>
+#include <QTimer>
+#include <QDateTime>
 
 
 class QQuickWindow;
@@ -17,7 +19,9 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     Q_OBJECT
   public:
     explicit cpp_utility(QObject* parent = nullptr);
+    ~cpp_utility();
     static std::string openGLVersion ;
+    bool is_ui_hang();
   public slots:
     void setCppOwnership(QObject *obj);
     void setQmlOwnership(QObject *obj);
@@ -37,6 +41,11 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
 
     void setCursor(Qt::CursorShape cs);
     void restoreCursor();
+
+private:
+    std::unique_ptr<QTimer> uiTimer_ ;
+    int uiTimer_interval_ = 50 ;
+    std::time_t pre_timepoint_ ;
 
   signals:
 };

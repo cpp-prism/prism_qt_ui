@@ -22,7 +22,32 @@ namespace prism::qt::ui {
 cpp_utility::cpp_utility(QObject* parent)
     : QObject(parent)
 {
+    uiTimer_ = std::make_unique<QTimer>();
+    connect(uiTimer_.get(),&QTimer::timeout,this,[this](){
+        pre_timepoint_ = QDateTime::currentMSecsSinceEpoch();
+    });
+
+    uiTimer_->setSingleShot(false);
+    uiTimer_->setInterval(uiTimer_interval_);
+    uiTimer_->start();
+
 }
+
+cpp_utility::~cpp_utility()
+{
+    if(uiTimer_)
+        uiTimer_->stop();
+}
+
+bool cpp_utility::is_ui_hang()
+{
+    auto delta = QDateTime::currentMSecsSinceEpoch() - pre_timepoint_;
+    if(delta > uiTimer_interval_*10)
+        return true;
+    else
+        return false;
+}
+
 void cpp_utility::setQmlOwnership(QObject *obj)
 {
     if(QQmlEngine::objectOwnership(obj) != QQmlEngine::JavaScriptOwnership)
