@@ -19,7 +19,7 @@ import QtQml.Models 2.15
 DatePickerCpp{
     id:control
     implicitHeight: 25
-    implicitWidth: 130
+    implicitWidth: 150
     //Layout.preferredHeight: 30
     //Layout.preferredWidth: 100
     property var maximumDate
@@ -52,7 +52,7 @@ DatePickerCpp{
     //DesktopPopup{
     DefaultPopup{
         id:pop_calendar
-        width: 400
+        width: 450
         height: 330
         closePolicy: Popup.CloseOnEscape|Popup.CloseOnPressOutside
         property int cacheRows :998
@@ -351,7 +351,7 @@ DatePickerCpp{
                 Loader{
                     property int type : 1 // year1 ...2 ...3 ...4 ...5 second6
                     Layout.fillHeight: true
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: parent.width/5
                     sourceComponent: lo_poplayout.comp_listview
                 }
             }
