@@ -22,10 +22,25 @@ namespace prism::qt::ui {
 cpp_utility::cpp_utility(QObject* parent)
     : QObject(parent)
 {
+    //detect ui hang timer
     uiTimer_ = std::make_unique<QTimer>();
     connect(uiTimer_.get(),&QTimer::timeout,this,[this](){
         pre_timepoint_ = QDateTime::currentMSecsSinceEpoch();
     });
+
+
+    //detect qml live
+    int length = QCoreApplication::arguments().length();
+    for(int i = 0; i < length; ++i)
+    {
+        QString arg = QCoreApplication::arguments().at(i);
+
+        if(arg == "qml_live")
+        {
+            isqmllive_ = true;
+        }
+    }
+
 
     uiTimer_->setSingleShot(false);
     uiTimer_->setInterval(uiTimer_interval_);
@@ -263,6 +278,11 @@ void cpp_utility::restoreCursor()
 {
     QApplication* app = qobject_cast<QApplication*>(QApplication::instance());
     app->restoreOverrideCursor();
+}
+
+bool cpp_utility::isqmllive()
+{
+        return isqmllive_;
 }
 
 
