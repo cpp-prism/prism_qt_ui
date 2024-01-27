@@ -152,6 +152,11 @@ QPoint cpp_utility::getMousePos()
     return  QCursor::pos();
 }
 
+QModelIndex cpp_utility::getInvalidQModelIndex()
+{
+    return QModelIndex();
+}
+
 
 std::shared_ptr<bool> cpp_utility::showQmlDialog(QString qmlUrl,QObject* viewModel)
 {

@@ -9,6 +9,7 @@
 #include <QPoint>
 #include <QTimer>
 #include <QDateTime>
+#include <QModelIndex>
 
 
 class QQuickWindow;
@@ -33,6 +34,8 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     QString qstr(std::string str);
     double itof(int i);
     QPoint getMousePos();
+
+    QModelIndex getInvalidQModelIndex();
 
     std::shared_ptr<bool> showQmlDialog(QString qmlUrl,QObject* viewModel);
     void showQmlWindow(QString qmlUrl, QObject* viewModel =nullptr);
