@@ -8,6 +8,8 @@
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QTranslator>
+#include <QFileInfo>
+#include <QDesktopServices>
 
 #include <QDebug>
 
@@ -283,6 +285,22 @@ void cpp_utility::restoreCursor()
 {
     QApplication* app = qobject_cast<QApplication*>(QApplication::instance());
     app->restoreOverrideCursor();
+}
+
+void cpp_utility::openPath(const QString path)
+{
+    QFileInfo fileInfo(path);
+
+    if (fileInfo.isDir()) {
+        // 如果是目录，直接打开目录
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+    } else if (fileInfo.isFile()) {
+        // 如果是文件，打开文件所在的目录，并定位到文件
+        QDesktopServices::openUrl(QUrl::fromLocalFile(fileInfo.absolutePath()));
+    } else {
+        // 路径既不是目录也不是文件，显示错误信息
+        qDebug()<< "open invalidate path :" << path;
+    }
 }
 
 bool cpp_utility::isqmllive()

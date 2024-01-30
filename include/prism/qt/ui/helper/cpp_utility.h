@@ -45,6 +45,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     void setCursor(Qt::CursorShape cs);
     void restoreCursor();
     bool isqmllive();
+    void openPath(const QString path);
 
 private:
     std::unique_ptr<QTimer> uiTimer_ ;
