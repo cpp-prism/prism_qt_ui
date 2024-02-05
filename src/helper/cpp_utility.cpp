@@ -154,6 +154,27 @@ QPoint cpp_utility::getMousePos()
     return  QCursor::pos();
 }
 
+void cpp_utility::forceUpdateMouseAreaHovered(QObject *mouseArea)
+{
+    //QEvent* e = new QEvent(QEvent::MouseMove);
+    //QCoreApplication::sendEvent(mouseArea, e);
+
+    //{
+    //    QMouseEvent *enterEvent = new QMouseEvent(QEvent::Enter, QPointF(10, 10), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+    //    QCoreApplication::sendEvent(mouseArea, enterEvent);
+    //}
+
+    //{
+    //    QMouseEvent *exitEvent = new QMouseEvent(QEvent::Leave, QPointF(200, 200), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+    //    QCoreApplication::sendEvent(mouseArea, exitEvent);
+    //}
+
+    {
+        QMouseEvent *exitEvent = new QMouseEvent(QEvent::MouseMove, QPointF(-1, -1), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+        QCoreApplication::sendEvent(mouseArea, exitEvent);
+    }
+}
+
 QModelIndex cpp_utility::getInvalidQModelIndex()
 {
     return QModelIndex();

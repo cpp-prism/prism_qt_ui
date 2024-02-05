@@ -38,7 +38,7 @@ Item {
     MouseArea {
         anchors.fill: svg
         id: ma
-        enabled: true
+        enabled: btn.enabled
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: {

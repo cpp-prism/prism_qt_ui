@@ -38,6 +38,7 @@ public slots:
     QString qstr(std::string str);
     double itof(int i);
     QPoint getMousePos();
+    void forceUpdateMouseAreaHovered(QObject* item);
 
     QModelIndex getInvalidQModelIndex();
 
