@@ -266,7 +266,18 @@ bool cpp_utility::load_language_qm(QString filePath)
         //通知qml engine，如果有的话
         std::shared_ptr<QQmlApplicationEngine> engine = Container::get()->resolve_object<QQmlApplicationEngine>();
         if(engine)
-            engine->retranslate();
+        {
+            /**
+             * fix 1 - retranslate will refresh all qml property,cause qsortfilterproxymodel* get an freed address which is incorret
+             * fix 2 - Performance when switching languages ​​dynamically
+             * by hbb 2024.2.3
+             */
+            //engine->retranslate();
+            if(transThis()=="")
+                setTransThis("\u200B");//ZWSP
+            else
+                setTransThis("");
+        }
     }
     catch(std::string & mes)
     {
@@ -305,11 +316,25 @@ void cpp_utility::openPath(const QString path)
 
 bool cpp_utility::isqmllive()
 {
-        return isqmllive_;
+    return isqmllive_;
 }
 
 
 std::string cpp_utility::openGLVersion  = "default";
+
+const QString &cpp_utility::transThis() const
+{
+    return m_transThis;
+}
+
+void cpp_utility::setTransThis(const QString &newTransThis)
+{
+    if (m_transThis == newTransThis)
+        return;
+    m_transThis = newTransThis;
+    emit transThisChanged();
+}
+
 }// namespace prism::qt::ui
 
 #ifdef USING_PCL

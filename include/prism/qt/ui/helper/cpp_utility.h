@@ -18,12 +18,16 @@ namespace prism::qt::ui {
 class PRISMQT_UI_EXPORT cpp_utility : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString transThis READ transThis WRITE setTransThis NOTIFY transThisChanged)
   public:
     explicit cpp_utility(QObject* parent = nullptr);
     ~cpp_utility();
     static std::string openGLVersion ;
     bool is_ui_hang();
-  public slots:
+    const QString &transThis() const;
+    void setTransThis(const QString &newTransThis);
+
+public slots:
     void setCppOwnership(QObject *obj);
     void setQmlOwnership(QObject *obj);
     void enableWindowBorderless(QQuickWindow* win);
@@ -53,7 +57,10 @@ private:
     std::time_t pre_timepoint_ ;
     bool isqmllive_ = false;
 
-  signals:
+    QString m_transThis;
+
+signals:
+    void transThisChanged();
 };
 
 }// namespace prism::qt::ui
