@@ -15,6 +15,7 @@ enum  class ENUM_PixelType
 {
     mono8,
     rgb8,
+    bgr8,
     bayerBG8,//not implemented
     bayerGB8,//not implemented
     bayerGR8,//not implemented
@@ -52,6 +53,7 @@ struct PRISMQT_UI_EXPORT img_buffer_Info{
 
 PRISM_ENUM(prism::qt::ui::ENUM_PixelType,{{ prism::qt::ui::ENUM_PixelType::mono8,"mono8"},
                                           { prism::qt::ui::ENUM_PixelType::rgb8,"rgb8"},
+                                          { prism::qt::ui::ENUM_PixelType::bgr8,"bgr8"},
                                           { prism::qt::ui::ENUM_PixelType::bayerBG8,"bayerBG8"},
                                           { prism::qt::ui::ENUM_PixelType::bayerGB8,"bayerGB8"},
                                           { prism::qt::ui::ENUM_PixelType::bayerGR8,"bayerGR8"},

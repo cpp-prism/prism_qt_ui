@@ -110,6 +110,10 @@ public:
 public slots:
     void renderNext()
     {
+        if(m_sn.empty())
+            return;
+        if(mp_render->sn().empty())
+            return;
         context->makeCurrent(surface);
 
         if (!m_renderFbo) {
@@ -144,6 +148,24 @@ public slots:
             buf->frames.clear();
         }
 
+        m_size.setWidth(mp_render->width());
+        m_size.setHeight(mp_render->height());
+
+        if(std::abs(m_displayFbo->width() - m_size.width()) > 0.01 || std::abs( m_displayFbo->height() - m_size.height()) > 0.01
+          || std::abs(m_renderFbo->width() - m_size.width()) > 0.01 || std::abs( m_renderFbo->height() - m_size.height()) > 0.01)
+        {
+            {
+                auto* tmp  = new QOpenGLFramebufferObject(m_size, m_displayFbo->format());
+                delete m_displayFbo;
+                m_displayFbo = tmp;
+            }
+            {
+                auto* tmp  = new QOpenGLFramebufferObject(m_size, m_renderFbo->format());
+                delete m_renderFbo;
+                m_renderFbo = tmp;
+            }
+        }
+
         m_logoRenderer->texture_width = m_logoRenderer->frame.width ;
         m_logoRenderer->texture_height =m_logoRenderer->frame.height;
         if(m_logoRenderer->frame.pixelType != buf->pre_frame.pixelType)
@@ -151,6 +173,7 @@ public slots:
             m_logoRenderer->initialize();
         }
         buf->pre_frame = m_logoRenderer->frame;
+
 
         //如果纹理宽不变保持比例放大到和控件一样，纹理高<=控件高
         double height = m_logoRenderer->texture_height *  mp_render->width() / m_logoRenderer->texture_width;
@@ -164,7 +187,6 @@ public slots:
             double width = m_logoRenderer->texture_width *  mp_render->height() / m_logoRenderer->texture_height;
             m_logoRenderer->m_fxScale = width/mp_render->width();
             m_logoRenderer->m_fyScale = 1;
-
         }
 
         m_renderFbo->bind();
@@ -296,6 +318,23 @@ ThreadRenderer::ThreadRenderer()
 {
     setFlag(ItemHasContents, true);
     m_renderThread = new RenderThread(QSize(512, 512),this);
+
+    connect(this,&ThreadRenderer::widthChanged,this,&ThreadRenderer::prismSizeChanged);
+    connect(this,&ThreadRenderer::heightChanged,this,&ThreadRenderer::prismSizeChanged);
+
+    m_sizechangedTimer->setInterval(200);
+    connect(m_sizechangedTimer.get(),&QTimer::timeout,this,&ThreadRenderer::prismSizeChangedDetect);
+}
+
+ThreadRenderer::~ThreadRenderer()
+{
+    std::shared_ptr<img_buffer_Info> buf = img_buffer_Info::infos[m_sn];
+    if(buf)
+    {
+        buf->doFreeOpenGL = true;
+        buf->buffer_cv.notify_one();
+    }
+
 }
 
 void ThreadRenderer::ready()
@@ -308,7 +347,7 @@ void ThreadRenderer::ready()
 
     m_renderThread->moveToThread(m_renderThread);
 
-    connect(window(), &QQuickWindow::sceneGraphInvalidated, m_renderThread, &RenderThread::shutDown, Qt::QueuedConnection);
+    //connect(window(), &QQuickWindow::sceneGraphInvalidated, m_renderThread, &RenderThread::shutDown, Qt::QueuedConnection);
 
     m_renderThread->start();
     update();
@@ -324,7 +363,44 @@ void ThreadRenderer::setCamSn(QString sn)
 {
     m_sn = sn.toStdString();
     if(m_renderThread)
-		m_renderThread->setSn(m_sn);
+        m_renderThread->setSn(m_sn);
+}
+
+void ThreadRenderer::prismSizeChanged()
+{
+    if(m_sn.empty())
+        return;
+
+    m_sizechangedFlag = true;
+    m_sizechangedTimer->stop();
+    m_sizechangedTimer->setSingleShot(true);
+    m_sizechangedTimer->start();
+
+}
+
+void ThreadRenderer::prismSizeChangedDetect()
+{
+    if(m_sn.empty())
+        return;
+
+    if(!m_sizechangedFlag)
+        return;
+    m_sizechangedFlag = false;
+
+    std::shared_ptr<img_buffer_Info> buf = img_buffer_Info::infos[m_sn];
+    {
+        std::unique_lock<std::mutex> lk(buf->buffer_mux);
+
+        if(buf->doFreeOpenGL)
+            return;
+
+        buf->frames.clear();
+        if(buf->pre_frame.buffer)
+        {
+            buf->frames.push_back(buf->pre_frame);
+            buf->buffer_cv.notify_one();
+        }
+    }
 }
 
 

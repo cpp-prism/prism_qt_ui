@@ -26,6 +26,7 @@ cpp_utility::cpp_utility(QObject* parent)
 {
     //detect ui hang timer
     uiTimer_ = std::make_unique<QTimer>();
+    setCppOwnership(uiTimer_.get());
     connect(uiTimer_.get(),&QTimer::timeout,this,[this](){
         pre_timepoint_ = QDateTime::currentMSecsSinceEpoch();
     });

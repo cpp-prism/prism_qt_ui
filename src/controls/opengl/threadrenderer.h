@@ -53,6 +53,8 @@
 
 #include <QQuickItem>
 #include <string>
+#include <QTimer>
+#include <memory>
 
 namespace prism::qt::ui{
 class RenderThread;
@@ -64,6 +66,7 @@ class ThreadRenderer : public QQuickItem
 
 public:
     ThreadRenderer();
+    ~ThreadRenderer();
 
     static QList<QThread *> threads;
     std::string sn();
@@ -71,7 +74,12 @@ public:
 public Q_SLOTS:
     void ready();
     void setCamSn(QString sn);
+    void prismSizeChanged();
+    void prismSizeChangedDetect();
 
+
+signals:
+    void sizeChanged();
 protected:
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *);
 
@@ -79,6 +87,8 @@ private:
     RenderThread *m_renderThread;
     std::string m_sn;
     QMetaObject::Connection m_shutdown_connection;
+    bool m_sizechangedFlag = false;
+    std::unique_ptr<QTimer> m_sizechangedTimer = std::make_unique<QTimer>();
 };
 }// namespace prism::qt::ui
 

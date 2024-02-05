@@ -88,6 +88,7 @@ private:
 
     QOpenGLShaderProgram program_mono8;
     QOpenGLShaderProgram program_rgb;
+    QOpenGLShaderProgram program_bgr;
     GLuint textuniformID;
     GLuint textuniformUL;
     GLuint vertexInAL;

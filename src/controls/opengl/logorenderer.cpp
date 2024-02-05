@@ -88,6 +88,8 @@ void LogoRenderer::paintQtLogo()
         program = &program_mono8;
     else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
+    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
+        program = &program_bgr;
     else
         program = &program_mono8;
 
@@ -103,6 +105,7 @@ void LogoRenderer::paintQtLogo()
     // 设置纹理参数，包括过滤方式和包装方式
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -110,6 +113,8 @@ void LogoRenderer::paintQtLogo()
     if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer.get());
     else  if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer.get());
+    else  if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer.get());
     else
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer.get());
@@ -176,6 +181,18 @@ void LogoRenderer::initialize()
         program_rgb.addCacheableShaderFromSourceCode(QOpenGLShader::Vertex, vsrc1);
         program_rgb.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc_rgb);
         program_rgb.link();
+
+        const char *fsrc_bgr =
+                "varying vec2 textureOut;\n"
+                "uniform sampler2D tex_;\n"
+                "void main(void)\n"
+                "{\n"
+                "    vec3 bgr_ = texture2D(tex_, textureOut).rgb ; \n"
+                "    gl_FragColor = vec4(bgr_.b, bgr_.g, bgr_.r,1.0);\n"
+                "}\n";
+        program_bgr.addCacheableShaderFromSourceCode(QOpenGLShader::Vertex, vsrc1);
+        program_bgr.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc_bgr);
+        program_bgr.link();
     }
     QOpenGLShaderProgram* program;
 
@@ -183,6 +200,8 @@ void LogoRenderer::initialize()
         program = &program_mono8;
     else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
+    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
+        program = &program_bgr;
     else
         program = &program_mono8;
 
@@ -199,6 +218,9 @@ void LogoRenderer::initialize()
         // 设置纹理参数
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        //多重采样 抗锯齿
+        glEnable(GL_MULTISAMPLE);
 
     }
 
@@ -227,13 +249,15 @@ void LogoRenderer::render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT );
 
+    //多重采样 抗锯齿
+    glEnable(GL_MULTISAMPLE);
 
     ////GL_CW 顺时针为正面
     ////GL_CCW 逆时针为正面，opengl默认选项
     glFrontFace(GL_CCW);
     ////GL_FRONT剔除正面
     ////GL_BACK剔除反面
-    //glCullFace(GL_BACK);
+    glCullFace(GL_BACK);
     ////启用剔除面
     //glEnable(GL_CULL_FACE);
     ////启用深度测试
@@ -250,6 +274,8 @@ void LogoRenderer::render()
         program = &program_mono8;
     else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
+    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
+        program = &program_bgr;
     else
         program = &program_mono8;
 
