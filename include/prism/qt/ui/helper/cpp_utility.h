@@ -33,6 +33,7 @@ public slots:
     void enableWindowBorderless(QQuickWindow* win);
     void clearQmlCache();
     bool enableHotReload();
+    std::optional<bool> bool2opt(bool b);
     QUrl transUrl(QString url);
     std::string stdstr(QString str);
     QString qstr(std::string str);

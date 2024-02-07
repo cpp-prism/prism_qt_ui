@@ -114,6 +114,11 @@ bool cpp_utility::enableHotReload()
     return qml_live_flag;
 }
 
+std::optional<bool> cpp_utility::bool2opt(bool b)
+{
+    return std::make_optional<bool>(b);
+}
+
 QUrl cpp_utility::transUrl(QString url)
 {
     if (enableHotReload())
