@@ -80,6 +80,7 @@ public:
     qreal   m_fAngle = 0;
     qreal   m_fxScale = 0;
     qreal   m_fyScale = 0;
+    bool isFirstFrame_ = false;
 private:
 
     std::string m_sn ;

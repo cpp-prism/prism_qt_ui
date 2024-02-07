@@ -116,7 +116,9 @@ public slots:
             return;
         context->makeCurrent(surface);
 
+        bool isFirstTime = false;
         if (!m_renderFbo) {
+            isFirstTime = true;
             // Initialize the buffers and renderer
             QOpenGLFramebufferObjectFormat format;
             format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
@@ -125,68 +127,73 @@ public slots:
             m_logoRenderer = new LogoRenderer();
             m_logoRenderer->initialize();
             m_logoRenderer->setCamSn(m_sn);
+            m_logoRenderer->isFirstFrame_ = isFirstTime;
         }
 
-        std::shared_ptr<img_buffer_Info> buf = img_buffer_Info::infos[m_sn];
+        if(!isFirstTime)
         {
-            std::unique_lock<std::mutex> lk(buf->buffer_mux);
-
-            buf->buffer_cv.wait(lk);
-
-            if(buf->doFreeOpenGL)
+            std::shared_ptr<img_buffer_Info> buf = img_buffer_Info::infos[m_sn];
             {
-                buf->doFreeOpenGL = false;
+                std::unique_lock<std::mutex> lk(buf->buffer_mux);
+
+                buf->buffer_cv.wait(lk);
+
+                if(buf->doFreeOpenGL)
+                {
+                    buf->doFreeOpenGL = false;
+                    buf->frames.clear();
+                    buf->pre_frame.buffer.reset();
+                    shutDown();
+                    return;
+                }
+
+                if(!buf->frames.size())
+                    return;
+                m_logoRenderer->frame = buf->frames.back();
+                //buf->frames.pop_back();
                 buf->frames.clear();
-                shutDown();
-                return;
             }
 
-            if(!buf->frames.size())
-                return;
-            m_logoRenderer->frame = buf->frames.back();
-            //buf->frames.pop_back();
-            buf->frames.clear();
-        }
+            m_size.setWidth(mp_render->width());
+            m_size.setHeight(mp_render->height());
 
-        m_size.setWidth(mp_render->width());
-        m_size.setHeight(mp_render->height());
-
-        if(std::abs(m_displayFbo->width() - m_size.width()) > 0.01 || std::abs( m_displayFbo->height() - m_size.height()) > 0.01
-          || std::abs(m_renderFbo->width() - m_size.width()) > 0.01 || std::abs( m_renderFbo->height() - m_size.height()) > 0.01)
-        {
+            if(std::abs(m_displayFbo->width() - m_size.width()) > 0.01 || std::abs( m_displayFbo->height() - m_size.height()) > 0.01
+                    || std::abs(m_renderFbo->width() - m_size.width()) > 0.01 || std::abs( m_renderFbo->height() - m_size.height()) > 0.01)
             {
-                auto* tmp  = new QOpenGLFramebufferObject(m_size, m_displayFbo->format());
-                delete m_displayFbo;
-                m_displayFbo = tmp;
+                {
+                    auto* tmp  = new QOpenGLFramebufferObject(m_size, m_displayFbo->format());
+                    delete m_displayFbo;
+                    m_displayFbo = tmp;
+                }
+                {
+                    auto* tmp  = new QOpenGLFramebufferObject(m_size, m_renderFbo->format());
+                    delete m_renderFbo;
+                    m_renderFbo = tmp;
+                }
             }
+
+            m_logoRenderer->texture_width = m_logoRenderer->frame.width ;
+            m_logoRenderer->texture_height =m_logoRenderer->frame.height;
+            if(m_logoRenderer->frame.pixelType != buf->pre_frame.pixelType)
             {
-                auto* tmp  = new QOpenGLFramebufferObject(m_size, m_renderFbo->format());
-                delete m_renderFbo;
-                m_renderFbo = tmp;
+                m_logoRenderer->initialize();
             }
-        }
-
-        m_logoRenderer->texture_width = m_logoRenderer->frame.width ;
-        m_logoRenderer->texture_height =m_logoRenderer->frame.height;
-        if(m_logoRenderer->frame.pixelType != buf->pre_frame.pixelType)
-        {
-            m_logoRenderer->initialize();
-        }
-        buf->pre_frame = m_logoRenderer->frame;
+            buf->pre_frame = m_logoRenderer->frame;
 
 
-        //如果纹理宽不变保持比例放大到和控件一样，纹理高<=控件高
-        double height = m_logoRenderer->texture_height *  mp_render->width() / m_logoRenderer->texture_width;
-        if(height <= mp_render->height())
-        {
-            m_logoRenderer->m_fxScale = 1;
-            m_logoRenderer->m_fyScale = height/mp_render->height();
-        }
-        else //否则纹理高保持不变，纹理宽缩小
-        {
-            double width = m_logoRenderer->texture_width *  mp_render->height() / m_logoRenderer->texture_height;
-            m_logoRenderer->m_fxScale = width/mp_render->width();
-            m_logoRenderer->m_fyScale = 1;
+            //如果纹理宽不变保持比例放大到和控件一样，纹理高<=控件高
+            double height = m_logoRenderer->texture_height *  mp_render->width() / m_logoRenderer->texture_width;
+            if(height <= mp_render->height())
+            {
+                m_logoRenderer->m_fxScale = 1;
+                m_logoRenderer->m_fyScale = height/mp_render->height();
+            }
+            else //否则纹理高保持不变，纹理宽缩小
+            {
+                double width = m_logoRenderer->texture_width *  mp_render->height() / m_logoRenderer->texture_height;
+                m_logoRenderer->m_fxScale = width/mp_render->width();
+                m_logoRenderer->m_fyScale = 1;
+            }
         }
 
         m_renderFbo->bind();
@@ -200,8 +207,8 @@ public slots:
         context->functions()->glFlush();
 
         m_renderFbo->bindDefault();
-        qSwap(m_renderFbo, m_displayFbo);
 
+        qSwap(m_renderFbo, m_displayFbo);
         emit textureReady(m_displayFbo->texture(), m_size);
     }
 

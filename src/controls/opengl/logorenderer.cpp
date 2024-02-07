@@ -143,7 +143,7 @@ void LogoRenderer::initialize()
     {
         initializeOpenGLFunctions();
 
-        glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 
         const char *vsrc1 =
                 "attribute vec4 vertexIn;\n"
@@ -245,7 +245,10 @@ void LogoRenderer::render()
         return;
     //glDepthMask(true);
 
-    glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+    if(isFirstFrame_)
+        glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
+    else
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT );
 
@@ -281,7 +284,10 @@ void LogoRenderer::render()
 
     program->bind();
     program->setUniformValue(matrixUL, modelview);
-    paintQtLogo();
+    if(!isFirstFrame_)
+        paintQtLogo();
+    else
+        isFirstFrame_ = false;
     program->release();
 
     //glDisable(GL_DEPTH_TEST);
