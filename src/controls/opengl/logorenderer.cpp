@@ -143,7 +143,7 @@ void LogoRenderer::initialize()
     {
         initializeOpenGLFunctions();
 
-        glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
         const char *vsrc1 =
                 "attribute vec4 vertexIn;\n"
@@ -246,7 +246,7 @@ void LogoRenderer::render()
     //glDepthMask(true);
 
     if(isFirstFrame_)
-        glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
     else
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
