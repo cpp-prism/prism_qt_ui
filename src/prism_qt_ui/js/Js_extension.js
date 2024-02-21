@@ -81,3 +81,31 @@ function collapseTree(t) {
 //    var dialog = Qt.createQmlObject('import QtQuick.Controls 2.15; QtLabsPlatform.Dialog { title: "Message"; text: message; standardButtons: StandardButton.' + buttonText + ' }', parent);
 //    return dialog
 //}
+
+// 递归查找函数
+function findChildItem(item, objectName) {
+    // 检查当前对象是否匹配
+    if (item.objectName === objectName) {
+        return item;
+    }
+
+    // 如果当前对象有子对象，则继续递归查找
+    for (var i = 0; i < item.children.length; ++i) {
+        var childItem = item.children[i];
+        var foundItem = findChildItem(childItem, objectName);
+        if (foundItem) {
+            return foundItem;
+        }
+    }
+
+    // 如果找不到匹配的子对象，则返回 null
+    return null;
+}
+function recursePrintChildItem(item) {
+    for (var i = 0; i < item.children.length; ++i) {
+        var childItem = item.children[i];
+        console.log(childItem)
+        recursePrintChildItem(childItem);
+    }
+
+}
