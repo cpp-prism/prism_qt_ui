@@ -52,6 +52,7 @@ public slots:
     void restoreCursor();
     bool isqmllive();
     void openPath(const QString path);
+    QObject* getModelIndexInternalPointer(const QModelIndex& item);
 
 private:
     std::unique_ptr<QTimer> uiTimer_ ;

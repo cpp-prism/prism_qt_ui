@@ -341,6 +341,12 @@ void cpp_utility::openPath(const QString path)
     }
 }
 
+QObject *cpp_utility::getModelIndexInternalPointer(const QModelIndex &item)
+{
+    return static_cast<QObject*>(item.internalPointer());
+}
+
+
 bool cpp_utility::isqmllive()
 {
     return isqmllive_;
