@@ -10,6 +10,7 @@
 #include <QTimer>
 #include <QDateTime>
 #include <QModelIndex>
+#include <prism/utilities/typeName.hpp>
 
 
 class QQuickWindow;
