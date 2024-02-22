@@ -107,6 +107,8 @@ public:
         return m_sn;
     }
 
+    void setReleaseBuferAfterRender(bool newReleaseBuferAfterRender);
+
 public slots:
     void renderNext()
     {
@@ -127,6 +129,7 @@ public slots:
             m_logoRenderer = new LogoRenderer();
             m_logoRenderer->initialize();
             m_logoRenderer->setCamSn(m_sn);
+            m_logoRenderer->setReleaseBuferAfterRender(m_releaseBuferAfterRender);
             m_logoRenderer->isFirstFrame_ = isFirstTime;
         }
 
@@ -142,7 +145,6 @@ public slots:
                 {
                     buf->doFreeOpenGL = false;
                     buf->frames.clear();
-                    buf->pre_frame.buffer.reset();
                     shutDown();
                     return;
                 }
@@ -241,6 +243,7 @@ private:
     QSize m_size;
     std::string m_sn;
     ThreadRenderer* mp_render = nullptr;
+    bool m_releaseBuferAfterRender = true;
 };
 
 
@@ -463,6 +466,27 @@ QSGNode *ThreadRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *
     node->setRect(boundingRect());
 
     return node;
+}
+
+bool ThreadRenderer::releaseBuferAfterRender() const
+{
+    return m_releaseBuferAfterRender;
+}
+
+void ThreadRenderer::setReleaseBuferAfterRender(bool newReleaseBuferAfterRender)
+{
+    if (m_releaseBuferAfterRender == newReleaseBuferAfterRender)
+        return;
+    m_releaseBuferAfterRender = newReleaseBuferAfterRender;
+    m_renderThread->setReleaseBuferAfterRender(newReleaseBuferAfterRender);
+    emit releaseBuferAfterRenderChanged();
+}
+
+void RenderThread::setReleaseBuferAfterRender(bool newReleaseBuferAfterRender)
+{
+    m_releaseBuferAfterRender = newReleaseBuferAfterRender;
+    if(m_logoRenderer)
+        m_logoRenderer->setReleaseBuferAfterRender(newReleaseBuferAfterRender);
 }
 
 }// namespace prism::qt::ui

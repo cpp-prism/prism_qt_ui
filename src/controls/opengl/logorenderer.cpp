@@ -119,6 +119,9 @@ void LogoRenderer::paintQtLogo()
     else
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer.get());
 
+    if(m_releaseBuferAfterRender)
+        frame.buffer.reset();
+
     glUniform1i(textuniformUL, 0);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -134,6 +137,16 @@ void LogoRenderer::paintQtLogo()
         qDebug() << "OpenGL Error:" << error;
     }
 
+}
+
+bool LogoRenderer::releaseBuferAfterRender() const
+{
+    return m_releaseBuferAfterRender;
+}
+
+void LogoRenderer::setReleaseBuferAfterRender(bool newReleaseBuferAfterRender)
+{
+    m_releaseBuferAfterRender = newReleaseBuferAfterRender;
 }
 
 

@@ -63,6 +63,7 @@ class ThreadRenderer : public QQuickItem
 {
     Q_OBJECT
     //QML_NAMED_ELEMENT(Renderer)
+    Q_PROPERTY(bool releaseBuferAfterRender READ releaseBuferAfterRender WRITE setReleaseBuferAfterRender NOTIFY releaseBuferAfterRenderChanged)
 
 public:
     ThreadRenderer();
@@ -70,6 +71,9 @@ public:
 
     static QList<QThread *> threads;
     std::string sn();
+
+    bool releaseBuferAfterRender() const;
+    void setReleaseBuferAfterRender(bool newReleaseBuferAfterRender);
 
 public Q_SLOTS:
     void ready();
@@ -80,6 +84,8 @@ public Q_SLOTS:
 
 signals:
     void sizeChanged();
+    void releaseBuferAfterRenderChanged();
+
 protected:
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *);
 
@@ -89,6 +95,7 @@ private:
     QMetaObject::Connection m_shutdown_connection;
     bool m_sizechangedFlag = false;
     std::unique_ptr<QTimer> m_sizechangedTimer = std::make_unique<QTimer>();
+    bool m_releaseBuferAfterRender = true;
 };
 }// namespace prism::qt::ui
 

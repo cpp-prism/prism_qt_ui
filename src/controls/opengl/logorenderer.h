@@ -81,6 +81,9 @@ public:
     qreal   m_fxScale = 0;
     qreal   m_fyScale = 0;
     bool isFirstFrame_ = false;
+    bool releaseBuferAfterRender() const;
+    void setReleaseBuferAfterRender(bool newReleaseBuferAfterRender);
+
 private:
 
     std::string m_sn ;
@@ -97,6 +100,7 @@ private:
 
     int matrixUL;
     bool inited_ = false;
+    bool m_releaseBuferAfterRender = true;
 
 
 };
