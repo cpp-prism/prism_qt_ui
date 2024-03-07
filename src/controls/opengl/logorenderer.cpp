@@ -159,6 +159,9 @@ void LogoRenderer::initialize()
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
         const char *vsrc1 =
+#ifdef __aarch64__
+                "precision mediump float;\n"
+#endif
                 "attribute vec4 vertexIn;\n"
                 "attribute vec2 textureIn;\n"
                 "varying vec2 textureOut;\n"
@@ -169,7 +172,11 @@ void LogoRenderer::initialize()
                 "    textureOut = vec2(textureIn.x,1.0 -textureIn.y);"
                 "}\n";
 
+
         const char *fsrc_nono8 =
+#ifdef __aarch64__
+                "precision mediump float;\n"
+#endif
                 "varying vec2 textureOut;\n"
                 "uniform sampler2D tex_;\n"
                 "void main(void)\n"
@@ -184,6 +191,9 @@ void LogoRenderer::initialize()
 
 
         const char *fsrc_rgb =
+#ifdef __aarch64__
+                "precision mediump float;\n"
+#endif
                 "varying vec2 textureOut;\n"
                 "uniform sampler2D tex_;\n"
                 "void main(void)\n"
@@ -195,7 +205,11 @@ void LogoRenderer::initialize()
         program_rgb.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc_rgb);
         program_rgb.link();
 
+
         const char *fsrc_bgr =
+#ifdef __aarch64__
+                "precision mediump float;\n"
+#endif
                 "varying vec2 textureOut;\n"
                 "uniform sampler2D tex_;\n"
                 "void main(void)\n"
@@ -233,7 +247,7 @@ void LogoRenderer::initialize()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         //多重采样 抗锯齿
-        glEnable(GL_MULTISAMPLE);
+        //glEnable(GL_MULTISAMPLE);
 
     }
 
@@ -266,7 +280,7 @@ void LogoRenderer::render()
     glClear(GL_COLOR_BUFFER_BIT );
 
     //多重采样 抗锯齿
-    glEnable(GL_MULTISAMPLE);
+    //glEnable(GL_MULTISAMPLE);
 
     ////GL_CW 顺时针为正面
     ////GL_CCW 逆时针为正面，opengl默认选项
