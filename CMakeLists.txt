@@ -18,8 +18,12 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControl
 find_package(prism COMPONENTS container qt::modular qt::core)
 
 option(USING_PCL "add pcl vtk " OFF)
+option(USING_OPENGLES  "using opengl es" OFF)
 
 
+if(USING_OPENGLES)
+    add_compile_definitions(USING_OPENGLES)
+endif()
 
 include_directories(${Qt${QT_VERSION_MAJOR}Quick_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt${QT_VERSION_MAJOR}Core_PRIVATE_INCLUDE_DIRS})

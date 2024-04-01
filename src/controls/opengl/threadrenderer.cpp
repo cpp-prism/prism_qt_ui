@@ -400,6 +400,8 @@ void ThreadRenderer::prismSizeChangedDetect()
     m_sizechangedFlag = false;
 
     std::shared_ptr<img_buffer_Info> buf = img_buffer_Info::infos[m_sn];
+    if(!buf)
+        buf = img_buffer_Info::infos[m_sn] = std::make_shared<img_buffer_Info>();
     {
         std::unique_lock<std::mutex> lk(buf->buffer_mux);
 

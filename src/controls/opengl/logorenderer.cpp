@@ -159,7 +159,7 @@ void LogoRenderer::initialize()
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
         const char *vsrc1 =
-#ifdef __aarch64__
+#ifdef USING_OPENGLES
                 "precision mediump float;\n"
 #endif
                 "attribute vec4 vertexIn;\n"
@@ -174,7 +174,7 @@ void LogoRenderer::initialize()
 
 
         const char *fsrc_nono8 =
-#ifdef __aarch64__
+#ifdef USING_OPENGLES
                 "precision mediump float;\n"
 #endif
                 "varying vec2 textureOut;\n"
@@ -191,7 +191,7 @@ void LogoRenderer::initialize()
 
 
         const char *fsrc_rgb =
-#ifdef __aarch64__
+#ifdef USING_OPENGLES
                 "precision mediump float;\n"
 #endif
                 "varying vec2 textureOut;\n"
@@ -207,7 +207,7 @@ void LogoRenderer::initialize()
 
 
         const char *fsrc_bgr =
-#ifdef __aarch64__
+#ifdef USING_OPENGLES
                 "precision mediump float;\n"
 #endif
                 "varying vec2 textureOut;\n"
