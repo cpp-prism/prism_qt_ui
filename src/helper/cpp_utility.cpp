@@ -404,11 +404,11 @@ void initVTK()
         qDebug()<< QString::fromStdString(mesa_gl_version);
 
         char* env = (char*)mesa_gl_version.c_str();
-        putenv(env);
+        _putenv(env);
 
-        putenv((char* )"MESA_GL_VERSION_OVERRIDE=3.0");
+        _putenv((char* )"MESA_GL_VERSION_OVERRIDE=3.0");
         // Fixes decimal point issue in vtkSTLReader
-        putenv((char *)"LC_NUMERIC=C");
+        _putenv((char *)"LC_NUMERIC=C");
 
     }
 

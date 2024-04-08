@@ -65,6 +65,7 @@ add_library(${PROJECT_NAME} SHARED
   include/prism/qt/ui/prismQt_ui_global.h
   include/prism/qt/ui/img_buffer_Info.h
   include/prism/qt/ui/helper/cpp_utility.h
+  include/prism/qt/ui/model/roi_info.h
 
   src/prismQt_ui.h
   src/prismQt_ui.cpp
@@ -74,6 +75,7 @@ add_library(${PROJECT_NAME} SHARED
   src/helper/menuhelper.h
   src/helper/menuhelper.cpp
   src/helper/img_buffer_Info.cpp
+
 
   src/controls/opengl/logorenderer.h
   src/controls/opengl/logorenderer.cpp

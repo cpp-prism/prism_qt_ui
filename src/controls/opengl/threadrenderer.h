@@ -63,6 +63,7 @@ class ThreadRenderer : public QQuickItem
 {
     Q_OBJECT
     //QML_NAMED_ELEMENT(Renderer)
+    //为了有机会渲染后另存为图片，可以选择false
     Q_PROPERTY(bool releaseBuferAfterRender READ releaseBuferAfterRender WRITE setReleaseBuferAfterRender NOTIFY releaseBuferAfterRenderChanged)
 
 public:

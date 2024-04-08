@@ -5,6 +5,7 @@
 #include "helper/menuhelper.h"
 #include "include/prism/qt/ui/helper/cpp_utility.h"
 #include "include/prism/qt/ui/img_buffer_Info.h"
+#include "include/prism/qt/ui/model/roi_info.h"
 #include "prismQt_ui.h"
 #include "validator/datetime_validator.h"
 #include <QDebug>
