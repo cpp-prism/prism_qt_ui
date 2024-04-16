@@ -58,8 +58,8 @@ PRISM_ENUM(prism::qt::ui::ENUM_PixelType,{{ prism::qt::ui::ENUM_PixelType::mono8
                                           { prism::qt::ui::ENUM_PixelType::bayerGB8,"bayerGB8"},
                                           { prism::qt::ui::ENUM_PixelType::bayerGR8,"bayerGR8"},
                                           { prism::qt::ui::ENUM_PixelType::bayerRG8,"bayerRG8"} });
-PRISMQT_TYPE(prism::qt::ui::ENUM_PixelType);
+PRISMQT_ENUM(prism::qt::ui::ENUM_PixelType);
 
 PRISM_FIELDS(prism::qt::ui::img_frame_info,height,width,frameNum,pixelType,receivedBufferNum,incompleteBufferNum,buffersPerSecond);
-PRISMQT_TYPE(prism::qt::ui::img_frame_info);
+PRISMQT_CLASS(prism::qt::ui::img_frame_info);
 #endif // PRISM_QT_UI_OPENGL_RENDER_INFO_H
