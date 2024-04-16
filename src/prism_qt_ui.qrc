@@ -69,5 +69,6 @@
         <file>prism_qt_ui/window/QmlWindowRoot.qml</file>
         <file>prism_qt_ui/forms/DatePicker.qml</file>
         <file>prism_qt_ui/forms/DateTimePicker.qml</file>
+        <file>prism_qt_ui/shapes/video_ROI.qml</file>
     </qresource>
 </RCC>
