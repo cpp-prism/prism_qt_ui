@@ -140,6 +140,11 @@ QUrl cpp_utility::transUrl(QString url)
     return url;
 }
 
+QString cpp_utility::qurl2localfile(QUrl url)
+{
+    return url.toLocalFile();
+}
+
 std::string cpp_utility::stdstr(QString str)
 {
     return str.toStdString();

@@ -36,6 +36,7 @@ public slots:
     bool enableHotReload();
     std::optional<bool> bool2opt(bool b);
     QUrl transUrl(QString url);
+    QString qurl2localfile(QUrl url);
     std::string stdstr(QString str);
     QString qstr(std::string str);
     double itof(int i);
