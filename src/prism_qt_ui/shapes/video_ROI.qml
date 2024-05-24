@@ -13,12 +13,16 @@ import prism_qt_ui 1.0
         id:root_marsk
         anchors.fill: parent
 
+        property int view_scale :1
         property int roi_x_b :0
         property int roi_y_b :0
         property int roi_width_b :0
         property int roi_height_b :0
 
         property alias rect_roi :rect_roi
+
+        property real frameWidth : 100
+        property real frameHeight :  100
 
         //property int roi_x_b: root._3d_cam_setting ? Bind.create(root._3d_cam_setting,"roi_info.offsetX"):0
         //property int roi_y_b: root._3d_cam_setting ? Bind.create(root._3d_cam_setting,"roi_info.offsetY"):0
@@ -91,8 +95,8 @@ import prism_qt_ui 1.0
         Rectangle {
             id:rect_roi
             z:100
-            property real frameWidth : fram_rvm?Bind.create(fram_rvm,"width"):1
-            property real frameHeight :  fram_rvm?Bind.create(fram_rvm,"height"):1
+            property real frameWidth : parent.frameWidth
+            property real frameHeight :  parent.frameHeight
             property bool  isFillWidth:{
                 if((frameHeight * root_marsk.width/frameWidth) <= root_marsk.height)
                     return true
@@ -118,8 +122,8 @@ import prism_qt_ui 1.0
 
 
 
-            property int pixel_control_width: (isFillWidth? root_marsk.width : frameWidth * root_marsk.height/frameHeight)
-            property int pixel_control_height:(!isFillWidth? root_marsk.height : frameHeight * root_marsk.width/frameWidth)
+            property int pixel_control_width:  (isFillWidth? root_marsk.width : frameWidth * root_marsk.height/frameHeight)
+            property int pixel_control_height: (!isFillWidth? root_marsk.height : frameHeight * root_marsk.width/frameWidth)
             property real x_scale_factor :pixel_control_width /frameWidth
             property real y_scale_factor :pixel_control_height /frameHeight
 
@@ -132,7 +136,7 @@ import prism_qt_ui 1.0
             color: "red"
             opacity: 0.2
 
-            property int guard_radius :4
+            property int guard_radius :  4 * view_scale
         }
         //drag
         MouseArea{
@@ -153,8 +157,8 @@ import prism_qt_ui 1.0
                 if(pressed )
                 {
                     var point_moving = CppUtility.getMousePos()
-                    rect_roi.roi_x  = roi_x + (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
-                    rect_roi.roi_y  = roi_y + (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
+                    rect_roi.roi_x  = roi_x + view_scale * (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
+                    rect_roi.roi_y  = roi_y + view_scale * (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
 
                     if(rect_roi.roi_x <0)
                         rect_roi.roi_x = 0
@@ -206,8 +210,8 @@ import prism_qt_ui 1.0
 
                     frame_global = CppUtility.getMousePos()
 
-                    frame_global.x -= map2frame.x
-                    frame_global.y -= map2frame.y
+                    frame_global.x -= map2frame.x / view_scale
+                    frame_global.y -= map2frame.y / view_scale
 
                     CppUtility.setCursor(cursorShape)
                     roi_x = rect_roi.roi_x
@@ -222,26 +226,26 @@ import prism_qt_ui 1.0
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
                             point_moving.x = frame_global.x
-                        if(point_moving.x > frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor)
-                            point_moving.x = frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor
-                        rect_roi.roi_x  = roi_x + (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
-                        rect_roi.roi_width  = roi_width - (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
+                        if((point_moving.x - frame_global.x)* view_scale > rect_roi.frameWidth * rect_roi.x_scale_factor)
+                            point_moving.x = (rect_roi.frameWidth * rect_roi.x_scale_factor) / view_scale + frame_global.x
+                        rect_roi.roi_x  = roi_x +  view_scale * (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
+                        rect_roi.roi_width  = roi_width -  view_scale * (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
                         if(rect_roi.roi_width<0)
                         {
                             rect_roi.roi_width *= -1
-                            rect_roi.roi_x  =  + roi_x + (point_moving.x - point_pressed.x -rect_roi.width) / rect_roi.x_scale_factor
+                            rect_roi.roi_x  =  + roi_x + (view_scale *(point_moving.x - point_pressed.x )-rect_roi.width) / rect_roi.x_scale_factor
                         }
 
                         if(point_moving.y < frame_global.y)
                             point_moving.y = frame_global.y
-                        if(point_moving.y > frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor)
-                            point_moving.y = frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor
-                        rect_roi.roi_y  = roi_y + (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
-                        rect_roi.roi_height  = roi_height - (point_moving.y - point_pressed.y)/rect_roi.y_scale_factor
+                        if((point_moving.y - frame_global.y)*view_scale > rect_roi.frameHeight * rect_roi.y_scale_factor)
+                            point_moving.y = (rect_roi.frameHeight * rect_roi.y_scale_factor) / view_scale +  frame_global.y
+                        rect_roi.roi_y  = roi_y + view_scale *(point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
+                        rect_roi.roi_height  = roi_height - view_scale *(point_moving.y - point_pressed.y)/rect_roi.y_scale_factor
                         if(rect_roi.roi_height<0)
                         {
                             rect_roi.roi_height *= -1
-                            rect_roi.roi_y  = roi_y + (point_moving.y - point_pressed.y - rect_roi.height) / rect_roi.y_scale_factor
+                            rect_roi.roi_y  = roi_y + (view_scale *(point_moving.y - point_pressed.y )- rect_roi.height) / rect_roi.y_scale_factor
 
                         }
                     }
@@ -286,8 +290,8 @@ import prism_qt_ui 1.0
 
                     frame_global = CppUtility.getMousePos()
 
-                    frame_global.x -= map2frame.x
-                    frame_global.y -= map2frame.y
+                    frame_global.x -= map2frame.x/view_scale
+                    frame_global.y -= map2frame.y/view_scale
 
                     CppUtility.setCursor(cursorShape)
                     roi_x = rect_roi.roi_x
@@ -302,14 +306,14 @@ import prism_qt_ui 1.0
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
                             point_moving.x = frame_global.x
-                        if(point_moving.x > frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor)
-                            point_moving.x = frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor
-                        rect_roi.roi_x  = roi_x + (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
-                        rect_roi.roi_width  = roi_width - (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
+                        if((point_moving.x - frame_global.x)*view_scale > rect_roi.frameWidth * rect_roi.x_scale_factor)
+                            point_moving.x = (rect_roi.frameWidth * rect_roi.x_scale_factor) / view_scale + frame_global.x
+                        rect_roi.roi_x  = roi_x +  view_scale * (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
+                        rect_roi.roi_width  = roi_width -  view_scale * (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
                         if(rect_roi.roi_width<0)
                         {
                             rect_roi.roi_width *= -1
-                            rect_roi.roi_x  =  + roi_x + (point_moving.x - point_pressed.x -rect_roi.width) / rect_roi.x_scale_factor
+                            rect_roi.roi_x  =  + roi_x + (view_scale *(point_moving.x - point_pressed.x )-rect_roi.width) / rect_roi.x_scale_factor
                         }
 
                     }
@@ -353,8 +357,8 @@ import prism_qt_ui 1.0
 
                     frame_global = CppUtility.getMousePos()
 
-                    frame_global.x -= map2frame.x
-                    frame_global.y -= map2frame.y
+                    frame_global.x -= map2frame.x/view_scale
+                    frame_global.y -= map2frame.y/view_scale
 
                     CppUtility.setCursor(cursorShape)
                     roi_x = rect_roi.roi_x
@@ -369,21 +373,21 @@ import prism_qt_ui 1.0
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
                             point_moving.x = frame_global.x
-                        if(point_moving.x > frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor)
-                            point_moving.x = frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor
-                        rect_roi.roi_x  = roi_x + (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
-                        rect_roi.roi_width  = roi_width - (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
+                        if((point_moving.x - frame_global.x)*view_scale > rect_roi.frameWidth * rect_roi.x_scale_factor)
+                            point_moving.x = (rect_roi.frameWidth * rect_roi.x_scale_factor)/view_scale + frame_global.x
+                        rect_roi.roi_x  = roi_x +  view_scale * (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
+                        rect_roi.roi_width  = roi_width -  view_scale * (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
                         if(rect_roi.roi_width<0)
                         {
                             rect_roi.roi_width *= -1
-                            rect_roi.roi_x  =  + roi_x + (point_moving.x - point_pressed.x -rect_roi.width) / rect_roi.x_scale_factor
+                            rect_roi.roi_x  =  + roi_x + (view_scale *(point_moving.x - point_pressed.x )-rect_roi.width)/ rect_roi.x_scale_factor
                         }
 
                         if(point_moving.y < frame_global.y)
                             point_moving.y = frame_global.y
-                        if(point_moving.y > frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor)
-                            point_moving.y = frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor
-                        rect_roi.roi_height  = roi_height + (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
+                        if((point_moving.y - frame_global.y) * view_scale > rect_roi.frameHeight * rect_roi.y_scale_factor)
+                            point_moving.y =(rect_roi.frameHeight * rect_roi.y_scale_factor) /view_scale + frame_global.y
+                        rect_roi.roi_height  =  roi_height + view_scale *(point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
                         rect_roi.roi_y  = roi_y /*- (point_moving.y - point_pressed.y)/rect_roi.y_scale_factor*/
                         if(rect_roi.roi_height<0)
                         {
@@ -432,8 +436,8 @@ import prism_qt_ui 1.0
 
                     frame_global = CppUtility.getMousePos()
 
-                    frame_global.x -= map2frame.x
-                    frame_global.y -= map2frame.y
+                    frame_global.x -= map2frame.x / view_scale
+                    frame_global.y -= map2frame.y / view_scale
 
                     CppUtility.setCursor(cursorShape)
                     roi_x = rect_roi.roi_x
@@ -448,10 +452,10 @@ import prism_qt_ui 1.0
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
                             point_moving.x = frame_global.x
-                        if(point_moving.x > frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor)
-                            point_moving.x = frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor
+                        if((point_moving.x - frame_global.x)* view_scale >  rect_roi.frameWidth * rect_roi.x_scale_factor)
+                            point_moving.x = (rect_roi.frameWidth * rect_roi.x_scale_factor) / view_scale + frame_global.x
                         rect_roi.roi_x  = roi_x /*+ (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor*/
-                        rect_roi.roi_width  = roi_width + (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
+                        rect_roi.roi_width  = roi_width +  view_scale * (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
                         if(rect_roi.roi_width<0)
                         {
                             rect_roi.roi_width *= -1
@@ -460,14 +464,14 @@ import prism_qt_ui 1.0
 
                         if(point_moving.y < frame_global.y)
                             point_moving.y = frame_global.y
-                        if(point_moving.y > frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor)
-                            point_moving.y = frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor
-                        rect_roi.roi_y  = roi_y + (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
-                        rect_roi.roi_height  = roi_height - (point_moving.y - point_pressed.y)/rect_roi.y_scale_factor
+                        if((point_moving.y - frame_global.y)*view_scale > rect_roi.frameHeight * rect_roi.y_scale_factor)
+                            point_moving.y = (rect_roi.frameHeight * rect_roi.y_scale_factor) / view_scale + frame_global.y
+                        rect_roi.roi_y  = roi_y + view_scale *(point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
+                        rect_roi.roi_height  = roi_height - view_scale *(point_moving.y - point_pressed.y)/rect_roi.y_scale_factor
                         if(rect_roi.roi_height<0)
                         {
                             rect_roi.roi_height *= -1
-                            rect_roi.roi_y  = roi_y + (point_moving.y - point_pressed.y - rect_roi.height) / rect_roi.y_scale_factor
+                            rect_roi.roi_y  = roi_y + (view_scale *(point_moving.y - point_pressed.y)- rect_roi.height) / rect_roi.y_scale_factor
 
                         }
                     }
@@ -511,8 +515,8 @@ import prism_qt_ui 1.0
 
                     frame_global = CppUtility.getMousePos()
 
-                    frame_global.x -= map2frame.x
-                    frame_global.y -= map2frame.y
+                    frame_global.x -= map2frame.x / view_scale
+                    frame_global.y -= map2frame.y / view_scale
 
                     CppUtility.setCursor(cursorShape)
                     roi_x = rect_roi.roi_x
@@ -527,10 +531,10 @@ import prism_qt_ui 1.0
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
                             point_moving.x = frame_global.x
-                        if(point_moving.x > frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor)
-                            point_moving.x = frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor
+                        if((point_moving.x - frame_global.x)* view_scale > rect_roi.frameWidth * rect_roi.x_scale_factor)
+                            point_moving.x = (rect_roi.frameWidth * rect_roi.x_scale_factor) /view_scale + frame_global.x
                         rect_roi.roi_x  = roi_x /*+ (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor*/
-                        rect_roi.roi_width  = roi_width + (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
+                        rect_roi.roi_width  = roi_width +  view_scale * (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
                         if(rect_roi.roi_width<0)
                         {
                             rect_roi.roi_width *= -1
@@ -578,8 +582,8 @@ import prism_qt_ui 1.0
 
                     frame_global = CppUtility.getMousePos()
 
-                    frame_global.x -= map2frame.x
-                    frame_global.y -= map2frame.y
+                    frame_global.x -= map2frame.x/view_scale
+                    frame_global.y -= map2frame.y/view_scale
 
                     CppUtility.setCursor(cursorShape)
                     roi_x = rect_roi.roi_x
@@ -594,10 +598,10 @@ import prism_qt_ui 1.0
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
                             point_moving.x = frame_global.x
-                        if(point_moving.x > frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor)
-                            point_moving.x = frame_global.x + rect_roi.frameWidth * rect_roi.x_scale_factor
+                        if((point_moving.x - frame_global.x)*view_scale > rect_roi.frameWidth * rect_roi.x_scale_factor)
+                            point_moving.x = (rect_roi.frameWidth * rect_roi.x_scale_factor)/view_scale + frame_global.x
                         rect_roi.roi_x  = roi_x /*+ (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor*/
-                        rect_roi.roi_width  = roi_width + (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
+                        rect_roi.roi_width  = roi_width +  view_scale * (point_moving.x - point_pressed.x)/rect_roi.y_scale_factor
                         if(rect_roi.roi_width<0)
                         {
                             rect_roi.roi_width *= -1
@@ -606,10 +610,10 @@ import prism_qt_ui 1.0
 
                         if(point_moving.y < frame_global.y)
                             point_moving.y = frame_global.y
-                        if(point_moving.y > frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor)
-                            point_moving.y = frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor
+                        if((point_moving.y - frame_global.y) *view_scale > rect_roi.frameHeight * rect_roi.y_scale_factor)
+                            point_moving.y = (rect_roi.frameHeight * rect_roi.y_scale_factor) / view_scale + frame_global.y
                         rect_roi.roi_y  = roi_y /*+ (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor*/
-                        rect_roi.roi_height  = roi_height + (point_moving.y - point_pressed.y)/rect_roi.y_scale_factor
+                        rect_roi.roi_height  = roi_height + view_scale *(point_moving.y - point_pressed.y)/rect_roi.y_scale_factor
                         if(rect_roi.roi_height<0)
                         {
                             rect_roi.roi_height *= -1
@@ -657,8 +661,8 @@ import prism_qt_ui 1.0
 
                     frame_global = CppUtility.getMousePos()
 
-                    frame_global.x -= map2frame.x
-                    frame_global.y -= map2frame.y
+                    frame_global.x -= map2frame.x/view_scale
+                    frame_global.y -= map2frame.y/view_scale
 
                     CppUtility.setCursor(cursorShape)
                     roi_x = rect_roi.roi_x
@@ -674,14 +678,14 @@ import prism_qt_ui 1.0
 
                         if(point_moving.y < frame_global.y)
                             point_moving.y = frame_global.y
-                        if(point_moving.y > frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor)
-                            point_moving.y = frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor
-                        rect_roi.roi_y  = roi_y + (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
-                        rect_roi.roi_height  = roi_height - (point_moving.y - point_pressed.y)/rect_roi.y_scale_factor
+                        if((point_moving.y - frame_global.y)* view_scale > rect_roi.frameHeight * rect_roi.y_scale_factor)
+                            point_moving.y = (rect_roi.frameHeight * rect_roi.y_scale_factor)/view_scale + frame_global.y
+                        rect_roi.roi_y  = roi_y +  view_scale * (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
+                        rect_roi.roi_height  = roi_height -  view_scale * (point_moving.y - point_pressed.y)/rect_roi.y_scale_factor
                         if(rect_roi.roi_height<0)
                         {
                             rect_roi.roi_height *= -1
-                            rect_roi.roi_y  = roi_y + (point_moving.y - point_pressed.y - rect_roi.height) / rect_roi.y_scale_factor
+                            rect_roi.roi_y  = roi_y + (view_scale *(point_moving.y - point_pressed.y) - rect_roi.height)/ rect_roi.y_scale_factor
 
                         }
                     }
@@ -725,8 +729,8 @@ import prism_qt_ui 1.0
 
                     frame_global = CppUtility.getMousePos()
 
-                    frame_global.x -= map2frame.x
-                    frame_global.y -= map2frame.y
+                    frame_global.x -= map2frame.x/view_scale
+                    frame_global.y -= map2frame.y/view_scale
 
                     CppUtility.setCursor(cursorShape)
                     roi_x = rect_roi.roi_x
@@ -742,9 +746,10 @@ import prism_qt_ui 1.0
 
                         if(point_moving.y < frame_global.y)
                             point_moving.y = frame_global.y
-                        if(point_moving.y > frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor)
-                            point_moving.y = frame_global.y + rect_roi.frameHeight * rect_roi.y_scale_factor
-                        rect_roi.roi_height  = roi_height + (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
+
+                        if((point_moving.y - frame_global.y)*view_scale >  rect_roi.frameHeight * rect_roi.y_scale_factor)
+                            point_moving.y =   (rect_roi.frameHeight * rect_roi.y_scale_factor)/view_scale + frame_global.y
+                        rect_roi.roi_height  = roi_height +  view_scale * (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
                         rect_roi.roi_y  = roi_y /*- (point_moving.y - point_pressed.y)/rect_roi.y_scale_factor*/
                         if(rect_roi.roi_height<0)
                         {
