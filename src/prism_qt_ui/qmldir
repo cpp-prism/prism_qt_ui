@@ -30,3 +30,4 @@ singleton   Style 1.0 theme/Style.qml
 
             VideoROI 1.0 shapes/video_ROI.qml
 
+            ItemViewer 1.0 shapes/ItemViewer.qml
