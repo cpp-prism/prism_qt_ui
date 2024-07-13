@@ -103,13 +103,17 @@ bool cpp_utility::enableHotReload()
     if (qml_live_flag == -1)
     {
         int length = QCoreApplication::arguments().length();
-        QString arg1;
-        if (length > 1)
-            arg1 = QCoreApplication::arguments().at(1);
-        if (length > 1 && arg1 == "qml_live")
-            qml_live_flag = 1;
-        else
-            qml_live_flag = 0;
+        QString arg;
+        for (int i = 0; i < length; ++i)
+        {
+            arg = QCoreApplication::arguments().at(1);
+            if (arg.startsWith("qml_live"))
+            {
+                qml_live_flag = 1;
+                break;
+            }
+        }
+        qml_live_flag = 0;
     }
     return qml_live_flag;
 }
