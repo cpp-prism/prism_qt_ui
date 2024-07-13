@@ -17,7 +17,7 @@ void borderless_window_mac::enableWindowBorderless(qulonglong wId)
     [nativeWindow setStyleMask:[nativeWindow styleMask] | NSWindowStyleMaskFullSizeContentView | NSWindowTitleHidden];
 
     [nativeWindow setTitlebarAppearsTransparent:YES];
-    [nativeWindow setMovableByWindowBackground:YES];
+    [nativeWindow setMovableByWindowBackground:NO];
 }
 
 
