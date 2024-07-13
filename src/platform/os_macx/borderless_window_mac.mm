@@ -3,7 +3,8 @@
 #include <QGuiApplication>
 #include <QWindow>
 
-namespace prism::qt::ui {
+namespace prism::qt::ui
+{
 
 borderless_window_mac::borderless_window_mac()
 {
@@ -20,6 +21,4 @@ void borderless_window_mac::enableWindowBorderless(qulonglong wId)
     [nativeWindow setMovableByWindowBackground:NO];
 }
 
-
-
-}//namespace prism::qt::ui 
+} // namespace prism::qt::ui

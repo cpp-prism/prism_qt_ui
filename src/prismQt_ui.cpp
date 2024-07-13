@@ -1,3 +1,4 @@
+#include "prismQt_ui.h"
 #include "controls/forms/datepickercpp.h"
 #include "controls/opengl/logorenderer.h"
 #include "controls/opengl/threadrenderer.h"
@@ -6,7 +7,6 @@
 #include "include/prism/qt/ui/helper/cpp_utility.h"
 #include "include/prism/qt/ui/img_buffer_Info.h"
 #include "include/prism/qt/ui/model/roi_info.h"
-#include "prismQt_ui.h"
 #include "validator/datetime_validator.h"
 #include <QDebug>
 #include <QQmlApplicationEngine>
@@ -41,7 +41,7 @@ bool prismQt_ui::register_types()
     // opengl渲染器
     qmlRegisterType<ThreadRenderer>("prism_qt_ui", 1, 0, "Renderer");
     qmlRegisterType<datetime_validator>("prism_qt_ui", 1, 0, "DatetimeValidator");
-    //datetimepicker
+    // datetimepicker
     qmlRegisterType<DatePickerCpp>("prism_qt_ui_private", 1, 0, "DatePickerCpp");
     //注册相机帧信息
     qRegisterMetaType<prism::qt::ui::img_frame_info>();
@@ -90,6 +90,7 @@ bool prismQt_ui::init()
 
 bool prismQt_ui::install()
 {
+
     if (!QGuiApplicationPrivate::platform_integration->hasCapability(QPlatformIntegration::ThreadedOpenGL))
     {
         qDebug() << "QPlatformIntegration::ThreadedOpenGL 兼容检测不通过";
