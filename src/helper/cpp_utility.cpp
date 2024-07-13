@@ -127,18 +127,39 @@ QUrl cpp_utility::transUrl(QString url)
 {
     if (enableHotReload())
     {
+        static int prismSourceLevel = -1;
+        if (prismSourceLevel == -1)
+        {
+            int length = QCoreApplication::arguments().length();
+            QString arg;
+            for (int i = 0; i < length; ++i)
+            {
+                arg = QCoreApplication::arguments().at(1);
+                if (arg.startsWith("prismSourceLevel"))
+                {
+                    QStringList items = arg.split(':');
+                    prismSourceLevel = items.at(1).toUInt();
+                    break;
+                }
+            }
+            prismSourceLevel = 0;
+        }
+
         if (url.isEmpty())
             return QUrl();
         QString root(PRISMQT_SOLUTION_SOURCEDIR);
-        QString relativePath ;
-        if(url.startsWith("qrc:/prism_qt_ui"))
+        QString relativePath;
+        if (url.startsWith("qrc:/prism_qt_ui"))
             relativePath = "";
         else
-            relativePath = "../";
-        auto rx = QRegExp(QString::fromStdString(R"(^qrc:/(\w+)(.*))"));
+            for (int i = 0; i < prismSourceLevel + 1; ++i)
+            {
+                relativePath = "../";
+            }
+        auto rx = QRegExp(QString::fromStdString(R"(^qrc:/([\w-_]+)(.*))"));
         rx.lastIndexIn(url);
         QString url_replaced = QString("file:///%1/%2%3/src/%4%5").arg(root).arg(relativePath).arg(rx.cap(1)).arg(rx.cap(1)).arg(rx.cap(2));
-        //qDebug()<< "trans url :" << url_replaced;
+        // qDebug()<< "trans url :" << url_replaced;
         return QUrl(url_replaced);
     }
     return url;
