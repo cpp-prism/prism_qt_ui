@@ -7,6 +7,7 @@ import ".."
 
 QmlDebugWindowCPP {
     id: win
+    visible: true
     onFocusObjectChanged:function(obj) {
         //console.log(obj)
     }
