@@ -29,7 +29,8 @@ struct PRISMQT_UI_EXPORT img_frame_info{
     double width = 1.0;
     int frameNum = 0;
     ENUM_PixelType pixelType = ENUM_PixelType::mono8;
-    std::shared_ptr<unsigned char> buffer;
+    void* buffer = nullptr;
+    std::shared_ptr<void> buffer_handel;
     //上位机统计
     int receivedBufferNum=0;
     int incompleteBufferNum =0;
