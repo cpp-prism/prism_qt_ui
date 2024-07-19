@@ -85,6 +85,7 @@ public Q_SLOTS:
 
 signals:
     void sizeChanged();
+    void frameSizeChanged(int width,int height);
     void releaseBuferAfterRenderChanged();
 
 protected:
