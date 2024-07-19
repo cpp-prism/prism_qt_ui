@@ -111,16 +111,19 @@ void LogoRenderer::paintQtLogo()
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer.get());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer);
     else  if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer.get());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer);
     else  if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer.get());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer);
     else
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer.get());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer);
 
     if(m_releaseBuferAfterRender)
-        frame.buffer.reset();
+    {
+        frame.buffer_handel.reset();
+        frame.buffer = nullptr;
+    }
 
     glUniform1i(textuniformUL, 0);
 
