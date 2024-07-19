@@ -176,8 +176,16 @@ public slots:
                 }
             }
 
-            m_logoRenderer->texture_width = m_logoRenderer->frame.width ;
-            m_logoRenderer->texture_height =m_logoRenderer->frame.height;
+            if(std::abs(m_logoRenderer->frame.width - m_logoRenderer->texture_width)>0.01  ||
+                std::abs(m_logoRenderer->frame.height - m_logoRenderer->texture_height) > 0.01)
+            {
+                m_logoRenderer->texture_width = m_logoRenderer->frame.width ;
+                m_logoRenderer->texture_height =m_logoRenderer->frame.height;
+
+                emit mp_render->frameSizeChanged(m_logoRenderer->texture_width,
+                                                 m_logoRenderer->texture_height);
+            }
+
             if(m_logoRenderer->frame.pixelType != buf->pre_frame.pixelType)
             {
                 m_logoRenderer->initialize();
