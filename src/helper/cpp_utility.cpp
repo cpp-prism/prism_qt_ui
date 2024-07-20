@@ -102,11 +102,11 @@ bool cpp_utility::enableHotReload()
         QString arg;
         for (int i = 0; i < length; ++i)
         {
-            arg = QCoreApplication::arguments().at(1);
+            arg = QCoreApplication::arguments().at(i);
             if (arg.startsWith("qml_live"))
             {
                 qml_live_flag = 1;
-                break;
+                return qml_live_flag;
             }
         }
         qml_live_flag = 0;
@@ -128,17 +128,20 @@ QUrl cpp_utility::transUrl(QString url)
         {
             int length = QCoreApplication::arguments().length();
             QString arg;
+            bool hit = false;
             for (int i = 0; i < length; ++i)
             {
-                arg = QCoreApplication::arguments().at(1);
+                arg = QCoreApplication::arguments().at(i);
                 if (arg.startsWith("prismSourceLevel"))
                 {
                     QStringList items = arg.split(':');
                     prismSourceLevel = items.at(1).toUInt();
+                    hit = true;
                     break;
                 }
             }
-            prismSourceLevel = 0;
+            if (!hit)
+                prismSourceLevel = 0;
         }
 
         if (url.isEmpty())
@@ -150,7 +153,7 @@ QUrl cpp_utility::transUrl(QString url)
         else
             for (int i = 0; i < prismSourceLevel + 1; ++i)
             {
-                relativePath = "../";
+                relativePath += "../";
             }
         auto rx = QRegExp(QString::fromStdString(R"(^qrc:/([\w-_]+)(.*))"));
         rx.lastIndexIn(url);
@@ -228,10 +231,12 @@ std::shared_ptr<bool> cpp_utility::showQmlDialog(QString qmlUrl, QObject* viewMo
         auto a = component.create();
         win = reinterpret_cast<qmlDebugWindow*>(a);
         win->setViewModel(QVariant::fromValue(viewModel));
-        QObject::connect(win, &QQuickWindow::destroyed, &loop, [&](auto* p) {
-            Q_UNUSED(p)
-            loop.exit();
-        });
+        QObject::connect(
+            win, &QQuickWindow::destroyed, &loop, [&](auto* p) {
+                Q_UNUSED(p)
+                loop.exit();
+            },
+            Qt::ConnectionType::QueuedConnection);
 
         win->setLoadUrl(qmlUrl);
         loop.exec();
