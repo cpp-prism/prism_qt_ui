@@ -90,7 +90,8 @@ bool prismQt_ui::init()
 
 bool prismQt_ui::install()
 {
-
+// macos 使用metal
+#if _WIN32 || __linux
     if (!QGuiApplicationPrivate::platform_integration->hasCapability(QPlatformIntegration::ThreadedOpenGL))
     {
         qDebug() << "QPlatformIntegration::ThreadedOpenGL 兼容检测不通过";
@@ -105,6 +106,8 @@ bool prismQt_ui::install()
     {
         qDebug() << "OpenGL is not available.";
     }
+#endif
+
     return true;
 }
 
