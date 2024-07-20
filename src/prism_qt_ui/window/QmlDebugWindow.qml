@@ -7,7 +7,7 @@ import ".."
 
 QmlDebugWindowCPP {
     id: win
-    visible: true
+    //visible: true //应该在qml中设置好希望的宽和高后,再设置
     onFocusObjectChanged:function(obj) {
         //console.log(obj)
     }
