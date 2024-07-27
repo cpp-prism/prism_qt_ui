@@ -7,6 +7,13 @@ import prismCpp 1.0
 Loader {
     id: rootLoader
     anchors.fill: parent
+    function updateUrl()
+    {
+        var url = rootLoader.source
+        rootLoader.source = ""
+        CppUtility.clearQmlCache()
+        rootLoader.source = url
+    }
     Button {
         width: 100
         height: 30
@@ -18,10 +25,7 @@ Loader {
         z: 100
         opacity: 10
         onClicked: {
-            var url = rootLoader.source
-            rootLoader.source = ""
-            CppUtility.clearQmlCache()
-            rootLoader.source = url
+            rootLoader.updateUrl()
         }
     }
 }
