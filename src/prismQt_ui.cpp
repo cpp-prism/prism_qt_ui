@@ -2,6 +2,7 @@
 #include "controls/forms/datepickercpp.h"
 #include "controls/opengl/logorenderer.h"
 #include "controls/opengl/threadrenderer.h"
+#include "controls/shapes/video_roi_cpp.h"
 #include "controls/window/qml_debug_window.h"
 #include "helper/menuhelper.h"
 #include "include/prism/qt/ui/helper/cpp_utility.h"
@@ -43,6 +44,7 @@ bool prismQt_ui::register_types()
     qmlRegisterType<datetime_validator>("prism_qt_ui", 1, 0, "DatetimeValidator");
     // datetimepicker
     qmlRegisterType<DatePickerCpp>("prism_qt_ui_private", 1, 0, "DatePickerCpp");
+    qmlRegisterType<video_roi_cpp>("prism_qt_ui_private", 1, 0, "Video_roi_cpp");
     //注册相机帧信息
     qRegisterMetaType<std::string>("std::string");
     qRegisterMetaType<prism::qt::ui::img_frame_info>();
