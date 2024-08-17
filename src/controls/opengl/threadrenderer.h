@@ -52,53 +52,54 @@
 #define PRISM_QT_UI_THREADRENDERER_H
 
 #include <QQuickItem>
-#include <string>
 #include <QTimer>
 #include <memory>
+#include <string>
 
-namespace prism::qt::ui{
+namespace prism::qt::ui
+{
 class RenderThread;
 
 class ThreadRenderer : public QQuickItem
 {
     Q_OBJECT
-    //QML_NAMED_ELEMENT(Renderer)
+    // QML_NAMED_ELEMENT(Renderer)
     //为了有机会渲染后另存为图片，可以选择false
     Q_PROPERTY(bool releaseBuferAfterRender READ releaseBuferAfterRender WRITE setReleaseBuferAfterRender NOTIFY releaseBuferAfterRenderChanged)
 
-public:
+  public:
     ThreadRenderer();
     ~ThreadRenderer();
 
-    static QList<QThread *> threads;
+    static QList<QThread*> threads;
     std::string sn();
 
     bool releaseBuferAfterRender() const;
     void setReleaseBuferAfterRender(bool newReleaseBuferAfterRender);
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void ready();
     void setCamSn(QString sn);
     void prismSizeChanged();
     void prismSizeChangedDetect();
 
-
-signals:
+  signals:
     void sizeChanged();
-    void frameSizeChanged(int width,int height);
+    void frameSizeChanged(int width, int height);
     void releaseBuferAfterRenderChanged();
+    void inited_background();
 
-protected:
-    QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *);
+  protected:
+    QSGNode* updatePaintNode(QSGNode*, UpdatePaintNodeData*);
 
-private:
-    RenderThread *m_renderThread;
+  private:
+    RenderThread* m_renderThread;
     std::string m_sn;
     QMetaObject::Connection m_shutdown_connection;
     bool m_sizechangedFlag = false;
     std::unique_ptr<QTimer> m_sizechangedTimer = std::make_unique<QTimer>();
     bool m_releaseBuferAfterRender = true;
 };
-}// namespace prism::qt::ui
+} // namespace prism::qt::ui
 
-#endif //PRISM_QT_UI_THREADRENDERER_H
+#endif // PRISM_QT_UI_THREADRENDERER_H
