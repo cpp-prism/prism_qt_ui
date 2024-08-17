@@ -35,6 +35,8 @@ bool prismQt_ui::register_types()
     qmlRegisterType<qmlDebugWindow>("prismCpp", 1, 0, "QmlDebugWindowCPP");
     qmlRegisterRevision<QWindow, 1>("prismCpp", 1, 0);
     qmlRegisterRevision<QQuickWindow, 1>("prismCpp", 1, 0);
+    qmlRegisterRevision<QColorDialog, 1>("prismCpp", 1, 0);
+    // QColorDialog*
 
     //注册多平台无边框窗口
     registerBorderlessHleper();

@@ -377,6 +377,12 @@ QObject* cpp_utility::getModelIndexInternalPointer(const QModelIndex& item)
     return static_cast<QObject*>(item.internalPointer());
 }
 
+QString cpp_utility::getguid()
+{
+    QUuid uuid = QUuid::createUuid();
+    return uuid.toString();
+}
+
 bool cpp_utility::isqmllive()
 {
     return isqmllive_;
@@ -395,6 +401,26 @@ void cpp_utility::setTransThis(const QString& newTransThis)
         return;
     m_transThis = newTransThis;
     emit transThisChanged();
+}
+
+QColorDialog* cpp_utility::openColorWindow(QWidget* parent)
+{
+    QColorDialog* d = new QColorDialog(parent);
+
+    d->setWindowTitle("选择颜色");
+    d->setWindowFlags(d->windowFlags() | Qt::WindowStaysOnTopHint);
+    d->exec();
+    return d;
+}
+
+int cpp_utility::getDialogResult(QDialog* d)
+{
+    return d->result();
+}
+
+QString cpp_utility::qcolor2qstring(QColor color)
+{
+    return color.name();
 }
 
 } // namespace prism::qt::ui
