@@ -2,6 +2,19 @@
 .import QtQuick 2.15   as QtQuick2
 .import Qt.labs.platform 1.1  as QtLabsPlatform
 
+
+function currentDateTimeString() {
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = ("0" + (date.getMonth() + 1)).slice(-2);
+    var day = ("0" + date.getDate()).slice(-2);
+    var hours = ("0" + date.getHours()).slice(-2);
+    var minutes = ("0" + date.getMinutes()).slice(-2);
+    var seconds = ("0" + date.getSeconds()).slice(-2);
+
+    return qsTr(year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds);
+}
+
 function prismTimer(parent) {
     return Qt.createQmlObject("import QtQuick 2.0; Timer {}", parent)
 }
