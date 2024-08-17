@@ -31,8 +31,8 @@ include_directories(${Qt${QT_VERSION_MAJOR}Gui_PRIVATE_INCLUDE_DIRS})
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     add_definitions("-x objective-c++") # as you already have
-    #set(CMAKE_EXE_LINKER_FLAGS "-framework ServiceManagement -framework Foundation -framework Cocoa")
-    set(CMAKE_SHARED_LINKER_FLAGS "-framework ServiceManagement -framework Foundation -framework Cocoa")
+    #set(CMAKE_EXE_LINKER_FLAGS "-framework ServiceManagement -framework Foundation -framework Cocoa -framework AppKit -framework Metal")
+    set(CMAKE_SHARED_LINKER_FLAGS "-framework ServiceManagement -framework Foundation -framework Cocoa -framework AppKit  -framework Metal")
     set(MAC_SOURCE
         src/platform/os_macx/borderless_window_mac.h
         src/platform/os_macx/borderless_window_mac.mm )
@@ -85,6 +85,8 @@ add_library(${PROJECT_NAME} SHARED
   src/controls/window/qml_debug_window.cpp
   src/controls/forms/datepickercpp.h
   src/controls/forms/datepickercpp.cpp
+  src/controls/shapes/video_roi_cpp.h
+  src/controls/shapes/video_roi_cpp.cpp
 
 
   src/validator/datetime_validator.h

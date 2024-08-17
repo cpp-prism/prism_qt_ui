@@ -29,5 +29,7 @@ singleton   Style 1.0 theme/Style.qml
             DateTimePicker 1.0 forms/DateTimePicker.qml
 
             VideoROI 1.0 shapes/video_ROI.qml
+            VideoROI2 1.0 shapes/video_ROI2.qml
+            VideoCanvas 1.0 shapes/video_Canvas.qml
 
             ItemViewer 1.0 shapes/ItemViewer.qml
