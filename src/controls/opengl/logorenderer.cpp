@@ -49,14 +49,15 @@
 ****************************************************************************/
 
 #include "logorenderer.h"
-#include <QPainter>
-#include <QPaintEngine>
-#include <qmath.h>
 #include <QDebug>
-#include <mutex>
+#include <QPaintEngine>
+#include <QPainter>
 #include <iostream>
+#include <mutex>
+#include <qmath.h>
 
-namespace prism::qt::ui{
+namespace prism::qt::ui
+{
 
 LogoRenderer::LogoRenderer()
 {
@@ -66,39 +67,45 @@ LogoRenderer::~LogoRenderer()
 {
 }
 
-
 void LogoRenderer::paintQtLogo()
 {
     constexpr static const GLfloat squareVertices[] = {
-        -1.0f, -1.0f,
-        1.0f, -1.0f,
-        -1.0f,  1.0f,
-        1.0f,  1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
 
     };
     constexpr static const GLfloat coordVertices[] = {
-        0.0f,  1.0f,
-        1.0f,  1.0f,
-        0.0f,  0.0f,
-        1.0f,  0.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        0.0f,
     };
 
     QOpenGLShaderProgram* program;
-    if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
+    if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
         program = &program_mono8;
-    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+    else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
-    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
+    else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
         program = &program_bgr;
     else
         program = &program_mono8;
 
-
     program->enableAttributeArray(vertexInAL);
-    program->setAttributeArray(vertexInAL,GL_FLOAT,squareVertices,2);
+    program->setAttributeArray(vertexInAL, GL_FLOAT, squareVertices, 2);
 
     program->enableAttributeArray(textureInAL);
-    program->setAttributeArray(textureInAL,GL_FLOAT, coordVertices,2);
+    program->setAttributeArray(textureInAL, GL_FLOAT, coordVertices, 2);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textuniformID);
@@ -106,20 +113,48 @@ void LogoRenderer::paintQtLogo()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer);
-    else  if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer);
-    else  if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer);
-    else
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer);
 
-    if(m_releaseBuferAfterRender)
+    if (!isFirstFrame_)
+    {
+
+        if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer);
+        else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer);
+        else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture_width, texture_height, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.buffer);
+        else
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width, texture_height, 0, GL_RED, GL_UNSIGNED_BYTE, frame.buffer);
+    }
+    else
+    {
+        isFirstFrame_ = false;
+        GLsizei width = 1;  // 纹理的宽度
+        GLsizei height = 1; // 纹理的高度
+        GLubyte r = 204;    // 红色通道值 (0-255)
+        GLubyte g = 204;    // 绿色通道值 (0-255)
+        GLubyte b = 204;    // 蓝色通道值 (0-255)
+
+        // 创建一个大小为 (width * height * 4) 的数组来存储颜色数据
+        std::vector<GLubyte> textureData(width * height * 3);
+
+        // 填充数组，每个像素都是相同的颜色
+        for (int i = 0; i < width * height * 4; i += 4)
+        {
+            textureData[i] = r;     // 红色
+            textureData[i + 1] = g; // 绿色
+            textureData[i + 2] = b; // 蓝色
+        }
+
+        // 上传纹理数据
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data());
+    }
+
+    if (m_releaseBuferAfterRender)
     {
         frame.buffer_handel.reset();
         frame.buffer = nullptr;
@@ -136,10 +171,10 @@ void LogoRenderer::paintQtLogo()
     glBindTexture(GL_TEXTURE_2D, 0);
 
     GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
+    if (error != GL_NO_ERROR)
+    {
         qDebug() << "OpenGL Error:" << error;
     }
-
 }
 
 bool LogoRenderer::releaseBuferAfterRender() const
@@ -152,85 +187,80 @@ void LogoRenderer::setReleaseBuferAfterRender(bool newReleaseBuferAfterRender)
     m_releaseBuferAfterRender = newReleaseBuferAfterRender;
 }
 
-
 void LogoRenderer::initialize()
 {
-    if(!inited_)
+    if (!inited_)
     {
         initializeOpenGLFunctions();
 
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
-        const char *vsrc1 =
+        const char* vsrc1 =
 #ifdef USING_OPENGLES
-                "precision mediump float;\n"
+            "precision mediump float;\n"
 #endif
-                "attribute vec4 vertexIn;\n"
-                "attribute vec2 textureIn;\n"
-                "varying vec2 textureOut;\n"
-                "uniform mediump mat4 matrix;\n"
-                "void main(void)\n"
-                "{\n"
-                "    gl_Position = matrix * vertexIn;\n"
-                "    textureOut = vec2(textureIn.x,1.0 -textureIn.y);"
-                "}\n";
+            "attribute vec4 vertexIn;\n"
+            "attribute vec2 textureIn;\n"
+            "varying vec2 textureOut;\n"
+            "uniform mediump mat4 matrix;\n"
+            "void main(void)\n"
+            "{\n"
+            "    gl_Position = matrix * vertexIn;\n"
+            "    textureOut = vec2(textureIn.x,1.0 -textureIn.y);"
+            "}\n";
 
-
-        const char *fsrc_nono8 =
+        const char* fsrc_nono8 =
 #ifdef USING_OPENGLES
-                "precision mediump float;\n"
+            "precision mediump float;\n"
 #endif
-                "varying vec2 textureOut;\n"
-                "uniform sampler2D tex_;\n"
-                "void main(void)\n"
-                "{\n"
-                "    float mono8 = texture2D(tex_, textureOut).r ; \n"
-                "    gl_FragColor = vec4(mono8,mono8,mono8, 1.0);\n"
-                "}\n";
+            "varying vec2 textureOut;\n"
+            "uniform sampler2D tex_;\n"
+            "void main(void)\n"
+            "{\n"
+            "    float mono8 = texture2D(tex_, textureOut).r ; \n"
+            "    gl_FragColor = vec4(mono8,mono8,mono8, 1.0);\n"
+            "}\n";
         program_mono8.addCacheableShaderFromSourceCode(QOpenGLShader::Vertex, vsrc1);
         program_mono8.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc_nono8);
         program_mono8.link();
 
-
-
-        const char *fsrc_rgb =
+        const char* fsrc_rgb =
 #ifdef USING_OPENGLES
-                "precision mediump float;\n"
+            "precision mediump float;\n"
 #endif
-                "varying vec2 textureOut;\n"
-                "uniform sampler2D tex_;\n"
-                "void main(void)\n"
-                "{\n"
-                "    vec3 rgb_ = texture2D(tex_, textureOut).rgb ; \n"
-                "    gl_FragColor = vec4(rgb_,1.0);\n"
-                "}\n";
+            "varying vec2 textureOut;\n"
+            "uniform sampler2D tex_;\n"
+            "void main(void)\n"
+            "{\n"
+            "    vec3 rgb_ = texture2D(tex_, textureOut).rgb ; \n"
+            "    gl_FragColor = vec4(rgb_,1.0);\n"
+            "}\n";
         program_rgb.addCacheableShaderFromSourceCode(QOpenGLShader::Vertex, vsrc1);
         program_rgb.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc_rgb);
         program_rgb.link();
 
-
-        const char *fsrc_bgr =
+        const char* fsrc_bgr =
 #ifdef USING_OPENGLES
-                "precision mediump float;\n"
+            "precision mediump float;\n"
 #endif
-                "varying vec2 textureOut;\n"
-                "uniform sampler2D tex_;\n"
-                "void main(void)\n"
-                "{\n"
-                "    vec3 bgr_ = texture2D(tex_, textureOut).rgb ; \n"
-                "    gl_FragColor = vec4(bgr_.b, bgr_.g, bgr_.r,1.0);\n"
-                "}\n";
+            "varying vec2 textureOut;\n"
+            "uniform sampler2D tex_;\n"
+            "void main(void)\n"
+            "{\n"
+            "    vec3 bgr_ = texture2D(tex_, textureOut).rgb ; \n"
+            "    gl_FragColor = vec4(bgr_.b, bgr_.g, bgr_.r,1.0);\n"
+            "}\n";
         program_bgr.addCacheableShaderFromSourceCode(QOpenGLShader::Vertex, vsrc1);
         program_bgr.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment, fsrc_bgr);
         program_bgr.link();
     }
     QOpenGLShaderProgram* program;
 
-    if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
+    if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
         program = &program_mono8;
-    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+    else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
-    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
+    else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
         program = &program_bgr;
     else
         program = &program_mono8;
@@ -239,7 +269,7 @@ void LogoRenderer::initialize()
     textureInAL = program->attributeLocation("textureIn");
     matrixUL = program->uniformLocation("matrix");
 
-    if(!inited_)
+    if (!inited_)
     {
         // 创建纹理对象
         glGenTextures(1, &textuniformID);
@@ -250,8 +280,7 @@ void LogoRenderer::initialize()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         //多重采样 抗锯齿
-        //glEnable(GL_MULTISAMPLE);
-
+        // glEnable(GL_MULTISAMPLE);
     }
 
     // 获取纹理位置
@@ -263,7 +292,6 @@ void LogoRenderer::initialize()
     inited_ = true;
 }
 
-
 void LogoRenderer::setCamSn(const std::string& sn)
 {
     m_sn = sn;
@@ -271,19 +299,19 @@ void LogoRenderer::setCamSn(const std::string& sn)
 
 void LogoRenderer::render()
 {
-    if(m_sn.empty())
+    if (m_sn.empty())
         return;
-    //glDepthMask(true);
+    // glDepthMask(true);
 
-    if(isFirstFrame_)
+    if (isFirstFrame_)
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
     else
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClear(GL_COLOR_BUFFER_BIT );
+    glClear(GL_COLOR_BUFFER_BIT);
 
     //多重采样 抗锯齿
-    //glEnable(GL_MULTISAMPLE);
+    // glEnable(GL_MULTISAMPLE);
 
     ////GL_CW 顺时针为正面
     ////GL_CCW 逆时针为正面，opengl默认选项
@@ -292,37 +320,33 @@ void LogoRenderer::render()
     ////GL_BACK剔除反面
     glCullFace(GL_BACK);
     ////启用剔除面
-    //glEnable(GL_CULL_FACE);
+    // glEnable(GL_CULL_FACE);
     ////启用深度测试
-    //glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_DEPTH_TEST);
 
     //
 
     QMatrix4x4 modelview;
-    modelview.scale(m_fxScale,m_fyScale);
+    modelview.scale(m_fxScale, m_fyScale);
 
     QOpenGLShaderProgram* program;
 
-    if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
+    if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::mono8)
         program = &program_mono8;
-    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
+    else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::rgb8)
         program = &program_rgb;
-    else if(this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
+    else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::bgr8)
         program = &program_bgr;
     else
         program = &program_mono8;
 
     program->bind();
     program->setUniformValue(matrixUL, modelview);
-    if(!isFirstFrame_)
-        paintQtLogo();
-    else
-        isFirstFrame_ = false;
+    paintQtLogo();
     program->release();
 
-    //glDisable(GL_DEPTH_TEST);
-    //glDisable(GL_CULL_FACE);
-
+    // glDisable(GL_DEPTH_TEST);
+    // glDisable(GL_CULL_FACE);
 }
 
-}// namespace prism::qt::ui
+} // namespace prism::qt::ui
