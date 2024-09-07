@@ -14,8 +14,8 @@ Window {
 
     property url contentUrl
 
-    minimumWidth: 1030
-    minimumHeight: 670
+    //minimumWidth: 1030
+    //minimumHeight: 670
     onVisibilityChanged: {
         CppUtility.enableWindowBorderless(window)
     }
