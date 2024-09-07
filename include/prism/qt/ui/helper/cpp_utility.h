@@ -63,6 +63,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     QColorDialog* openColorWindow(QWidget* parent);
     int getDialogResult(QDialog* d);
     QString qcolor2qstring(QColor color);
+    QString getAppBaseDir();
 
   private:
     std::unique_ptr<QTimer> uiTimer_;

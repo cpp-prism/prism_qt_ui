@@ -423,6 +423,13 @@ QString cpp_utility::qcolor2qstring(QColor color)
     return color.name();
 }
 
+QString cpp_utility::getAppBaseDir()
+{
+    QString dir = QCoreApplication::instance()->applicationDirPath();
+    qDebug() << "app base path:" << dir;
+    return dir;
+}
+
 } // namespace prism::qt::ui
 
 #ifdef USING_PCL
