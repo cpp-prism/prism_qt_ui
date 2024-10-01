@@ -35,6 +35,7 @@ struct PRISMQT_UI_EXPORT img_frame_info{
     int receivedBufferNum=0;
     int incompleteBufferNum =0;
     double buffersPerSecond = 0.0;
+    int detectedBufferNum = 0;
 };
 
 struct PRISMQT_UI_EXPORT img_buffer_Info{
@@ -61,6 +62,6 @@ PRISM_ENUM(prism::qt::ui::ENUM_PixelType,{{ prism::qt::ui::ENUM_PixelType::mono8
                                           { prism::qt::ui::ENUM_PixelType::bayerRG8,"bayerRG8"} });
 PRISMQT_ENUM(prism::qt::ui::ENUM_PixelType);
 
-PRISM_FIELDS(prism::qt::ui::img_frame_info,height,width,frameNum,pixelType,receivedBufferNum,incompleteBufferNum,buffersPerSecond);
+PRISM_FIELDS(prism::qt::ui::img_frame_info,height,width,frameNum,pixelType,receivedBufferNum,incompleteBufferNum,buffersPerSecond,detectedBufferNum);
 PRISMQT_CLASS(prism::qt::ui::img_frame_info);
 #endif // PRISM_QT_UI_OPENGL_RENDER_INFO_H
