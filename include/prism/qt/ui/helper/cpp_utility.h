@@ -6,6 +6,7 @@
 #include <QModelIndex>
 #include <QObject>
 #include <QPoint>
+#include <QQmlEngine>
 #include <QTimer>
 #include <QUrl>
 #include <QUuid>
@@ -64,6 +65,9 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     int getDialogResult(QDialog* d);
     QString qcolor2qstring(QColor color);
     QString getAppBaseDir();
+    bool killProceById(int pid);
+    bool isForegroundShell(int pid);
+    QQmlEngine* getqmlEngine();
 
   private:
     std::unique_ptr<QTimer> uiTimer_;

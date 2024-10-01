@@ -36,7 +36,6 @@ bool prismQt_ui::register_types()
     qmlRegisterRevision<QWindow, 1>("prismCpp", 1, 0);
     qmlRegisterRevision<QQuickWindow, 1>("prismCpp", 1, 0);
     qmlRegisterRevision<QColorDialog, 1>("prismCpp", 1, 0);
-    // QColorDialog*
 
     //注册多平台无边框窗口
     registerBorderlessHleper();
@@ -52,6 +51,7 @@ bool prismQt_ui::register_types()
     qRegisterMetaType<prism::qt::ui::img_frame_info>();
     qRegisterMetaType<prismModelProxy<prism::qt::ui::img_frame_info>*>("prismModelProxy<prism::qt::ui::img_frame_info>*");
     qRegisterMetaType<std::shared_ptr<bool>>("std::shared_ptr<bool>");
+    qRegisterMetaType<QQmlEngine*>("QQmlEngine*");
 
     //注册qml中使用的实用工具类到ioc container 和qml engine
     std::shared_ptr<cpp_utility> sp_cpputility = std::make_shared<cpp_utility>(new cpp_utility());

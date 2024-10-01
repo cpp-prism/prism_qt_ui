@@ -7,6 +7,7 @@ import prismCpp 1.0
 Loader {
     id: rootLoader
     anchors.fill: parent
+    property bool showButton: true
     function updateUrl()
     {
         var url = rootLoader.source
@@ -18,7 +19,7 @@ Loader {
         width: 100
         height: 30
         focusPolicy: Qt.NoFocus
-        visible: CppUtility.enableHotReload()
+        visible: CppUtility.enableHotReload() && rootLoader.showButton
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         text: "hot reload"
