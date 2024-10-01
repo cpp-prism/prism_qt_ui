@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QDesktopServices>
 #include <QFileInfo>
+#include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QTranslator>
@@ -428,6 +429,74 @@ QString cpp_utility::getAppBaseDir()
     QString dir = QCoreApplication::instance()->applicationDirPath();
     qDebug() << "app base path:" << dir;
     return dir;
+}
+
+bool cpp_utility::killProceById(int pid)
+{
+#if defined(Q_OS_WIN)
+    // Windows 上使用 `taskkill` 命令
+    QString command = "taskkill /PID " + QString::number(pid) + " /F";
+#elif defined(Q_OS_UNIX)
+    // Unix 系统使用 `kill` 命令
+    QString command = "kill -9 " + QString::number(pid);
+#else
+    qWarning() << "Unsupported platform!";
+    return false;
+#endif
+
+    // 使用 QProcess 执行命令
+    QProcess process;
+    process.start(command);
+    process.waitForFinished();
+
+    if (process.exitCode() == 0)
+    {
+        qDebug() << "Process" << pid << "terminated successfully!";
+        return true;
+    }
+    else
+    {
+        qDebug() << "Failed to terminate process" << pid << "!";
+        return false;
+    }
+}
+
+bool cpp_utility::isForegroundShell(int pid)
+{
+#if defined(Q_OS_WIN)
+    return false;
+    QString command = "taskkill /PID " + QString::number(pid) + " /F"; // TODO windows 待实现
+                                                                       // tasklist /v /FI "PID eq 12345"  //通过此法貌,过滤窗口标题的方式貌似可以查看是否是在与用户交互,待测试
+#elif defined(Q_OS_UNIX)
+    QString command = QString("bash -c \"ps u -p %1 | awk '{print $8}' \" ").arg(QString::number(pid));
+    // 使用 QProcess 执行命令
+    QProcess process;
+    process.start(command);
+    process.waitForFinished();
+
+    if (process.exitCode() == 0)
+    {
+        QByteArray output = process.readAllStandardOutput();
+        if (output.contains("Ss+"))
+            return true;
+        else
+            return false;
+    }
+    else
+    {
+        qDebug() << "Failed to exec  :" << command << "!  :" << process.errorString();
+        return false;
+    }
+#else
+    return false;
+
+#endif
+}
+
+QQmlEngine* cpp_utility::getqmlEngine()
+{
+    std::shared_ptr<QQmlApplicationEngine> engine = Container::get()->resolve_object<QQmlApplicationEngine>();
+    return engine.get();
 }
 
 } // namespace prism::qt::ui
