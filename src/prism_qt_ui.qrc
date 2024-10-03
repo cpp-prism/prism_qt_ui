@@ -74,5 +74,22 @@
         <file>prism_qt_ui/shapes/video_ROI2.qml</file>
         <file>prism_qt_ui/shapes/video_Canvas.qml</file>
         <file>prism_qt_ui/svg/color_palette.svg</file>
+        <file>prism_qt_ui/svg/circle-pause-regular.svg</file>
+        <file>prism_qt_ui/svg/circle-pause-solid.svg</file>
+        <file>prism_qt_ui/svg/circle-play-regular.svg</file>
+        <file>prism_qt_ui/svg/circle-play-solid.svg</file>
+        <file>prism_qt_ui/svg/circle-stop-regular.svg</file>
+        <file>prism_qt_ui/svg/circle-stop-solid.svg</file>
+        <file>prism_qt_ui/svg/floppy-disk-solid.svg</file>
+        <file>prism_qt_ui/svg/angles-down-solid.svg</file>
+        <file>prism_qt_ui/svg/angles-up-solid.svg</file>
+        <file>prism_qt_ui/svg/folder-open-solid.svg</file>
+        <file>prism_qt_ui/svg/share-from-square-solid.svg</file>
+        <file>prism_qt_ui/svg/wave-square-solid.svg</file>
+        <file>prism_qt_ui/svg/repeat-solid.svg</file>
+        <file>prism_qt_ui/svg/eye-slash-solid.svg</file>
+        <file>prism_qt_ui/svg/eye-solid.svg</file>
+        <file>prism_qt_ui/svg/check-solid.svg</file>
+        <file>prism_qt_ui/svg/trash-can-solid.svg</file>
     </qresource>
 </RCC>

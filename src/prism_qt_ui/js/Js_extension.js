@@ -3,6 +3,14 @@
 .import Qt.labs.platform 1.1  as QtLabsPlatform
 
 
+function currentDateString() {
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = ("0" + (date.getMonth() + 1)).slice(-2);
+    var day = ("0" + date.getDate()).slice(-2);
+
+    return qsTr(year + "-" + month + "-" + day);
+}
 function currentDateTimeString() {
     var date = new Date();
     var year = date.getFullYear();

@@ -427,7 +427,6 @@ QString cpp_utility::qcolor2qstring(QColor color)
 QString cpp_utility::getAppBaseDir()
 {
     QString dir = QCoreApplication::instance()->applicationDirPath();
-    qDebug() << "app base path:" << dir;
     return dir;
 }
 
