@@ -170,6 +170,11 @@ QString cpp_utility::qurl2localfile(QUrl url)
     return url.toLocalFile();
 }
 
+QUrl cpp_utility::localfile2qurl(QString path)
+{
+    return QUrl::fromLocalFile(path);
+}
+
 std::string cpp_utility::stdstr(QString str)
 {
     return str.toStdString();

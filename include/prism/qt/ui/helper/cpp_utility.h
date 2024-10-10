@@ -41,6 +41,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     std::optional<bool> bool2opt(bool b);
     QUrl transUrl(QString url);
     QString qurl2localfile(QUrl url);
+    QUrl localfile2qurl(QString path);
     std::string stdstr(QString str);
     QString qstr(std::string str);
     double itof(int i);
