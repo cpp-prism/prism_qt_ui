@@ -115,6 +115,15 @@ bool cpp_utility::enableHotReload()
     return qml_live_flag;
 }
 
+QString cpp_utility::translate(QString source)
+{
+   QString r =  _trans_dic[source] ;
+   if(r.isEmpty() || r.isNull())
+       return source;
+   else
+       return r;
+}
+
 std::optional<bool> cpp_utility::bool2opt(bool b)
 {
     return std::make_optional<bool>(b);
@@ -326,6 +335,25 @@ bool cpp_utility::load_language_qm(QString filePath)
         std::shared_ptr<QQmlApplicationEngine> engine = Container::get()->resolve_object<QQmlApplicationEngine>();
         if (engine)
         {
+            QQmlComponent transComp (engine.get(),QUrl(TransFile));
+            QObject* listmodel = transComp.create();
+            if(listmodel)
+            {
+                QAbstractItemModel* itemmodel = qobject_cast<QAbstractItemModel*>(listmodel);
+                if(itemmodel)
+                {
+                    for(int i = 0; i< itemmodel->rowCount(); ++i)
+                    {
+                        QModelIndex idx = itemmodel->index(i,0);
+
+                        QString source = itemmodel->data(idx,1).value<QString>();
+                        QString translate = itemmodel->data(idx,0).value<QString>();
+                        //qDebug()<< "source:" << source << "    tanslate:" << translate;
+                        _trans_dic[source] = translate;
+                    }
+                }
+            }
+
             /**
              * fix 1 - retranslate will refresh all qml property,cause qsortfilterproxymodel* get an freed address which is incorret
              * fix 2 - Performance when switching languages ​​dynamically
@@ -502,6 +530,33 @@ QQmlEngine* cpp_utility::getqmlEngine()
     std::shared_ptr<QQmlApplicationEngine> engine = Container::get()->resolve_object<QQmlApplicationEngine>();
     return engine.get();
 }
+
+QJSValue cpp_utility::qsTr(const QString source)
+{
+    std::shared_ptr<QQmlApplicationEngine> engine = Container::get()->resolve_object<QQmlApplicationEngine>();
+    QString placehold = " cpputility.transThis + cpputility.translate(\"$source$\")";
+    QJSValue result ;
+    QJSValue a = engine->newQObject(this);
+    engine->globalObject().setProperty("cpputility",a);
+    if(engine)
+    {
+        try{
+            result = engine->evaluate(placehold.replace("$source$",source));
+        }
+        catch(...)
+        {
+
+        }
+    }
+
+    if (result.isError()) {
+        qWarning() << "Error evaluating JavaScript expression:" << result.toString();
+        //return QJSValue();
+    }
+
+    return result;
+}
+
 
 } // namespace prism::qt::ui
 

@@ -31,6 +31,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     bool is_ui_hang();
     const QString& transThis() const;
     void setTransThis(const QString& newTransThis);
+    static inline QString TransFile = "qrc:/dv_common/views/projects/trans.qml";
 
   public slots:
     void setCppOwnership(QObject* obj);
@@ -38,6 +39,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     void enableWindowBorderless(QQuickWindow* win);
     void clearQmlCache();
     bool enableHotReload();
+    QString translate(QString source);
     std::optional<bool> bool2opt(bool b);
     QUrl transUrl(QString url);
     QString qurl2localfile(QUrl url);
@@ -69,6 +71,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     bool killProceById(int pid);
     bool isForegroundShell(int pid);
     QQmlEngine* getqmlEngine();
+    QJSValue qsTr(const QString source);
 
   private:
     std::unique_ptr<QTimer> uiTimer_;
@@ -77,6 +80,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     bool isqmllive_ = false;
 
     QString m_transThis;
+    QHash<QString,QString> _trans_dic;
 
   signals:
     void transThisChanged();
