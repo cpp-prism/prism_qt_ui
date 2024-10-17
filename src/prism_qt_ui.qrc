@@ -92,5 +92,6 @@
         <file>prism_qt_ui/svg/check-solid.svg</file>
         <file>prism_qt_ui/svg/trash-can-solid.svg</file>
         <file>prism_qt_ui/svg/magnifying-glass-solid.svg</file>
+        <file>prism_qt_ui/svg/screwdriver-wrench-solid.svg</file>
     </qresource>
 </RCC>
