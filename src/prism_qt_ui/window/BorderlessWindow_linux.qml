@@ -19,6 +19,7 @@ Window {
 
     property int frameBorderWidth: 0
     property color frameBorderColor: "lightgray"
+    property  alias showReloadButton: window_rootLoader.showButton
     Shape {
         id: mask
         visible:frameBorderWidth!==0 && window.visibility === Window.Windowed
@@ -75,6 +76,7 @@ Window {
         anchors.margins: window.visibility === Window.Windowed? frameBorderWidth:0
         LiveLoader {
             id: window_rootLoader
+            showButton: false
             anchors.fill: parent
             source: contentUrl
         }
