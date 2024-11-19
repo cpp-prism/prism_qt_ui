@@ -56,6 +56,42 @@ function getFont(size) {
                    })
 }
 
+function expandTreeNode2level(t,ni) {
+    //if(!t.isExpanded(ni))
+        t.expand(ni)
+    var cc = t.model.rowCount(ni)
+    if(cc>0) {
+        for(var i=0;i<cc;i++) {
+            var nni = t.model.index(i,0,ni)
+            //if(!t.isExpanded(nni))
+            //这里不样全部展开了,节点太多卡卡的,只展开两层就将将好
+            //expandTreeNode(t,nni)
+            t.expand(nni)
+
+            var cc2 = t.model.rowCount(nni)
+            if(cc2>0) {
+                for(var i2=0;i2<cc2;i2++) {
+                    var nni2 = t.model.index(i2,0,nni)
+                    //if(!t.isExpanded(nni))
+                    t.expand(nni2)
+
+                }
+            }
+        }
+    }
+}
+function expandTree2Level(t) {
+    for(var i=0; i < t.model.rowCount(); i++) {
+        var idx = t.model.index(i,0)
+        expandTreeNode2level(t,idx);
+    }
+}
+function expandTree1Level(t) {
+    for(var i=0; i < t.model.rowCount(); i++) {
+        var idx = t.model.index(i,0)
+        t.expand(idx)
+    }
+}
 function expandTreeNode(t,ni) {
     //if(!t.isExpanded(ni))
         t.expand(ni)

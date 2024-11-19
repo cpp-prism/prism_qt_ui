@@ -60,7 +60,8 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     void setCursor(Qt::CursorShape cs);
     void restoreCursor();
     bool isqmllive();
-    void openPath(const QString path);
+    QString openPath(const QString path);
+    QString removeDirRecursive(QString path);
     QObject* getModelIndexInternalPointer(const QModelIndex& item);
     QString getguid();
 

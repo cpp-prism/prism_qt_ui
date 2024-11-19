@@ -1,6 +1,8 @@
 #include "include/prism/qt/ui/helper/cpp_utility.h"
 #include "../platform/i_borderless_window_helper.h"
 #include "src/controls/window/qml_debug_window.h"
+#include <QDir>
+#include <QFileInfoList>
 #include <QApplication>
 #include <QCoreApplication>
 #include <QDebug>
@@ -385,7 +387,7 @@ void cpp_utility::restoreCursor()
     app->restoreOverrideCursor();
 }
 
-void cpp_utility::openPath(const QString path)
+QString cpp_utility::openPath(const QString path)
 {
     QFileInfo fileInfo(path);
 
@@ -403,12 +405,47 @@ void cpp_utility::openPath(const QString path)
     {
         // 路径既不是目录也不是文件，显示错误信息
         qDebug() << "open invalidate path :" << path;
+        return path;
     }
+    return "";
+}
+
+QString cpp_utility::removeDirRecursive(QString path)
+{
+    QDir rmd (path);
+    if(!rmd.exists())
+        return "";
+    QFileInfoList infolist =  rmd.entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries);
+
+    for(const QFileInfo& info : infolist)
+    {
+        if(info.isDir())
+        {
+            QString result =  removeDirRecursive(info.absoluteFilePath());
+            if(!(result.isEmpty() || result.isNull()))
+                return result;
+        }
+        else
+        {
+            if(!QFile::remove(info.absoluteFilePath()))
+            {
+                return QString("failed to remove file : %1 ").arg(info.absoluteFilePath());
+            }
+        }
+    }
+
+    if(!rmd.rmdir(path))
+    {
+        return QString("failed to remove dir : %1 ").arg(path);
+    }
+
+    return "";
+
 }
 
 QObject* cpp_utility::getModelIndexInternalPointer(const QModelIndex& item)
 {
-    return static_cast<QObject*>(item.internalPointer());
+    return reinterpret_cast<QObject*>(item.internalPointer());
 }
 
 QString cpp_utility::getguid()

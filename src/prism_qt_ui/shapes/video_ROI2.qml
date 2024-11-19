@@ -28,6 +28,7 @@ import prism_qt_ui_private 1.0
 
         property color color: "transparent"
         property color borderColor: "blue"
+        property alias guard_radius :rect_roi.guard_radius
         property int borderWidth: 1
 
         signal clicked(var x,var y)
@@ -91,8 +92,6 @@ import prism_qt_ui_private 1.0
             property point point_pressed
             drag.threshold: 0
             cursorShape: Qt.SizeAllCursor
-
-
             focus: true
             Keys.enabled: true
             Keys.onPressed: function(e) {

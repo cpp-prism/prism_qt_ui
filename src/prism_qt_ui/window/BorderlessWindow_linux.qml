@@ -76,7 +76,6 @@ Window {
         anchors.margins: window.visibility === Window.Windowed? frameBorderWidth:0
         LiveLoader {
             id: window_rootLoader
-            showButton: false
             anchors.fill: parent
             source: contentUrl
         }

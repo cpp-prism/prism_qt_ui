@@ -21,6 +21,7 @@ Item {
     property color strokeColor : "blue"
 
     property alias rect_roi: rect_roi
+    property alias canvas: canvas
 
     property int frameWidth: 100
     property int frameHeight: 100
@@ -87,21 +88,49 @@ Item {
             property var last_y;
             property var last_w;
             property var last_h;
+            property var cross_mousex
+            property var cross_mousey
 
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.clearRect(0, 0, width, height)
 
-                if (isDrawing) {
-                    last_x = Math.min(startPoint.x, endPoint.x)
-                    last_y = Math.min(startPoint.y, endPoint.y)
-                    last_w = Math.abs(startPoint.x - endPoint.x)
-                    last_h = Math.abs(startPoint.y - endPoint.y)
-
-
                     ctx.strokeStyle = root_marsk.strokeColor
+                if (isDrawing) {
+                    if(endPoint.x < 0)
+                        var endx = 0
+                    else if(endPoint.x > width)
+                        endx= width
+                    else
+                        endx = endPoint.x
+
+                    if(endPoint.y <0)
+                        var endy = 0
+                    else if(endPoint.y> height)
+                        endy = height
+                    else
+                        endy = endPoint.y
+
+
+                    last_x = Math.min(startPoint.x, endx)
+                    last_y = Math.min(startPoint.y, endy)
+                    last_w = Math.abs(startPoint.x - endx)
+                    last_h = Math.abs(startPoint.y - endy)
+
+
                     ctx.strokeRect(last_x, last_y, last_w, last_h)
                 }
+
+                //ctx.beginPath()
+                //ctx.lineWidth = 1
+                //ctx.moveTo(cross_mousex,0)
+                //ctx.lineTo(cross_mousex,canvas.height)
+
+                //ctx.moveTo(0,cross_mousey)
+                //ctx.lineTo(canvas.width,cross_mousey)
+
+                //ctx.stroke()
+
             }
 
             MouseArea {
