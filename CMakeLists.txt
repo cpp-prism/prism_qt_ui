@@ -25,6 +25,15 @@ if(USING_OPENGLES)
     add_compile_definitions(USING_OPENGLES)
 endif()
 
+
+if(USING_PRISM_QT_UI_VNCITEM)
+    set(VNCITEM_SOURCE
+        src/controls/vnc/vncitem.h
+        src/controls/vnc/vncitem.cpp
+    )
+
+endif()
+
 include_directories(${Qt${QT_VERSION_MAJOR}Quick_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt${QT_VERSION_MAJOR}Core_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt${QT_VERSION_MAJOR}Gui_PRIVATE_INCLUDE_DIRS})
@@ -62,6 +71,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${MAC_SOURCE}
+  ${VNCITEM_SOURCE}
   include/prism/qt/ui/prismQt_ui_global.h
   include/prism/qt/ui/img_buffer_Info.h
   include/prism/qt/ui/helper/cpp_utility.h
