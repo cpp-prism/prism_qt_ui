@@ -27,10 +27,17 @@ endif()
 
 
 if(USING_PRISM_QT_UI_VNCITEM)
+    find_package(ZLIB REQUIRED )
+
     set(VNCITEM_SOURCE
         src/controls/vnc/vncitem.h
         src/controls/vnc/vncitem.cpp
     )
+
+    set(VNCITME_LINKS
+         ZLIB::ZLIB
+    )
+
 
 endif()
 
@@ -132,6 +139,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     prism::qt::modular
     prism::qt::core
     ${WIN32_LIBS}
+    ${VNCITME_LINKS}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets

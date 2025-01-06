@@ -1,7 +1,10 @@
+#ifdef USING_PRISM_QT_UI_VNCITEM
+#include "src/controls/vnc/vncitem.h"
+#endif
+
 #include "prismQt_ui.h"
 #include "controls/forms/datepickercpp.h"
 #include "controls/opengl/logorenderer.h"
-#include "src/controls/vnc/vncitem.h"
 #include "controls/opengl/threadrenderer.h"
 #include "controls/shapes/video_roi_cpp.h"
 #include "controls/window/qml_debug_window.h"
@@ -41,8 +44,10 @@ bool prismQt_ui::register_types()
     //注册多平台无边框窗口
     registerBorderlessHleper();
 
+#ifdef USING_PRISM_QT_UI_VNCITEM
     //vncitem
     qmlRegisterType<VncItem>("prism_qt_ui", 1, 0, "VncItem");
+#endif
     // opengl渲染器
     qmlRegisterType<ThreadRenderer>("prism_qt_ui", 1, 0, "Renderer");
     qmlRegisterType<datetime_validator>("prism_qt_ui", 1, 0, "DatetimeValidator");

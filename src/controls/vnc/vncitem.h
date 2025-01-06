@@ -8,11 +8,12 @@
 #include <QtQuick/QQuickPaintedItem>
 #include <zlib.h>
 #include <QTimer>
+#include "../../../include/prism/qt/ui/prismQt_ui_global.h"
 
 
 namespace prism::qt::ui{
 
-class VncItem :public QQuickPaintedItem
+class PRISMQT_UI_EXPORT VncItem :public QQuickPaintedItem
 {
     Q_OBJECT
 public:
@@ -83,7 +84,7 @@ private:
     std::unique_ptr<QByteArray> rectBuffer = std::make_unique<QByteArray>();
     std::unique_ptr<QTimer> releaseAltTimer_ = std::make_unique<QTimer>();
 
-    
+
     bool isFrameBufferUpdating = false;
     bool isRectUpdating = false;
 

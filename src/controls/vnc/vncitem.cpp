@@ -2,6 +2,7 @@
 #include <QtGui/QPainter>
 
 namespace prism::qt::ui{
+
 void VncItem::readex(QByteArray& ba,int len)
 {
     ba.clear();
