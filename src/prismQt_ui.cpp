@@ -55,6 +55,7 @@ bool prismQt_ui::register_types()
     qmlRegisterType<DatePickerCpp>("prism_qt_ui_private", 1, 0, "DatePickerCpp");
     qmlRegisterType<video_roi_cpp>("prism_qt_ui_private", 1, 0, "Video_roi_cpp");
     //注册相机帧信息
+    //qRegisterMetaType<QString*>("QString*");
     qRegisterMetaType<std::string>("std::string");
     qRegisterMetaType<prism::qt::ui::img_frame_info>();
     qRegisterMetaType<prismModelProxy<prism::qt::ui::img_frame_info>*>("prismModelProxy<prism::qt::ui::img_frame_info>*");
