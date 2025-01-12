@@ -189,6 +189,7 @@ private:
 #define EN0     0       /* MODE == encrypt */
 #define DE1     1       /* MODE == decrypt */
 
+namespace prism::qt::ui{
 extern void deskey(unsigned char *, short);
 /*                    hexkey[8]     MODE
  * Sets the internal key register according to the hexadecimal
@@ -216,6 +217,7 @@ extern void des(unsigned char *, unsigned char *);
 
 /* d3des.h V5.09 rwo 9208.04 15:06 Graven Imagery
  ********************************************************************/
+}//namespace prism::qt::ui
 
 
 
