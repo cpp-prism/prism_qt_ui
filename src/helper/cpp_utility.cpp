@@ -594,6 +594,24 @@ QJSValue cpp_utility::qsTr(const QString source)
     return result;
 }
 
+void cpp_utility::createFileAndWrite(const QString& path,const QString& content)
+{
+    QFileInfo fileInfo(path);
+    QDir dir(fileInfo.dir().dirName());
+    if (!dir.exists())
+        dir.mkpath(fileInfo.dir().dirName());
+
+    QFile file(path);
+
+    // 以写入模式打开文件，如果文件不存在则创建，已存在则覆盖
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << content;
+        file.close();
+    } else {
+        qWarning() << "无法打开文件:" << file.errorString();
+    }
+}
 
 } // namespace prism::qt::ui
 

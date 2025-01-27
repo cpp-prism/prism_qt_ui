@@ -74,6 +74,8 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     QQmlEngine* getqmlEngine();
     QJSValue qsTr(const QString source);
 
+    void createFileAndWrite(const QString& file,const QString& content);
+
   private:
     std::unique_ptr<QTimer> uiTimer_;
     int uiTimer_interval_ = 50;
