@@ -8,6 +8,7 @@
 #include <QtQuick/QQuickPaintedItem>
 #include <zlib.h>
 #include <QTimer>
+#include <QVariantMap>
 #include "../../../include/prism/qt/ui/prismQt_ui_global.h"
 
 
@@ -16,12 +17,21 @@ namespace prism::qt::ui{
 class PRISMQT_UI_EXPORT VncItem :public QQuickPaintedItem
 {
     Q_OBJECT
+    Q_PROPERTY(int frameBufferWidth READ frameBufferWidth WRITE setFrameBufferWidth NOTIFY frameBufferWidthChanged)
+    Q_PROPERTY(int  frameBufferHeight READ frameBufferHeight WRITE setFrameBufferHeight NOTIFY frameBufferHeightChanged)
+
 public:
     explicit VncItem(QQuickItem* parent= nullptr);
     ~VncItem();
 
 
     // QQuickItem interface
+    int frameBufferWidth() const;
+    void setFrameBufferWidth(int newFrameBufferWidth);
+
+    int frameBufferHeight() const;
+    void setFrameBufferHeight(int newFrameBufferHeight);
+
 protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
@@ -38,6 +48,8 @@ public slots:
 
     void sendKey_alt_tab();
     void sendKey_ctrl_alt_t();
+    void save(const QString &filePath, const QRect &rect,const bool& async);
+
 
 private slots:
     void releaseKey_alt_tab();
@@ -53,6 +65,22 @@ private slots:
     void perpareRectData();
 
 signals:
+    void previewMousePress(QVariantMap event,QImage* screen) ;
+    void mousePress(QVariantMap event,QImage* screen) ;
+
+    void previewMouseRelease(QVariantMap event,QImage* screen) ;
+    void mouseRelease(QVariantMap event,QImage* screen) ;
+
+    void previewkeyPress(QVariantMap event) ;
+    void keyPress(QVariantMap event) ;
+
+    void previewKeyRelease(QVariantMap event,QImage* screen);
+    void keyRelease(QVariantMap event,QImage* screen);
+
+
+    void frameBufferWidthChanged();
+
+    void frameBufferHeightChanged();
 
 private:
     //zlib解压
@@ -62,15 +90,13 @@ private:
 
     uint8_t bg[4] = {255,255,255,255};
     uint8_t fg[4] = {0,0,0,0};
+    QImage cache_screen_;
     QImage screen;
     quint16 posX;
     quint16 posY;
     std::unique_ptr<QTcpSocket> socket ;
     //std::unique_ptr<ThreadTcpSocket> socket;
     QByteArray desHash(QByteArray challenge, QString passStr);
-
-    int frameBufferWidth;
-    int frameBufferHeight;
 
     bool firstFrame =true;
     int rect_x = 0;
@@ -142,6 +168,8 @@ private:
 
 
 
+    int m_frameBufferWidth;
+    int m_frameBufferHeight;
 };
 } //namespace prism::qt::ui
 

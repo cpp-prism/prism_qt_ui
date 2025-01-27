@@ -1,5 +1,9 @@
 #include "vncitem.h"
 #include <QtGui/QPainter>
+#include <QQuickItemGrabResult>
+#include <QtConcurrent/QtConcurrent>
+#include <QDir>
+#include <QFileInfo>
 
 namespace prism::qt::ui{
 
@@ -105,11 +109,11 @@ bool VncItem::connectToVncServer(QString ip, QString password, int port)
 
             response = socket->read(2); // framebuffer-width in pixels
             qDebug() << response;
-            frameBufferWidth = qMakeU16(response.at(0), response.at(1));
-            qDebug() << "Width: " << frameBufferWidth;
+            setFrameBufferWidth(qMakeU16(response.at(0), response.at(1))) ;
+            qDebug() << "Width: " << m_frameBufferWidth;
             response = socket->read(2); // framebuffer-height in pixels
-            frameBufferHeight = qMakeU16(response.at(0), response.at(1));
-            qDebug() << "Height: " << frameBufferHeight;
+            setFrameBufferHeight(qMakeU16(response.at(0), response.at(1)));
+            qDebug() << "Height: " << m_frameBufferHeight;
 
             // Pixel Format
             // ***************************
@@ -193,7 +197,11 @@ bool VncItem::connectToVncServer(QString ip, QString password, int port)
             }
 
 
+#ifdef USING_PRISM_QT_UI_VNCITEM_IGNORE_SET_PIXEL
+            if(false) // se pix format
+#else
             if(true) // se pix format
+#endif
             {
                 QByteArray ba(20,0);
                 ba[0] = 0; // set pix format
@@ -242,7 +250,7 @@ bool VncItem::connectToVncServer(QString ip, QString password, int port)
         return false;
     }
 
-    screen = QImage(frameBufferWidth, frameBufferHeight, QImage::Format_RGB32);
+    screen = QImage(m_frameBufferWidth, m_frameBufferHeight, QImage::Format_RGB32);
 
     exit = false;
 
@@ -301,10 +309,10 @@ void VncItem::sendFrameBufferUpdateRequest_p()
     frameBufferUpdateRequest[4] = 0;// y position
     frameBufferUpdateRequest[5] = 0;// y position
 
-    frameBufferUpdateRequest[6] = (frameBufferWidth >> 8) & 0xFF; // width
-    frameBufferUpdateRequest[7] = (frameBufferWidth >> 0) & 0xFF; // width
-    frameBufferUpdateRequest[8] = (frameBufferHeight >> 8) & 0xFF; // height
-    frameBufferUpdateRequest[9] = (frameBufferHeight >> 0) & 0xFF; // height
+    frameBufferUpdateRequest[6] = (m_frameBufferWidth >> 8) & 0xFF; // width
+    frameBufferUpdateRequest[7] = (m_frameBufferWidth >> 0) & 0xFF; // width
+    frameBufferUpdateRequest[8] = (m_frameBufferHeight >> 8) & 0xFF; // height
+    frameBufferUpdateRequest[9] = (m_frameBufferHeight >> 0) & 0xFF; // height
 
     socket->write(frameBufferUpdateRequest);
 
@@ -319,10 +327,10 @@ void VncItem::sendFrameBufferUpdateRequest()
     frameBufferUpdateRequest[4] = 0;// y position
     frameBufferUpdateRequest[5] = 0;// y position
 
-    frameBufferUpdateRequest[6] = (frameBufferWidth >> 8) & 0xFF; // width
-    frameBufferUpdateRequest[7] = (frameBufferWidth >> 0) & 0xFF; // width
-    frameBufferUpdateRequest[8] = (frameBufferHeight >> 8) & 0xFF; // height
-    frameBufferUpdateRequest[9] = (frameBufferHeight >> 0) & 0xFF; // height
+    frameBufferUpdateRequest[6] = (m_frameBufferWidth >> 8) & 0xFF; // width
+    frameBufferUpdateRequest[7] = (m_frameBufferWidth >> 0) & 0xFF; // width
+    frameBufferUpdateRequest[8] = (m_frameBufferHeight >> 8) & 0xFF; // height
+    frameBufferUpdateRequest[9] = (m_frameBufferHeight >> 0) & 0xFF; // height
 
     socket->write(frameBufferUpdateRequest);
 
@@ -366,6 +374,7 @@ void VncItem::processRectData(int xPosition, int yPosition, int width, int heigh
                        *(img16_ptr + i*4 + 3) =  (uint8_t)tmp.at(3);
 
                    }
+                   spainter.drawImage(x , y , img16);
                    continue;
                }
 
@@ -968,9 +977,36 @@ void VncItem::perpareRectData()
         if(rect_read_ == rect_total_ && !exit)
         {
             update();
+            cache_screen_ = screen.copy();
             isFrameBufferUpdating = false;
             this->staticMetaObject.invokeMethod(this,"sendFrameBufferUpdateRequest_p",Qt::QueuedConnection);
         }
+    }
+
+}
+
+void VncItem::save(const QString &filePath, const QRect &rect,const bool& async)
+{
+    QFileInfo fileInfo(filePath);
+    QDir dir(fileInfo.dir().dirName());
+    if (!dir.exists())
+        dir.mkpath(fileInfo.dir().dirName());
+
+    if(!cache_screen_.isNull())
+    {
+        if(async)
+        {
+            QtConcurrent::run([=](){
+                qDebug()<< "async save image " << rect << " to " << filePath;
+                cache_screen_.copy(rect).save(filePath);
+            });
+        }
+        else
+        {
+            qDebug()<< "sync save image " << rect << " to " << filePath;
+            cache_screen_.copy(rect).save(filePath);
+        }
+
     }
 
 }
@@ -1261,6 +1297,11 @@ void VncItem::releaseKey_alt_tab()
 
 void VncItem::keyPressEvent(QKeyEvent *event)
 {
+    QVariantMap qmlevent;
+    qmlevent["shiftModifier"] =( event->modifiers() & Qt::ShiftModifier ) >0;
+    qmlevent["key"] =event->key();
+
+    emit previewkeyPress(qmlevent);
     if(!isConnectedToServer())
         return;
 
@@ -1279,9 +1320,15 @@ void VncItem::keyPressEvent(QKeyEvent *event)
 
     socket->write(message);
 
+    emit keyPress(qmlevent);
 }
 void VncItem::keyReleaseEvent(QKeyEvent *event)
 {
+    QVariantMap qmlevent;
+    qmlevent["shiftModifier"] =( event->modifiers() & Qt::ShiftModifier ) > 0;
+    qmlevent["key"] =event->key();
+
+    emit previewKeyRelease(qmlevent,&cache_screen_);
     if(!isConnectedToServer())
         return;
 
@@ -1299,6 +1346,7 @@ void VncItem::keyReleaseEvent(QKeyEvent *event)
     message[7] = (key >> 0) & 0xFF;
 
     socket->write(message);
+    emit keyRelease(qmlevent,&cache_screen_);
 }
 void VncItem::mouseMoveEvent(QMouseEvent *event)
 {
@@ -1314,8 +1362,8 @@ void VncItem::mouseMoveEvent(QMouseEvent *event)
     tmp += (event->buttons() & Qt::RightButton) == Qt::RightButton ? 4 :0;
     message[1] = tmp;
 
-    posX = (double(event->pos().x()) / double(width())) * double(frameBufferWidth);
-    posY = (double(event->pos().y()) / double(height())) * double(frameBufferHeight);
+    posX = (double(event->pos().x()) / double(width())) * double(m_frameBufferWidth);
+    posY = (double(event->pos().y()) / double(height())) * double(m_frameBufferHeight);
 
     message[2] = (posX >> 8) & 0xFF;
     message[3] = (posX >> 0) & 0xFF;
@@ -1341,8 +1389,8 @@ void VncItem::hoverMoveEvent(QHoverEvent *event)
     //tmp += (event->buttons() & Qt::RightButton) == Qt::RightButton ? 4 :0;
     message[1] = tmp;
 
-    posX = (double(event->pos().x()) / double(width())) * double(frameBufferWidth);
-    posY = (double(event->pos().y()) / double(height())) * double(frameBufferHeight);
+    posX = (double(event->pos().x()) / double(width())) * double(m_frameBufferWidth);
+    posY = (double(event->pos().y()) / double(height())) * double(m_frameBufferHeight);
 
     message[2] = (posX >> 8) & 0xFF;
     message[3] = (posX >> 0) & 0xFF;
@@ -1355,6 +1403,13 @@ void VncItem::hoverMoveEvent(QHoverEvent *event)
 
 void VncItem::mousePressEvent(QMouseEvent *event)
 {
+    QVariantMap qmlevent;
+    qmlevent["x"] = event->pos().x();
+    qmlevent["y"] = event->pos().y();
+    qmlevent["leftButton"] = (event->buttons() & Qt::LeftButton) == Qt::LeftButton;
+    qmlevent["rightButton"] = (event->buttons() & Qt::RightButton) == Qt::RightButton;
+    qmlevent["midButton"] = (event->buttons() & Qt::MiddleButton) == Qt::MiddleButton;
+    emit previewMousePress(qmlevent,&cache_screen_);
     //setFocus();
     this->forceActiveFocus();
 
@@ -1366,13 +1421,13 @@ void VncItem::mousePressEvent(QMouseEvent *event)
     message[0] = 5; // mouse event
     char tmp =0;
     tmp =  (event->buttons() & Qt::LeftButton) == Qt::LeftButton ? 1 :0;
-    tmp += (event->buttons() & Qt::MidButton) == Qt::MidButton ? 2 :0;
+    tmp += (event->buttons() & Qt::MiddleButton) == Qt::MiddleButton ? 2 :0;
     tmp += (event->buttons() & Qt::RightButton) == Qt::RightButton ? 4 :0;
     message[1] = tmp;
 
 
-    posX = (double(event->pos().x()) / double(width())) * double(frameBufferWidth);
-    posY = (double(event->pos().y()) / double(height())) * double(frameBufferHeight);
+    posX = (double(event->pos().x()) / double(width())) * double(m_frameBufferWidth);
+    posY = (double(event->pos().y()) / double(height())) * double(m_frameBufferHeight);
 
     message[2] = (posX >> 8) & 0xFF;
     message[3] = (posX >> 0) & 0xFF;
@@ -1380,10 +1435,19 @@ void VncItem::mousePressEvent(QMouseEvent *event)
     message[4] = (posY >> 8) & 0xFF;
     message[5] = (posY >> 0) & 0xFF;
     socket->write(message);
+    emit mousePress(qmlevent,&cache_screen_);
 }
 
 void VncItem::mouseReleaseEvent(QMouseEvent *event)
 {
+    QVariantMap qmlevent;
+    qmlevent["x"] = event->pos().x();
+    qmlevent["y"] = event->pos().y();
+    qmlevent["leftButton"] = (event->buttons() & Qt::LeftButton) == Qt::LeftButton;
+    qmlevent["rightButton"] = (event->buttons() & Qt::RightButton) == Qt::RightButton;
+    qmlevent["midButton"] = (event->buttons() & Qt::MiddleButton) == Qt::MiddleButton;
+
+    emit previewMouseRelease(qmlevent,&cache_screen_);
     if(!isConnectedToServer())
         return;
 
@@ -1398,8 +1462,8 @@ void VncItem::mouseReleaseEvent(QMouseEvent *event)
     message[1] = tmp;
 
 
-    posX = (double(event->pos().x()) / double(width())) * double(frameBufferWidth);
-    posY = (double(event->pos().y()) / double(height())) * double(frameBufferHeight);
+    posX = (double(event->pos().x()) / double(width())) * double(m_frameBufferWidth);
+    posY = (double(event->pos().y()) / double(height())) * double(m_frameBufferHeight);
 
     message[2] = (posX >> 8) & 0xFF;
     message[3] = (posX >> 0) & 0xFF;
@@ -1409,6 +1473,7 @@ void VncItem::mouseReleaseEvent(QMouseEvent *event)
 
     socket->write(message);
 
+    emit mouseRelease(qmlevent,&cache_screen_);
 }
 
 void VncItem::wheelEvent(QWheelEvent *event)
@@ -2061,7 +2126,33 @@ static void desfunc( unsigned long *block,  unsigned long *keys)
         *block++ = right;
         *block = leftt;
         return;
-        }
+}
+
+int VncItem::frameBufferWidth() const
+{
+    return m_frameBufferWidth;
+}
+
+void VncItem::setFrameBufferWidth(int newFrameBufferWidth)
+{
+    if (m_frameBufferWidth == newFrameBufferWidth)
+        return;
+    m_frameBufferWidth = newFrameBufferWidth;
+    emit frameBufferWidthChanged();
+}
+
+int VncItem::frameBufferHeight() const
+{
+    return m_frameBufferHeight;
+}
+
+void VncItem::setFrameBufferHeight(int newFrameBufferHeight)
+{
+    if (m_frameBufferHeight == newFrameBufferHeight)
+        return;
+    m_frameBufferHeight = newFrameBufferHeight;
+    emit frameBufferHeightChanged();
+}
 
 /* Validation sets:
  *

@@ -57,6 +57,7 @@ bool prismQt_ui::register_types()
     //注册相机帧信息
     //qRegisterMetaType<QString*>("QString*");
     qRegisterMetaType<std::string>("std::string");
+    qRegisterMetaType<QImage*>("QImage*");
     qRegisterMetaType<prism::qt::ui::img_frame_info>();
     qRegisterMetaType<prismModelProxy<prism::qt::ui::img_frame_info>*>("prismModelProxy<prism::qt::ui::img_frame_info>*");
     qRegisterMetaType<std::shared_ptr<bool>>("std::shared_ptr<bool>");
