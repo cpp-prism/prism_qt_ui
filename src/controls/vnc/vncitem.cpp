@@ -976,6 +976,7 @@ void VncItem::perpareRectData()
 
         if(rect_read_ == rect_total_ && !exit)
         {
+            frameUpdate(&screen);
             update();
             cache_screen_ = screen.copy();
             isFrameBufferUpdating = false;

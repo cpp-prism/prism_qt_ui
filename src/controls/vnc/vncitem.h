@@ -82,6 +82,8 @@ signals:
 
     void frameBufferHeightChanged();
 
+    void frameUpdate(QImage* screen);
+
 private:
     //zlib解压
     bool exit = true;
