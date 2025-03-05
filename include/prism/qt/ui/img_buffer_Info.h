@@ -13,13 +13,15 @@ namespace prism::qt::ui
 
 enum  class ENUM_PixelType
 {
-    mono8,
+    mono8 = 0,
     rgb8,
     bgr8,
     bayerBG8,//not implemented
     bayerGB8,//not implemented
     bayerGR8,//not implemented
-    bayerRG8//not implemented
+    bayerRG8,//not implemented
+    yuv420,//not implemented
+    yuv420p//not implemented
 
 };
 
@@ -59,7 +61,9 @@ PRISM_ENUM(prism::qt::ui::ENUM_PixelType,{{ prism::qt::ui::ENUM_PixelType::mono8
                                           { prism::qt::ui::ENUM_PixelType::bayerBG8,"bayerBG8"},
                                           { prism::qt::ui::ENUM_PixelType::bayerGB8,"bayerGB8"},
                                           { prism::qt::ui::ENUM_PixelType::bayerGR8,"bayerGR8"},
-                                          { prism::qt::ui::ENUM_PixelType::bayerRG8,"bayerRG8"} });
+                                          { prism::qt::ui::ENUM_PixelType::bayerRG8,"bayerRG8"},
+                                          { prism::qt::ui::ENUM_PixelType::yuv420,"yuv420"},
+                                          { prism::qt::ui::ENUM_PixelType::yuv420p,"yuv420p"} });
 PRISMQT_ENUM(prism::qt::ui::ENUM_PixelType);
 
 PRISM_FIELDS(prism::qt::ui::img_frame_info,height,width,frameNum,pixelType,receivedBufferNum,incompleteBufferNum,buffersPerSecond,detectedBufferNum);

@@ -93,9 +93,21 @@ private:
     QOpenGLShaderProgram program_mono8;
     QOpenGLShaderProgram program_rgb;
     QOpenGLShaderProgram program_bgr;
+    QOpenGLShaderProgram program_yuv420;
+    QOpenGLShaderProgram program_yuv420p;
+
+    QOpenGLShaderProgram* program;
+
     GLuint textuniformID;
+    GLuint textuniformUID;
+    GLuint textuniformVID;
+
     GLuint textuniformUL;
+    GLuint textuniformUUL;
+    GLuint textuniformVUL;
+
     GLuint vertexInAL;
+
     GLuint textureInAL;
 
     int matrixUL;
