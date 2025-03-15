@@ -14,11 +14,29 @@ void borderless_window_mac::enableWindowBorderless(qulonglong wId)
 {
     NSView *nativeView = reinterpret_cast<NSView *>(wId);
     NSWindow *nativeWindow = [nativeView window];
-    //[nativeWindow setStyleMask:[nativeWindow styleMask] | NSFullSizeContentViewWindowMask | NSWindowTitleHidden];
-    [nativeWindow setStyleMask:[nativeWindow styleMask] | NSWindowStyleMaskFullSizeContentView | NSWindowTitleHidden];
 
+    NSUInteger styleMask = [nativeWindow styleMask];
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+    styleMask |= NSWindowStyleMaskFullSizeContentView;
+#else
+    styleMask |= NSFullSizeContentViewWindowMask  ;
+    styleMask |= NSWindowStyleMaskFullSizeContentView  ;
+
+#endif
+
+    [nativeWindow setStyleMask:styleMask];
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
     [nativeWindow setTitlebarAppearsTransparent:YES];
     [nativeWindow setMovableByWindowBackground:NO];
+#else
+    //[nativeWindow setTitleVisibility:NSWindowTitleHidden];
+    [nativeWindow setTitlebarAppearsTransparent:YES];
+    [nativeWindow setMovableByWindowBackground:NO];
+
+#endif
 }
+
 
 } // namespace prism::qt::ui
