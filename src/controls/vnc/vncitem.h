@@ -46,8 +46,10 @@ public slots:
     bool connectToVncServer(QString ip, QString password, int port = 5900);
     void disconnectFromVncServer();
 
+    void moveAndClick(int x,int y);
     void sendKey_alt_tab();
     void sendKey_ctrl_alt_t();
+    void sendEscKey();
     void save(const QString &filePath, const QRect &rect,const bool& async);
 
 

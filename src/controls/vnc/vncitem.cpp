@@ -1125,6 +1125,36 @@ void VncItem::disconnectFromVncServer()
     }
 }
 
+void VncItem::moveAndClick(int x,int y)
+{
+    if(!isConnectedToServer())
+        return;
+
+    QByteArray message(6, 0);
+    message[0] = 5; // mouse event
+    {
+        char tmp =   1; //left
+        //tmp +=  2; //mid
+        //tmp +=  4 ; right
+        message[1] = tmp; //mouse button
+        posX = x; message[2] = (posX >> 8) & 0xFF; message[3] = (posX >> 0) & 0xFF;
+        posY = y; message[4] = (posY >> 8) & 0xFF; message[5] = (posY >> 0) & 0xFF;
+        socket->write(message);
+    }
+
+    {
+        char tmp =   0; //left
+        //tmp +=  2; //mid
+        //tmp +=  4 ; right
+        message[1] = tmp; //mouse button
+        posX = x; message[2] = (posX >> 8) & 0xFF; message[3] = (posX >> 0) & 0xFF;
+        posY = y; message[4] = (posY >> 8) & 0xFF; message[5] = (posY >> 0) & 0xFF;
+        socket->write(message);
+    }
+
+
+}
+
 void VncItem::sendKey_alt_tab()
 {
     if(!isConnectedToServer())
@@ -1264,6 +1294,50 @@ void VncItem::sendKey_ctrl_alt_t()
         }
     }
 
+
+}
+
+void VncItem::sendEscKey()
+{
+    if(!isConnectedToServer())
+        return;
+
+    QByteArray message(8, 0);
+
+    message[0] = 4; // keyboard event
+    message[2] = message[3] = 0; // padding
+
+    quint32 key = 5000;
+
+    {
+        message[1] = 1; // down = 1 (press)
+
+        {
+            key= XK_Escape;
+            message[4] = (key >> 24) & 0xFF;
+            message[5] = (key >> 16) & 0xFF;
+            message[6] = (key >> 8) & 0xFF;
+            message[7] = (key >> 0) & 0xFF;
+
+            socket->write(message);
+            socket->waitForBytesWritten();
+        }
+
+    }
+    {
+        message[1] = 0; // down = 0 (release)
+
+        {
+            key= XK_Escape;
+            message[4] = (key >> 24) & 0xFF;
+            message[5] = (key >> 16) & 0xFF;
+            message[6] = (key >> 8) & 0xFF;
+            message[7] = (key >> 0) & 0xFF;
+
+            socket->write(message);
+            socket->waitForBytesWritten();
+        }
+    }
 
 }
 
