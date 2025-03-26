@@ -13,6 +13,7 @@
 #include "include/prism/qt/ui/img_buffer_Info.h"
 #include "include/prism/qt/ui/model/roi_info.h"
 #include "validator/datetime_validator.h"
+#include <prism/container.hpp>
 #include <QDebug>
 #include <QQmlApplicationEngine>
 #include <QtGui/private/qguiapplication_p.h>
@@ -76,6 +77,12 @@ bool prismQt_ui::register_types()
 
         return prism::Container::get()->resolve_object<cpp_utility>().get();
     });
+
+    std::shared_ptr<QQmlApplicationEngine> engine = prism::Container::get()->resolve_object<QQmlApplicationEngine>();
+    if(engine)
+    {
+         qmlRegisterSingletonInstance<QQmlApplicationEngine>("prismCpp", 1, 0, "PrismQmlEngine", engine.get());
+    }
 
     //注册单例 到qml engine  qt 5.15的语法
     // qmlRegisterSingletonInstance<MenuHelper>("prismCpp", 1, 0, "MenuHelper", new MenuHelper());
