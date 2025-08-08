@@ -14,7 +14,7 @@ import prism_qt_ui_private 1.0
         id:root_marsk
         anchors.fill: parent
 
-        property int view_scale :1
+        property double view_scale :1
         //property int roi_x:0
         //property int roi_y:0
         //property int roi_width:1
@@ -38,6 +38,8 @@ import prism_qt_ui_private 1.0
         signal leftKeyup(var e)
         signal rightKeydown(var e)
         signal rightKeyup(var e)
+        signal ctrlkeyDown(var e)
+        signal ctrlkeyUp(var e)
 
         property alias mouseArea_drag:ma_drag
 
@@ -100,13 +102,17 @@ import prism_qt_ui_private 1.0
                 {
                     root_marsk.deleteKeydown(e)
                 }
-                if(e.key === Qt.Key_Left)
+                else if(e.key === Qt.Key_Left)
                 {
                     root_marsk.leftKeydown(e)
                 }
-                if(e.key === Qt.Key_Right)
+                else if(e.key === Qt.Key_Right)
                 {
                     root_marsk.rightKeydown(e)
+                }
+                else if(e.key === Qt.Key_Control)
+                {
+                    root_marsk.ctrlkeyDown(e)
                 }
             }
             Keys.onReleased: function(e) {
@@ -115,13 +121,17 @@ import prism_qt_ui_private 1.0
                 {
                     root_marsk.deleteKeyup(e)
                 }
-                if(e.key === Qt.Key_Left)
+                else if(e.key === Qt.Key_Left)
                 {
                     root_marsk.leftKeyup(e)
                 }
-                if(e.key === Qt.Key_Right)
+                else if(e.key === Qt.Key_Right)
                 {
                     root_marsk.rightKeyup(e)
+                }
+                else if(e.key === Qt.Key_Control)
+                {
+                    root_marsk.ctrlkeyUp(e)
                 }
             }
             onClicked: function(e){
