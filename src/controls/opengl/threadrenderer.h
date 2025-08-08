@@ -86,6 +86,7 @@ class ThreadRenderer : public QQuickItem
   signals:
     void sizeChanged();
     void frameSizeChanged(int width, int height);
+    void newFrameCome();
     void releaseBuferAfterRenderChanged();
     void inited_background();
 

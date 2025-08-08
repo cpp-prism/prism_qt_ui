@@ -143,6 +143,7 @@ class RenderThread : public QThread
                 std::unique_lock<std::mutex> lk(buf->buffer_mux);
 
                 buf->buffer_cv.wait(lk);
+                emit mp_render->newFrameCome();
 
                 if (buf->doFreeOpenGL)
                 {
