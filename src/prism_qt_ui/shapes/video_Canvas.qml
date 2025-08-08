@@ -22,10 +22,13 @@ Item {
 
     property alias rect_roi: rect_roi
     property alias canvas: canvas
+    property alias ma_canvas: ma_canvas
 
     property int frameWidth: 100
     property int frameHeight: 100
     signal drawCompleted(int x,int y, int width, int height);
+    signal rightPressed();
+    signal rightReleased();
 
     z: 99
     Rectangle {
@@ -134,12 +137,24 @@ Item {
             }
 
             MouseArea {
+                id:ma_canvas
                 anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                property bool f_rightPressed:false
                 onPressed: {
-                    canvas.startPoint = Qt.point(mouse.x, mouse.y)
-                    canvas.endPoint = Qt.point(mouse.x, mouse.y)
-                    canvas.isDrawing = true
-                    canvas.requestPaint()
+                    if(mouse.buttons == 1)
+                    {
+                        f_rightPressed = false
+                        canvas.startPoint = Qt.point(mouse.x, mouse.y)
+                        canvas.endPoint = Qt.point(mouse.x, mouse.y)
+                        canvas.isDrawing = true
+                        canvas.requestPaint()
+                    }
+                    else  if(mouse.buttons == 2)
+                    {
+                        f_rightPressed = true
+                        rightPressed();
+                    }
                 }
 
                 onPositionChanged: {
@@ -150,12 +165,20 @@ Item {
                 }
 
                 onReleased: {
-                    canvas.isDrawing = false
-                    canvas.requestPaint()
-                    drawCompleted(canvas.last_x * root_marsk.frameWidth / width,
-                                  canvas.last_y * root_marsk.frameHeight / height,
-                                  canvas.last_w * root_marsk.frameWidth / width,
-                                  canvas.last_h * root_marsk.frameHeight / height)
+                    if(canvas.isDrawing)
+                    {
+                        canvas.isDrawing = false
+                        canvas.requestPaint()
+                        drawCompleted(canvas.last_x * root_marsk.frameWidth / width,
+                                      canvas.last_y * root_marsk.frameHeight / height,
+                                      canvas.last_w * root_marsk.frameWidth / width,
+                                      canvas.last_h * root_marsk.frameHeight / height)
+                    }
+                    if(f_rightPressed)
+                    {
+                        f_rightPressed = false
+                        rightReleased()
+                    }
                 }
             }
         }
