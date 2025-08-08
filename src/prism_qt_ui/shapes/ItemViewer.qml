@@ -26,7 +26,14 @@ Rectangle {
         draggable.oy = draggable.height/2
         draggable.dx =0
         draggable.dy =0
-        draggable.scale = draggable.parent.width / draggable.width
+
+        let h_scale = draggable.parent.height / draggable.height
+        let w_scale = draggable.parent.width / draggable.width
+
+        if(h_scale* draggable.height <= draggable.parent.height+0.1 &&  h_scale * draggable.width <=draggable.parent.width + 0.1)
+            draggable.scale = h_scale
+        else
+            draggable.scale = w_scale
     }
 
     Item{
