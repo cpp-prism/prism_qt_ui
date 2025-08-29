@@ -606,6 +606,7 @@ void cpp_utility::createFileAndWrite(const QString& path,const QString& content)
     // 以写入模式打开文件，如果文件不存在则创建，已存在则覆盖
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
+        out.setCodec("UTF-8");
         out << content;
         file.close();
     } else {
