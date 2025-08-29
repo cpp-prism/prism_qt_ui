@@ -96,14 +96,14 @@ void LogoRenderer::paintQtLogo()
             //u
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, textuniformUID);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width/2, texture_height/2, 0, GL_RED, GL_UNSIGNED_BYTE, (u_int8_t*)frame.buffer + texture_width*texture_height);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width/2, texture_height/2, 0, GL_RED, GL_UNSIGNED_BYTE, (uint8_t*)frame.buffer + texture_width*texture_height);
             glUniform1i(textuniformUUL, 1);
 
             //v
 
             glActiveTexture(GL_TEXTURE2);
             glBindTexture(GL_TEXTURE_2D, textuniformVID);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width/2, texture_height/2, 0, GL_RED, GL_UNSIGNED_BYTE, (u_int8_t*)frame.buffer + texture_width*texture_height  * 5/4 );
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texture_width/2, texture_height/2, 0, GL_RED, GL_UNSIGNED_BYTE, (uint8_t*)frame.buffer + texture_width*texture_height  * 5/4 );
             glUniform1i(textuniformVUL, 2);
         }
         else if (this->frame.pixelType == prism::qt::ui::ENUM_PixelType::yuv420)
@@ -112,7 +112,7 @@ void LogoRenderer::paintQtLogo()
 
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, textuniformUID);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, texture_width/2, texture_height/2, 0, GL_RG, GL_UNSIGNED_BYTE, (u_int8_t*)frame.buffer + texture_width*texture_height);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, texture_width/2, texture_height/2, 0, GL_RG, GL_UNSIGNED_BYTE, (uint8_t*)frame.buffer + texture_width*texture_height);
             glUniform1i(textuniformUUL, 1);
         }
 
