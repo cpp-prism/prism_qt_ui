@@ -15,12 +15,12 @@ namespace prism::qt::ui {
 borderless_window_win::borderless_window_win(QQuickWindow* parent)
     : QQuickWindow(parent)
 {
-    this->setOpacity(0.0);
-    this->setVisible(false);
-    this->setHeight(0);
-    this->setWidth(0);
-    this->setX(-100);
-    this->setY(-100);
+    //this->setOpacity(0.0);
+    //this->setVisible(false);
+    //this->setHeight(0);
+    //this->setWidth(0);
+    //this->setX(-100);
+    //this->setY(-100);
 }
 
 borderless_window_win::borderless_window_win()

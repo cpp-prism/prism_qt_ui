@@ -10,9 +10,9 @@ import prism_qt_ui 1.0
 BorderLessWindow_Win_cpp {
     id: window
     property real exceed_pixels: Math.round(8 / Screen.devicePixelRatio)
-    property url contentUrl
+    property var contentUrl
+    property alias showReloadButton: window_rootLoader.showButton
 
-    visible: false
     opacity: 0
     title: qsTr("prism")
     color: "transparent"
