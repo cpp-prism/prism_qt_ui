@@ -50,7 +50,8 @@ import PrismUI_private 1.0
 
             color: root_marsk.color
             border.color: root_marsk.borderColor
-            border.width: root_marsk.borderWidth
+            border.width: root_marsk.borderWidth *view_scale
+
             property int frameWidth : parent.frameWidth
             property int frameHeight :  parent.frameHeight
             property bool  isFillWidth:{
@@ -82,7 +83,7 @@ import PrismUI_private 1.0
             y:(root_marsk.height - pixel_control_height)/2 + roi_y * y_scale_factor
 
 
-            property int guard_radius :  4 * view_scale
+            property int guard_radius :  6 * view_scale
         }
         //drag
         MouseArea{
