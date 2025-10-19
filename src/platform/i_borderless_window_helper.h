@@ -20,7 +20,8 @@ class i_borderless_window_helper
 class i_borderless_window_native_event_fileter : public QAbstractNativeEventFilter
 {
   public:
-    virtual bool nativeEventFilter([[maybe_unused]] const QByteArray& eventType, [[maybe_unused]] void* message, [[maybe_unused]] long* result) override
+
+    virtual bool nativeEventFilter([[maybe_unused]] const QByteArray& eventType, [[maybe_unused]] void* message, [[maybe_unused]] qintptr* result) override
     {
         return 0;
     }

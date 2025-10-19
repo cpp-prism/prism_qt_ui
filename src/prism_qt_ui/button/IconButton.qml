@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.15
 import QtQuick 2.15
 import QtGraphicalEffects 1.0
 import "../shapes"
-import prismCpp 1.0
+import PrismCpp 1.0
 import prism_qt_ui 1.0
 
 Item {

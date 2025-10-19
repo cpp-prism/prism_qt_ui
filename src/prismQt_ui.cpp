@@ -4,8 +4,8 @@
 
 #include "prismQt_ui.h"
 #include "controls/forms/datepickercpp.h"
-#include "controls/opengl/logorenderer.h"
-#include "controls/opengl/threadrenderer.h"
+//#include "controls/opengl/logorenderer.h"
+//#include "controls/opengl/threadrenderer.h"
 #include "controls/shapes/video_roi_cpp.h"
 #include "controls/window/qml_debug_window.h"
 #include "helper/menuhelper.h"
@@ -37,10 +37,10 @@ prismQt_ui::~prismQt_ui()
 bool prismQt_ui::register_types()
 {
     //控件注册
-    qmlRegisterType<qmlDebugWindow>("prismCpp", 1, 0, "QmlDebugWindowCPP");
-    qmlRegisterRevision<QWindow, 1>("prismCpp", 1, 0);
-    qmlRegisterRevision<QQuickWindow, 1>("prismCpp", 1, 0);
-    qmlRegisterRevision<QColorDialog, 1>("prismCpp", 1, 0);
+    qmlRegisterType<qmlDebugWindow>("PrismCpp", 1, 0, "QmlDebugWindowCPP");
+    qmlRegisterRevision<QWindow, 1>("PrismCpp", 1, 0);
+    qmlRegisterRevision<QQuickWindow, 1>("PrismCpp", 1, 0);
+    qmlRegisterRevision<QColorDialog, 1>("PrismCpp", 1, 0);
 
     //注册多平台无边框窗口
     registerBorderlessHleper();
@@ -50,7 +50,7 @@ bool prismQt_ui::register_types()
     qmlRegisterType<VncItem>("prism_qt_ui", 1, 0, "VncItem");
 #endif
     // opengl渲染器
-    qmlRegisterType<ThreadRenderer>("prism_qt_ui", 1, 0, "Renderer");
+    //qmlRegisterType<ThreadRenderer>("prism_qt_ui", 1, 0, "Renderer");
     qmlRegisterType<datetime_validator>("prism_qt_ui", 1, 0, "DatetimeValidator");
     // datetimepicker
     qmlRegisterType<DatePickerCpp>("prism_qt_ui_private", 1, 0, "DatePickerCpp");
@@ -69,9 +69,9 @@ bool prismQt_ui::register_types()
     prism::Container::get()->register_instance<cpp_utility>(sp_cpputility);
 
     //注册单例 到qml engine  qt 5.15的语法
-    // qmlRegisterSingletonInstance<cpp_utility>("prismCpp", 1, 0, "CppUtility",sp_cpputility.get());
+    // qmlRegisterSingletonInstance<cpp_utility>("PrismCpp", 1, 0, "CppUtility",sp_cpputility.get());
     //注册单例 到qml engine  qt 5.12的语法
-    qmlRegisterSingletonType<cpp_utility>("prismCpp", 1, 0, "CppUtility", [](QQmlEngine* engine, QJSEngine* scriptEngine) -> QObject* {
+    qmlRegisterSingletonType<cpp_utility>("PrismCpp", 1, 0, "CppUtility", [](QQmlEngine* engine, QJSEngine* scriptEngine) -> QObject* {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
 
@@ -81,13 +81,13 @@ bool prismQt_ui::register_types()
     std::shared_ptr<QQmlApplicationEngine> engine = prism::Container::get()->resolve_object<QQmlApplicationEngine>();
     if(engine)
     {
-         qmlRegisterSingletonInstance<QQmlApplicationEngine>("prismCpp", 1, 0, "PrismQmlEngine", engine.get());
+         qmlRegisterSingletonInstance<QQmlApplicationEngine>("PrismCpp", 1, 0, "PrismQmlEngine", engine.get());
     }
 
     //注册单例 到qml engine  qt 5.15的语法
-    // qmlRegisterSingletonInstance<MenuHelper>("prismCpp", 1, 0, "MenuHelper", new MenuHelper());
+    // qmlRegisterSingletonInstance<MenuHelper>("PrismCpp", 1, 0, "MenuHelper", new MenuHelper());
     //注册单例 到qml engine  qt 5.12的语法
-    qmlRegisterSingletonType<MenuHelper>("prismCpp", 1, 0, "MenuHelper", [](QQmlEngine* engine, QJSEngine* scriptEngine) -> QObject* {
+    qmlRegisterSingletonType<MenuHelper>("PrismCpp", 1, 0, "MenuHelper", [](QQmlEngine* engine, QJSEngine* scriptEngine) -> QObject* {
         Q_UNUSED(engine)
         Q_UNUSED(scriptEngine)
         return new MenuHelper();
@@ -173,7 +173,8 @@ static void registerBorderlessHleper()
     Container::get()->register_instance<IborderHelper>(std::make_shared<borderHelper>());
 
     //注册window
-    qmlRegisterType<borderless_window_win>("prism_qt_ui", 1, 0, "BorderLessWindow_Win_cpp");
+    qDebug()<< 11111111;
+    qmlRegisterType<borderless_window_win>("prism_qt_ui", 1, 0, "BorderLessWindowWincpp");
     qmlRegisterRevision<QWindow, 1>("prism_qt_ui", 1, 0);
     qmlRegisterRevision<QQuickWindow, 1>("prism_qt_ui", 1, 0);
 }

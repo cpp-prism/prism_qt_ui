@@ -15,6 +15,7 @@
 #include <prism/container.hpp>
 
 #include <QDebug>
+#include <QRegularExpression>
 
 #ifdef USING_PCL
 #include <QQuickVTKRenderWindow.h>
@@ -167,9 +168,32 @@ QUrl cpp_utility::transUrl(QString url)
             {
                 relativePath += "../";
             }
-        auto rx = QRegExp(QString::fromStdString(R"(^qrc:/([\w-_]+)(.*))"));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QRegExp rx(QString::fromStdString(R"(^qrc:/([\w-_]+)(.*))"));
         rx.lastIndexIn(url);
-        QString url_replaced = QString("file:///%1/%2%3/src/%4%5").arg(root).arg(relativePath).arg(rx.cap(1)).arg(rx.cap(1)).arg(rx.cap(2));
+        QString url_replaced = QString("file:///%1/%2%3/src/%4%5")
+                                   .arg(root)
+                                   .arg(relativePath)
+                                   .arg(rx.cap(1))
+                                   .arg(rx.cap(1))
+                                   .arg(rx.cap(2));
+#else
+        QRegularExpression rx(QString::fromStdString(R"(^qrc:/([\w-_]+)(.*))"));
+        QRegularExpressionMatch match = rx.match(url);
+        QString url_replaced;
+        if (match.hasMatch()) {
+            url_replaced = QString("file:///%1/%2%3/src/%4%5")
+                               .arg(root)
+                               .arg(relativePath)
+                               .arg(match.captured(1))
+                               .arg(match.captured(1))
+                               .arg(match.captured(2));
+        } else {
+            url_replaced = url;
+        }
+#endif
+
+return QUrl(url_replaced);
         // qDebug()<< "trans url :" << url_replaced;
         return QUrl(url_replaced);
     }
@@ -606,7 +630,11 @@ void cpp_utility::createFileAndWrite(const QString& path,const QString& content)
     // 以写入模式打开文件，如果文件不存在则创建，已存在则覆盖
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
-        out.setCodec("UTF-8");
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    out.setCodec("UTF-8");
+#else
+    out.setEncoding(QStringConverter::Utf8);
+#endif
         out << content;
         file.close();
     } else {

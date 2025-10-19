@@ -6,7 +6,7 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 1.4 as Q1
 import QtQuick.Controls.Styles 1.4
-import prismCpp 1.0
+import PrismCpp 1.0
 import prism_qt_ui 1.0
 
 

@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Window 2.12
-import prismCpp 1.0
+import PrismCpp 1.0
 import QtQuick.Layouts 1.12
 import ".."
 

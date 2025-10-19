@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import ".."
 import "../shapes"
-import prismCpp 1.0
+import PrismCpp 1.0
 import QtQml 2.12
 
 import QtQuick.Window 2.15

@@ -8,7 +8,7 @@ import QtQuick.Controls 2.15
 import ".."
 import "../shapes"
 import "../window"
-import prismCpp 1.0
+import PrismCpp 1.0
 import prism_qt_ui_private 1.0
 import QtQml 2.12
 

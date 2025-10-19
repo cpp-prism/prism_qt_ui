@@ -1,3 +1,4 @@
+module prism_qt_ui
 singleton   Style 1.0 theme/Style.qml
             JsEx 1.0  js/Js_extension.js
             LiveLoader 1.0  debug/Live_loader.qml

@@ -5,7 +5,7 @@ import QtQuick.Window 2.15
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import prism_qt_ui 1.0
-import prismCpp 1.0
+import PrismCpp 1.0
 
 import QtQml 2.15
 import QtGraphicalEffects 1.0

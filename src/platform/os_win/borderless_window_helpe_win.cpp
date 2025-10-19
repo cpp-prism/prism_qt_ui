@@ -1,5 +1,6 @@
 #include "borderless_window_helpe_win.h"
 #include <QDebug>
+#include <QOperatingSystemVersion>
 #include <QSysInfo>
 #include <QVector>
 #include <dwmapi.h>
@@ -18,7 +19,7 @@ void borderless_window_helpe_win::enableWindowBorderless(qulonglong wId)
     iswin7classic = !(composition_enabled && success);
 
     HWND wnd = (HWND)wId;
-    if (iswin7classic && QSysInfo::windowsVersion() == QSysInfo::WV_WINDOWS7)
+    if (iswin7classic && QOperatingSystemVersion::current() <= QOperatingSystemVersion(QOperatingSystemVersion::Windows, 7))
     {
         SetWindowLongPtr(wnd, GWL_STYLE, static_cast<LONG>(style::aero_borderless));
     }

@@ -85,10 +85,10 @@ BOOL multi_screen_helper_win::callbackGetScreenInfo(HMONITOR hMonitor, HDC, LPRE
 
     if (EnumDisplayDevices(mi.szDevice, 0, &dev_display, 0))
     {
-        sc_info.firendlyName = QString::fromLocal8Bit(dev_display.DeviceString);
+        sc_info.firendlyName = QString::fromStdWString(dev_display.DeviceString);
     }
 
-    sc_info.deviceName = QString::fromLocal8Bit(mi.szDevice);
+    sc_info.deviceName = QString::fromStdWString(mi.szDevice);
     sc_info.physicalPosX = dev_mode.dmPosition.x;
     sc_info.physicalPosY = dev_mode.dmPosition.y;
     sc_info.physicalWidth = dev_mode.dmPelsWidth;

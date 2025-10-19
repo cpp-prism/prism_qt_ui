@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControls2 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControls2   REQUIRED)
 find_package(prism COMPONENTS container qt::modular qt::core)
 
 option(USING_PCL "add pcl vtk " OFF)
@@ -44,6 +44,7 @@ endif()
 include_directories(${Qt${QT_VERSION_MAJOR}Quick_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt${QT_VERSION_MAJOR}Core_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt${QT_VERSION_MAJOR}Gui_PRIVATE_INCLUDE_DIRS})
+
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     add_definitions("-x objective-c++") # as you already have
@@ -94,10 +95,10 @@ add_library(${PROJECT_NAME} SHARED
   src/helper/img_buffer_Info.cpp
 
 
-  src/controls/opengl/logorenderer.h
-  src/controls/opengl/logorenderer.cpp
-  src/controls/opengl/threadrenderer.h
-  src/controls/opengl/threadrenderer.cpp
+  #src/controls/opengl/logorenderer.h
+  #src/controls/opengl/logorenderer.cpp
+  #src/controls/opengl/threadrenderer.h
+  #src/controls/opengl/threadrenderer.cpp
   src/controls/window/qml_debug_window.h
   src/controls/window/qml_debug_window.cpp
   src/controls/forms/datepickercpp.h
@@ -145,6 +146,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::Qml
+    Qt${QT_VERSION_MAJOR}::QuickTemplates2Private
     Qt${QT_VERSION_MAJOR}::QuickControls2)
 
 
