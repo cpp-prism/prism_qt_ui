@@ -13,7 +13,7 @@ Item {
     id: root_marsk
     anchors.fill: parent
 
-    property int view_scale: 1
+    property double view_scale: 1
     property int roi_x: 0
     property int roi_y: 0
     property int roi_width: 1
