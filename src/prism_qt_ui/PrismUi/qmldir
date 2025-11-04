@@ -32,5 +32,6 @@ singleton   Style 1.0 theme/Style.qml
             VideoROI 1.0 shapes/video_ROI.qml
             VideoROI2 1.0 shapes/video_ROI2.qml
             VideoCanvas 1.0 shapes/video_Canvas.qml
+            VideoItem 1.0 shapes/Video_Item.qml
 
             ItemViewer 1.0 shapes/ItemViewer.qml
