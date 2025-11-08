@@ -178,7 +178,7 @@ QUrl cpp_utility::transUrl(QString url)
                                    .arg(rx.cap(1))
                                    .arg(rx.cap(2));
 #else
-        QRegularExpression rx(QString::fromStdString(R"(^qrc:/([\w-_]+)(.*))"));
+        static QRegularExpression rx(QString::fromStdString(R"(^qrc:/([\w_-]+)(.*))"));
         QRegularExpressionMatch match = rx.match(url);
         QString url_replaced;
         if (match.hasMatch()) {
@@ -191,9 +191,9 @@ QUrl cpp_utility::transUrl(QString url)
         } else {
             url_replaced = url;
         }
+
 #endif
 
-return QUrl(url_replaced);
         // qDebug()<< "trans url :" << url_replaced;
         return QUrl(url_replaced);
     }
@@ -263,7 +263,7 @@ std::shared_ptr<bool> cpp_utility::showQmlDialog(QString qmlUrl, QObject* viewMo
     QQmlComponent component(p_engine.get());
 
     QQuickWindow::setDefaultAlphaBuffer(true);
-    auto url = transUrl("qrc:/prism_qt_ui/window/QmlDebugWindow.qml");
+    auto url = transUrl("qrc:/prism_qt_ui/PrismUI/window/QmlDebugWindow.qml");
     component.loadUrl(url);
     qmlDebugWindow* win = nullptr;
     if (component.isReady())
@@ -310,7 +310,7 @@ void cpp_utility::showQmlWindow(QString qmlUrl, QObject* viewModel)
     std::shared_ptr<QQuickWindow> mainWindow = prism::Container::get()->resolve_object<QQuickWindow>();
     QQmlComponent component(p_engine.get(), mainWindow->contentItem());
 
-    auto url = transUrl("qrc:/prism_qt_ui/window/QmlDebugWindow.qml");
+    auto url = transUrl("qrc:/prism_qt_ui/PrismUI/window/QmlDebugWindow.qml");
     component.loadUrl(url);
     if (component.isReady())
     {

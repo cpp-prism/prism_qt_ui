@@ -4,8 +4,17 @@
 
 #include "prismQt_ui.h"
 #include "controls/forms/datepickercpp.h"
+
+#if defined(USING_OPENGL)  | defined(USING_OPENGLES)
 //#include "controls/opengl/logorenderer.h"
 //#include "controls/opengl/threadrenderer.h"
+#endif
+
+#if defined(USING_VULKAN)
+#include "src/controls/vulkan/vulkanCustomTextureItem.h"
+#endif
+
+
 #include "controls/shapes/video_roi_cpp.h"
 #include "controls/window/qml_debug_window.h"
 #include "helper/menuhelper.h"
@@ -47,16 +56,25 @@ bool prismQt_ui::register_types()
 
 #ifdef USING_PRISM_QT_UI_VNCITEM
     //vncitem
-    qmlRegisterType<VncItem>("prism_qt_ui", 1, 0, "VncItem");
+    qmlRegisterType<VncItem>("PrismUI", 1, 0, "VncItem");
 #endif
     // opengl渲染器
-    //qmlRegisterType<ThreadRenderer>("prism_qt_ui", 1, 0, "Renderer");
-    qmlRegisterType<datetime_validator>("prism_qt_ui", 1, 0, "DatetimeValidator");
+#if defined(USING_OPENGL)  | defined(USING_OPENGLES)
+    qmlRegisterType<ThreadRenderer>("PrismUI", 1, 0, "Renderer");
+#endif
+
+#if defined(USING_VULKAN)
+    qmlRegisterType<VulkanCustomTextureItem>("PrismUI", 1, 0, "VulkanCustomTextureItem");
+
+#endif
+
+
+    qmlRegisterType<datetime_validator>("PrismUI", 1, 0, "DatetimeValidator");
     // datetimepicker
-    qmlRegisterType<DatePickerCpp>("prism_qt_ui_private", 1, 0, "DatePickerCpp");
-    qmlRegisterType<video_roi_cpp>("prism_qt_ui_private", 1, 0, "Video_roi_cpp");
+    qmlRegisterType<DatePickerCpp>("PrismUI_private", 1, 0, "DatePickerCpp");
+    qmlRegisterType<video_roi_cpp>("PrismUI_private", 1, 0, "Video_roi_cpp");
     //注册相机帧信息
-    //qRegisterMetaType<QString*>("QString*");
+    qRegisterMetaType<QString*>("QString*");
     qRegisterMetaType<std::string>("std::string");
     qRegisterMetaType<QImage*>("QImage*");
     qRegisterMetaType<prism::qt::ui::img_frame_info>();
@@ -102,10 +120,12 @@ bool prismQt_ui::init()
     std::shared_ptr<QQmlApplicationEngine> engine = Container::get()->resolve_object<QQmlApplicationEngine>();
     cpp_utility a;
     if (!a.enableHotReload())
-        engine->addImportPath("qrc:/");
+    {
+        engine->addImportPath("qrc:/prism_qt_ui");
+    }
     else
     {
-        engine->addImportPath(QString("%1/%2").arg(PRISMQT_SOLUTION_SOURCEDIR).arg("prism_qt_ui/src"));
+        engine->addImportPath(QString("%1/%2").arg(PRISMQT_SOLUTION_SOURCEDIR).arg("prism_qt_ui/src/prism_qt_ui"));
     }
     return true;
 }
@@ -173,10 +193,10 @@ static void registerBorderlessHleper()
     Container::get()->register_instance<IborderHelper>(std::make_shared<borderHelper>());
 
     //注册window
-    qDebug()<< 11111111;
-    qmlRegisterType<borderless_window_win>("prism_qt_ui", 1, 0, "BorderLessWindowWincpp");
-    qmlRegisterRevision<QWindow, 1>("prism_qt_ui", 1, 0);
-    qmlRegisterRevision<QQuickWindow, 1>("prism_qt_ui", 1, 0);
+    qmlRegisterType<borderless_window_win>("PrismUI", 1, 0, "BorderLessWindowWincpp");
+    qmlRegisterRevision<QWindow, 1>("PrismUI", 1, 0);
+    qmlRegisterRevision<QQuickWindow, 1>("PrismUI", 1, 0);
+
 }
 #endif
 

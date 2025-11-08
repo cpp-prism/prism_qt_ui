@@ -174,7 +174,7 @@ Q1.Menu {
                     color: Style.black
                     mipmap: true
                     anchors.centerIn: parent
-                    svgPath: "qrc:/prism_qt_ui/svg/play-arrow.svg"
+                    svgPath: "qrc:/prism_qt_ui/PrismUI/svg/play-arrow.svg"
                 }
             }
             Item {

@@ -14,6 +14,13 @@ class PRISMQT_UI_EXPORT borderless_window_win : public QQuickWindow
     Q_PROPERTY(int titleHeight READ titleHeight WRITE setTitleHeight NOTIFY titleHeightChanged)
     Q_PROPERTY(int titleBarBtnWidth READ titleBarBtnWidth WRITE setTitleBarBtnWidth NOTIFY titleBarBtnWidthChanged)
 
+
+public slots:
+
+    void maximize();
+    void minimize();
+    void restore();
+
 private:
     int m_titleHeight = 30;
     int m_titleBarBtnWidth = 100;

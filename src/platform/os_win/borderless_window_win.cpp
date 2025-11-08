@@ -16,6 +16,22 @@
 
 namespace prism::qt::ui {
 
+void borderless_window_win::maximize() {
+    HWND hwnd = (HWND)winId();
+    ShowWindow(hwnd, SW_SHOWMAXIMIZED);
+}
+
+void borderless_window_win::minimize() {
+    HWND hwnd = (HWND)winId();
+    ShowWindow(hwnd, SW_SHOWMINIMIZED);
+}
+
+void borderless_window_win::restore() {
+    HWND hwnd = (HWND)winId();
+    ShowWindow(hwnd, SW_RESTORE);
+}
+
+
 borderless_window_win::borderless_window_win(QQuickWindow* parent)
     : QQuickWindow(parent)
 {
@@ -26,11 +42,11 @@ borderless_window_win::borderless_window_win(QQuickWindow* parent)
 
     this->setColor("transparent");
 
-    //connect(this, &QQuickWindow::screenChanged, this, [this](QScreen* screen) {
-    //    Q_UNUSED(screen)
-    //    // QTBUG-95925 重新触发尺寸修复
-    //    this->resize(this->size());
-    //});
+    connect(this, &QQuickWindow::screenChanged, this, [this](QScreen* screen) {
+        Q_UNUSED(screen)
+        // QTBUG-95925 重新触发尺寸修复
+        this->resize(this->size());
+    });
 }
 
 
@@ -49,7 +65,7 @@ bool borderless_window_win::nativeEvent(const QByteArray& eventType, void* messa
     {
         BOOL composition_enabled = FALSE;
         bool success = (::DwmIsCompositionEnabled(&composition_enabled) == S_OK);
-        bool isClassic = !(composition_enabled && success);
+        //bool isClassic = !(composition_enabled && success);
 
         // 恢复原生样式，使其仍可最小化、最大化、拖动
         SetWindowLongPtr(msg->hwnd, GWL_STYLE, WS_POPUP | WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_CLIPCHILDREN);
@@ -67,6 +83,7 @@ bool borderless_window_win::nativeEvent(const QByteArray& eventType, void* messa
         *result = WVR_REDRAW;
         return true;
     }
+
 
     case WM_NCHITTEST:
     {

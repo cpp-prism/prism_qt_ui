@@ -18,11 +18,47 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControl
 find_package(prism COMPONENTS container qt::modular qt::core)
 
 option(USING_PCL "add pcl vtk " OFF)
+option(USING_OPENGL  "using opengl" OFF)
 option(USING_OPENGLES  "using opengl es" OFF)
+option(USING_VULKAN  "using vulkan" OFF)
 
 
 if(USING_OPENGLES)
     add_compile_definitions(USING_OPENGLES)
+    set(OPENGL_SOURCE
+            src/controls/opengl/logorenderer.h
+            src/controls/opengl/logorenderer.cpp
+            src/controls/opengl/threadrenderer.h
+            src/controls/opengl/threadrenderer.cpp
+    )
+endif()
+
+if(USING_OPENGL)
+    add_compile_definitions(USING_OPENGL)
+    set(OPENGL_SOURCE
+            src/controls/opengl/logorenderer.h
+            src/controls/opengl/logorenderer.cpp
+            src/controls/opengl/threadrenderer.h
+            src/controls/opengl/threadrenderer.cpp
+    )
+endif()
+
+if(USING_VULKAN)
+    add_compile_definitions(USING_VULKAN)
+    set(VULKAN_SOURCE
+                src/controls/vulkan/vulkanCustomTextureItem.cpp
+                src/controls/vulkan/vulkanCustomTextureItem.h
+                src/controls/vulkan/vulkancustomtexturenode.h
+                src/controls/vulkan/vulkancustomtexturenode.cpp
+                src/controls/vulkan/vulkancustomtexture.h
+                src/controls/vulkan/vulkancustomtexture.cpp
+    )
+    find_package(rs_vk_engine)
+    set(VULKAN_LINKS
+        rs_vk_engine
+    )
+
+
 endif()
 
 
@@ -77,6 +113,8 @@ endif()
 
 
 
+
+
 add_library(${PROJECT_NAME} SHARED
   ${MAC_SOURCE}
   ${VNCITEM_SOURCE}
@@ -95,10 +133,10 @@ add_library(${PROJECT_NAME} SHARED
   src/helper/img_buffer_Info.cpp
 
 
-  #src/controls/opengl/logorenderer.h
-  #src/controls/opengl/logorenderer.cpp
-  #src/controls/opengl/threadrenderer.h
-  #src/controls/opengl/threadrenderer.cpp
+  ${OPENGL_SOURCE}
+  ${VULKAN_SOURCE}
+
+
   src/controls/window/qml_debug_window.h
   src/controls/window/qml_debug_window.cpp
   src/controls/forms/datepickercpp.h
@@ -110,6 +148,7 @@ add_library(${PROJECT_NAME} SHARED
   src/validator/datetime_validator.h
   src/validator/datetime_validator.cpp
 )
+
 
 add_library(prism::qt::ui  ALIAS ${PROJECT_NAME})
 
@@ -135,6 +174,7 @@ if(USING_PCL)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    ${VULKAN_LINKS}
     prism::prism
     prism::container
     prism::qt::modular
@@ -150,7 +190,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::QuickControls2)
 
 
-set(QML_IMPORT_PATH ${PROJECT_SOURCE_DIR}/src CACHE STRING "QML Import Paths")
+set(QML_IMPORT_PATH ${PROJECT_SOURCE_DIR}/src/prism_qt_ui CACHE STRING "QML Import Paths")
 
 
 #
@@ -194,7 +234,9 @@ if(EXISTS ${VCPKG_ROOT})
     file(COPY ${PROJECT_SOURCE_DIR}/cmake/portfile.cmake DESTINATION ${VCPKG_ROOT}/ports/${PORT_NAME})
 endif()
 
-execute_process(COMMAND ${CMAKE_COMMAND} -E echo "
+
+
+#execute_process(COMMAND ${CMAKE_COMMAND} -E echo "
 #----------
-  ${MAC_SOURCE}
+#  ${MAC_SOURCE}
 #----------" )

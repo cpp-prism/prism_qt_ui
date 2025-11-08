@@ -7,66 +7,118 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 1.4 as Q1
 import QtQuick.Controls.Styles 1.4
 import PrismCpp 1.0
-import prism_qt_ui 1.0
-import prism_qt_ui_private 1.0
+import PrismUI 1.0
 
-    Video_roi_cpp {
+    Item {
         id:root_marsk
         anchors.fill: parent
 
-        property double view_scale :1
-        //property int roi_x:0
-        //property int roi_y:0
-        //property int roi_width:1
-        //property int roi_height:1
+        property int view_scale :1
+        property int roi_x_b :0
+        property int roi_y_b :0
+        property int roi_width_b :0
+        property int roi_height_b :0
 
-        property bool disableDragAndResize: false
         property alias rect_roi :rect_roi
 
-        property int frameWidth : 100
-        property int frameHeight :  100
+        property real frameWidth : 100
+        property real frameHeight :  100
 
-        property color color: "transparent"
-        property color borderColor: "blue"
-        property alias guard_radius :rect_roi.guard_radius
-        property int borderWidth: 1
+        //property int roi_x_b: root._3d_cam_setting ? Bind.create(root._3d_cam_setting,"roi_info.offsetX"):0
+        //property int roi_y_b: root._3d_cam_setting ? Bind.create(root._3d_cam_setting,"roi_info.offsetY"):0
+        //property int roi_width_b: root._3d_cam_setting ? Bind.create(root._3d_cam_setting,"roi_info.width"):0
+        //property int roi_height_b: root._3d_cam_setting ? Bind.create(root._3d_cam_setting,"roi_info.height"):0
 
-        signal clicked(var x,var y)
-        signal deleteKeydown(var e)
-        signal deleteKeyup(var e)
-        signal leftKeydown(var e)
-        signal leftKeyup(var e)
-        signal rightKeydown(var e)
-        signal rightKeyup(var e)
-        signal ctrlkeyDown(var e)
-        signal ctrlkeyUp(var e)
+        //onRoi_xChanged: {
+        //    if(root._3d_cam_setting && rect_roi.roi_x !== root_marsk.roi_x_b )
+        //    {
+        //        root._3d_cam_setting.set("roi_info.offsetX",rect_roi.roi_x)
+        //        //console.log("roi_x:",roi_x)
+        //    }
+        //}
+        //onRoi_yChanged: {
+        //    if(root._3d_cam_setting && rect_roi.roi_y !== root_marsk.roi_y_b)
+        //    {
+        //        root._3d_cam_setting.set("roi_info.offsetY",rect_roi.roi_y)
+        //        //console.log("roi_y" , roi_y)
+        //    }
+        //}
+        //onRoi_widthChanged: {
+        //    if(root._3d_cam_setting && rect_roi.roi_width !== root_marsk.roi_width_b && rect_roi.roi_width >=0)
+        //    {
+        //        root._3d_cam_setting.set("roi_info.width",rect_roi.roi_width)
+        //        //console.log("roi_width: ",roi_width)
+        //    }
+        //}
+        //onRoi_heightChanged: {
+        //    if(root._3d_cam_setting && rect_roi.roi_height !== root_marsk.roi_height_b && rect_roi.roi_height >= 0)
+        //    {
+        //        root._3d_cam_setting.set("roi_info.height",rect_roi.roi_height)
+        //        //console.log("roi_height:",roi_height)
+        //    }
+        //}
 
-        property alias mouseArea_drag:ma_drag
+        //visible:
+        //{
+        //    var showroi = root._3d_cam_setting ? Bind.create(root._3d_cam_setting,"show_ROI"):0
+        //    return fram_rvm && fram_rvm !== null && fram_rvm.get("width")!==1 && fram_rvm.get("height")!==1 && showroi
+        //}
+
+
+
+        //onRoi_x_bChanged: {
+        //    if(rect_roi.roi_x!==roi_x_b)
+        //        rect_roi.roi_x = roi_x_b
+        //}
+        //onRoi_y_bChanged: {
+        //    if(rect_roi.roi_y!==roi_y_b)
+        //        rect_roi.roi_y = roi_y_b
+        //}
+        //onRoi_width_bChanged: {
+        //    if(rect_roi.roi_width!==roi_width_b && roi_width_b !==0)
+        //        rect_roi.roi_width = roi_width_b
+        //}
+        //onRoi_height_bChanged: {
+        //    if(rect_roi.roi_height!==roi_height_b && roi_height_b !== 0)
+        //        rect_roi.roi_height = roi_height_b
+        //}
+
+       //inner
+
+        signal roi_xChanged(var i);
+        signal roi_yChanged(var i);
+        signal roi_widthChanged(var i);
+        signal roi_heightChanged(var i);
+
 
         z:99
         Rectangle {
             id:rect_roi
             z:100
-
-            color: root_marsk.color
-            border.color: root_marsk.borderColor
-            border.width: root_marsk.borderWidth
-            property int frameWidth : parent.frameWidth
-            property int frameHeight :  parent.frameHeight
+            property real frameWidth : parent.frameWidth
+            property real frameHeight :  parent.frameHeight
             property bool  isFillWidth:{
                 if((frameHeight * root_marsk.width/frameWidth) <= root_marsk.height)
                     return true
                 return false
             }
-            property int roi_x:root_marsk.roi_x
-            property int roi_y:root_marsk.roi_y
-            property int roi_width:root_marsk.roi_width
-            property int roi_height:root_marsk.roi_height
+            property int roi_x:0
+            property int roi_y:0
+            property int roi_width:1
+            property int roi_height:1
 
-            onRoi_xChanged:  root_marsk.setRoi_x(rect_roi.roi_x)
-            onRoi_yChanged:  root_marsk.setRoi_y(roi_y)
-            onRoi_widthChanged:  root_marsk.setRoi_width(roi_width)
-            onRoi_heightChanged:  root_marsk.setRoi_height(roi_height)
+            onRoi_xChanged: {
+                root_marsk.roi_xChanged(roi_x)
+            }
+            onRoi_yChanged: {
+                root_marsk.roi_yChanged(roi_y)
+            }
+            onRoi_widthChanged: {
+                root_marsk.roi_widthChanged(roi_width)
+            }
+            onRoi_heightChanged: {
+                root_marsk.roi_heightChanged(roi_height)
+            }
 
 
 
@@ -81,12 +133,13 @@ import prism_qt_ui_private 1.0
             x: (root_marsk.width - pixel_control_width)/2  + roi_x * x_scale_factor
             y:(root_marsk.height - pixel_control_height)/2 + roi_y * y_scale_factor
 
+            color: "red"
+            opacity: 0.2
 
             property int guard_radius :  4 * view_scale
         }
         //drag
         MouseArea{
-            id:ma_drag
             visible: rect_roi.visible
             anchors.fill : rect_roi
             property int roi_x
@@ -94,50 +147,6 @@ import prism_qt_ui_private 1.0
             property point point_pressed
             drag.threshold: 0
             cursorShape: Qt.SizeAllCursor
-            focus: true
-            Keys.enabled: true
-            Keys.onPressed: function(e) {
-                if(e.key === Qt.Key_Delete
-                        ||e.key === Qt.Key_Backspace)
-                {
-                    root_marsk.deleteKeydown(e)
-                }
-                else if(e.key === Qt.Key_Left)
-                {
-                    root_marsk.leftKeydown(e)
-                }
-                else if(e.key === Qt.Key_Right)
-                {
-                    root_marsk.rightKeydown(e)
-                }
-                else if(e.key === Qt.Key_Control)
-                {
-                    root_marsk.ctrlkeyDown(e)
-                }
-            }
-            Keys.onReleased: function(e) {
-                if(e.key === Qt.Key_Delete
-                        ||e.key === Qt.Key_Backspace)
-                {
-                    root_marsk.deleteKeyup(e)
-                }
-                else if(e.key === Qt.Key_Left)
-                {
-                    root_marsk.leftKeyup(e)
-                }
-                else if(e.key === Qt.Key_Right)
-                {
-                    root_marsk.rightKeyup(e)
-                }
-                else if(e.key === Qt.Key_Control)
-                {
-                    root_marsk.ctrlkeyUp(e)
-                }
-            }
-            onClicked: function(e){
-                ma_drag.forceActiveFocus()
-               root_marsk.clicked(e.x/rect_roi.x_scale_factor, e.y/rect_roi.y_scale_factor)
-            }
             onPressed: {
                 CppUtility.setCursor(cursorShape)
                 roi_x = rect_roi.roi_x
@@ -145,20 +154,16 @@ import prism_qt_ui_private 1.0
                 point_pressed = CppUtility.getMousePos()
             }
             function updatePosition(){
-                if(pressed && !disableDragAndResize )
+                if(pressed )
                 {
                     var point_moving = CppUtility.getMousePos()
                     rect_roi.roi_x  = roi_x + view_scale * (point_moving.x - point_pressed.x) / rect_roi.x_scale_factor
                     rect_roi.roi_y  = roi_y + view_scale * (point_moving.y - point_pressed.y) / rect_roi.y_scale_factor
 
                     if(rect_roi.roi_x <0)
-                    {
                         rect_roi.roi_x = 0
-                    }
                     if(rect_roi.roi_x > rect_roi.frameWidth- rect_roi.roi_width)
-                    {
                         rect_roi.roi_x = rect_roi.frameWidth- rect_roi.roi_width
-                    }
 
                     if(rect_roi.roi_y <0)
                         rect_roi.roi_y = 0
@@ -177,7 +182,7 @@ import prism_qt_ui_private 1.0
 
         //左上
         Rectangle{
-            visible: rect_roi.visible && !disableDragAndResize
+            visible: rect_roi.visible
             height: rect_roi.guard_radius*2
             width: rect_roi.guard_radius*2
             radius: rect_roi.guard_radius
@@ -186,7 +191,7 @@ import prism_qt_ui_private 1.0
             anchors.top: rect_roi.top
             anchors.margins: -rect_roi.guard_radius
 
-            color: borderColor
+            color: "green"
             MouseArea{
                 anchors.fill : parent
                 property int roi_x
@@ -216,7 +221,7 @@ import prism_qt_ui_private 1.0
                     point_pressed = CppUtility.getMousePos()
                 }
                 function updatePosition(){
-                    if(pressed  && !disableDragAndResize)
+                    if(pressed )
                     {
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
@@ -256,7 +261,7 @@ import prism_qt_ui_private 1.0
         }
         //左中
         Rectangle{
-            visible: rect_roi.visible && !disableDragAndResize
+            visible: rect_roi.visible
             height: rect_roi.guard_radius*2
             width: rect_roi.guard_radius*2
             radius: rect_roi.guard_radius
@@ -265,7 +270,7 @@ import prism_qt_ui_private 1.0
             anchors.verticalCenter: rect_roi.verticalCenter
             anchors.margins: -rect_roi.guard_radius
 
-            color: borderColor
+            color: "green"
 
             MouseArea{
                 anchors.fill : parent
@@ -296,7 +301,7 @@ import prism_qt_ui_private 1.0
                     point_pressed = CppUtility.getMousePos()
                 }
                 function updatePosition(){
-                    if(pressed  && !disableDragAndResize)
+                    if(pressed )
                     {
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
@@ -324,7 +329,7 @@ import prism_qt_ui_private 1.0
         }
         //左下
         Rectangle{
-            visible: rect_roi.visible && !disableDragAndResize
+            visible: rect_roi.visible
             height: rect_roi.guard_radius*2
             width: rect_roi.guard_radius*2
             radius: rect_roi.guard_radius
@@ -333,7 +338,7 @@ import prism_qt_ui_private 1.0
             anchors.bottom: rect_roi.bottom
             anchors.margins: -rect_roi.guard_radius
 
-            color: borderColor
+            color: "green"
             MouseArea{
                 anchors.fill : parent
                 property int roi_x
@@ -363,7 +368,7 @@ import prism_qt_ui_private 1.0
                     point_pressed = CppUtility.getMousePos()
                 }
                 function updatePosition(){
-                    if(pressed  && !disableDragAndResize)
+                    if(pressed )
                     {
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
@@ -403,7 +408,7 @@ import prism_qt_ui_private 1.0
         }
         //右上
         Rectangle{
-            visible: rect_roi.visible && !disableDragAndResize
+            visible: rect_roi.visible
             height: rect_roi.guard_radius*2
             width: rect_roi.guard_radius*2
             radius: rect_roi.guard_radius
@@ -412,7 +417,7 @@ import prism_qt_ui_private 1.0
             anchors.top: rect_roi.top
             anchors.margins: -rect_roi.guard_radius
 
-            color: borderColor
+            color: "green"
             MouseArea{
                 anchors.fill : parent
                 property int roi_x
@@ -442,7 +447,7 @@ import prism_qt_ui_private 1.0
                     point_pressed = CppUtility.getMousePos()
                 }
                 function updatePosition(){
-                    if(pressed  && !disableDragAndResize)
+                    if(pressed )
                     {
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
@@ -482,7 +487,7 @@ import prism_qt_ui_private 1.0
         }
         //右中
         Rectangle{
-            visible: rect_roi.visible && !disableDragAndResize
+            visible: rect_roi.visible
             height: rect_roi.guard_radius*2
             width: rect_roi.guard_radius*2
             radius: rect_roi.guard_radius
@@ -491,7 +496,7 @@ import prism_qt_ui_private 1.0
             anchors.verticalCenter: rect_roi.verticalCenter
             anchors.margins: -rect_roi.guard_radius
 
-            color: borderColor
+            color: "green"
             MouseArea{
                 anchors.fill : parent
                 property int roi_x
@@ -521,7 +526,7 @@ import prism_qt_ui_private 1.0
                     point_pressed = CppUtility.getMousePos()
                 }
                 function updatePosition(){
-                    if(pressed  && !disableDragAndResize)
+                    if(pressed )
                     {
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
@@ -549,7 +554,7 @@ import prism_qt_ui_private 1.0
         }
         //右下
         Rectangle{
-            visible: rect_roi.visible && !disableDragAndResize
+            visible: rect_roi.visible
             height: rect_roi.guard_radius*2
             width: rect_roi.guard_radius*2
             radius: rect_roi.guard_radius
@@ -558,7 +563,7 @@ import prism_qt_ui_private 1.0
             anchors.bottom: rect_roi.bottom
             anchors.margins: -rect_roi.guard_radius
 
-            color: borderColor
+            color: "green"
             MouseArea{
                 anchors.fill : parent
                 property int roi_x
@@ -588,7 +593,7 @@ import prism_qt_ui_private 1.0
                     point_pressed = CppUtility.getMousePos()
                 }
                 function updatePosition(){
-                    if(pressed  && !disableDragAndResize)
+                    if(pressed )
                     {
                         var point_moving = CppUtility.getMousePos()
                         if(point_moving.x < frame_global.x)
@@ -628,7 +633,7 @@ import prism_qt_ui_private 1.0
         }
         //中上
         Rectangle{
-            visible: rect_roi.visible && !disableDragAndResize
+            visible: rect_roi.visible
             height: rect_roi.guard_radius*2
             width: rect_roi.guard_radius*2
             radius: rect_roi.guard_radius
@@ -637,7 +642,7 @@ import prism_qt_ui_private 1.0
             anchors.horizontalCenter: rect_roi.horizontalCenter
             anchors.margins: -rect_roi.guard_radius
 
-            color: borderColor
+            color: "green"
             MouseArea{
                 anchors.fill : parent
                 property int roi_x
@@ -667,7 +672,7 @@ import prism_qt_ui_private 1.0
                     point_pressed = CppUtility.getMousePos()
                 }
                 function updatePosition(){
-                    if(pressed  && !disableDragAndResize)
+                    if(pressed )
                     {
                         var point_moving = CppUtility.getMousePos()
 
@@ -696,7 +701,7 @@ import prism_qt_ui_private 1.0
         }
         //中下
         Rectangle{
-            visible: rect_roi.visible && !disableDragAndResize
+            visible: rect_roi.visible
             height: rect_roi.guard_radius*2
             width: rect_roi.guard_radius*2
             radius: rect_roi.guard_radius
@@ -705,7 +710,7 @@ import prism_qt_ui_private 1.0
             anchors.horizontalCenter: rect_roi.horizontalCenter
             anchors.margins: -rect_roi.guard_radius
 
-            color: borderColor
+            color: "green"
             MouseArea{
                 anchors.fill : parent
                 property int roi_x
@@ -735,7 +740,7 @@ import prism_qt_ui_private 1.0
                     point_pressed = CppUtility.getMousePos()
                 }
                 function updatePosition(){
-                    if(pressed  && !disableDragAndResize)
+                    if(pressed )
                     {
                         var point_moving = CppUtility.getMousePos()
 

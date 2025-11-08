@@ -2,8 +2,7 @@ import QtQuick 2.0
 import QtQuick.Window 2.12
 import PrismCpp 1.0
 import QtQuick.Layouts 1.12
-import prism_qt_ui 1.0
-import dv.viewmodels 1.0
+import PrismUI 1.0
 import QtQuick.Shapes 1.15
 
 Window {
@@ -11,6 +10,7 @@ Window {
     visible: true
     title: qsTr("prism")
     color: "white"
+    property var contentUrl
     //flags: Qt.Window | Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint
     //       | Qt.WindowCloseButtonHint | Qt.WindowSystemMenuHint |Qt.FramelessWindowHint
     minimumWidth: 1030

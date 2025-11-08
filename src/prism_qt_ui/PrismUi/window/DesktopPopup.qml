@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import ".."
 import "../shapes"
-//import prism_qt_ui 1.0
+//import PrismUI 1.0
 import PrismCpp 1.0
 
 Q1.Menu {
