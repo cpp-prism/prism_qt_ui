@@ -23,6 +23,7 @@ Loader {
         focusPolicy: Qt.NoFocus
         visible: CppUtility.enableHotReload() && rootLoader.showButton
         x:parent.width/2 - width/2
+        y:0
         text: "hot reload"
         z: 100
         onClicked: {
