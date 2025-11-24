@@ -31,7 +31,6 @@ public:
 
 private:
     QVulkanInstance* inst ;
-    VkCommandBuffer cmdBuf ;
     int framesInFlight = -1;
 
     std::vector<uint8_t> m_vert;

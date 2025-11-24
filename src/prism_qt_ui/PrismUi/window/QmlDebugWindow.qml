@@ -40,7 +40,7 @@ QmlDebugWindowCPP {
     LiveLoader {
         id:loader
         active: !win.loadUrl.isEmpty
-        source: active? CppUtility.transUrl( win.loadUrl):""
+        source: active?  win.loadUrl:""
         anchors.fill: parent
     }
 
