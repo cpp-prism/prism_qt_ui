@@ -6,8 +6,8 @@
 #include "controls/forms/datepickercpp.h"
 
 #if defined(USING_OPENGL)  | defined(USING_OPENGLES)
-//#include "controls/opengl/logorenderer.h"
-//#include "controls/opengl/threadrenderer.h"
+#include "controls/opengl/logorenderer.h"
+#include "controls/opengl/threadrenderer.h"
 #endif
 
 #if defined(USING_VULKAN)

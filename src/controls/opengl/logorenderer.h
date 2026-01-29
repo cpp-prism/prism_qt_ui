@@ -55,7 +55,7 @@
 
 #include <QtGui/qvector3d.h>
 #include <QtGui/qmatrix4x4.h>
-#include <QtGui/qopenglshaderprogram.h>
+#include <QOpenGLShaderProgram>
 #include <QtGui/qopenglfunctions.h>
 
 #include <QTime>

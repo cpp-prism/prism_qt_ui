@@ -11,8 +11,8 @@ Window {
     title: qsTr("prism")
     color: "white"
     property var contentUrl
-    //flags: Qt.Window | Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint
-    //       | Qt.WindowCloseButtonHint | Qt.WindowSystemMenuHint |Qt.FramelessWindowHint
+    flags: Qt.Window | Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint
+           | Qt.WindowCloseButtonHint | Qt.WindowSystemMenuHint |Qt.FramelessWindowHint
     minimumWidth: 1030
     minimumHeight: 670
 
