@@ -100,5 +100,22 @@
         <file>prism_qt_ui/PrismUI/svg/broom-solid.svg</file>
         <file>prism_qt_ui/PrismUI/vk_shaders/squircle.frag.spv</file>
         <file>prism_qt_ui/PrismUI/vk_shaders/squircle.vert.spv</file>
+        <file>prism_qt_ui/Shaders/mono8.frag</file>
+        <file>prism_qt_ui/Shaders/image_2d.vert</file>
+        <file>prism_qt_ui/Shaders/bgr24.frag</file>
+        <file>prism_qt_ui/Shaders/bgra32.frag</file>
+        <file>prism_qt_ui/Shaders/nv12.frag</file>
+        <file>prism_qt_ui/Shaders/rgb24.frag</file>
+        <file>prism_qt_ui/Shaders/rgba32.frag</file>
+        <file>prism_qt_ui/Shaders/yuv420p.frag</file>
+        <file>prism_qt_ui/Shaders/qsb/bgr24.frag.qsb</file>
+        <file>prism_qt_ui/Shaders/qsb/bgra32.frag.qsb</file>
+        <file>prism_qt_ui/Shaders/qsb/image_2d.vert.qsb</file>
+        <file>prism_qt_ui/Shaders/qsb/mono8.frag.qsb</file>
+        <file>prism_qt_ui/Shaders/qsb/nv12.frag.qsb</file>
+        <file>prism_qt_ui/Shaders/qsb/rgb24.frag.qsb</file>
+        <file>prism_qt_ui/Shaders/qsb/rgba32.frag.qsb</file>
+        <file>prism_qt_ui/Shaders/qsb/yuv420.frag.qsb</file>
+        <file>prism_qt_ui/Shaders/qsb/yuv420p.frag.qsb</file>
     </qresource>
 </RCC>

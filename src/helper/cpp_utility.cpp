@@ -17,7 +17,7 @@
 #include <QDebug>
 #include <QRegularExpression>
 
-#ifdef USING_PCL
+#ifdef PRISMUI_PCL
 #include <QQuickVTKRenderWindow.h>
 #include <QQuickWindow>
 #include <QSGRendererInterface>
@@ -256,53 +256,31 @@ QModelIndex cpp_utility::getInvalidQModelIndex()
     return QModelIndex();
 }
 
-std::shared_ptr<bool> cpp_utility::showQmlDialog(QString qmlUrl, QObject* viewModel)
+void cpp_utility::s_centerQmlWindow2cursorScreen(QQuickWindow *win)
 {
-    std::shared_ptr<bool> result;
-    std::shared_ptr<QQmlApplicationEngine> p_engine = Container::get()->resolve_object<QQmlApplicationEngine>();
-    QQmlComponent component(p_engine.get());
+    const QPoint cursorPos = QCursor::pos();
+    QScreen *screen = QGuiApplication::screenAt(cursorPos);
 
-    QQuickWindow::setDefaultAlphaBuffer(true);
-    auto url = transUrl("qrc:/prism_qt_ui/PrismUI/window/QmlDebugWindow.qml");
-    component.loadUrl(url);
-    qmlDebugWindow* win = nullptr;
-    if (component.isReady())
-    {
-        QEventLoop loop;
-        auto a = component.create();
-        win = reinterpret_cast<qmlDebugWindow*>(a);
-        win->setViewModel(QVariant::fromValue(viewModel));
-        QObject::connect(
-            win, &QQuickWindow::destroyed, &loop, [&](auto* p) {
-                Q_UNUSED(p)
-                loop.exit();
-            },
-            Qt::ConnectionType::QueuedConnection);
+    if (!screen)
+        screen = QGuiApplication::primaryScreen();
 
-        win->setLoadUrl(qmlUrl);
-        loop.exec();
+    const QRect avail = screen->availableGeometry();
+    const QSize size = win->size();
 
-        //#undef Bool
-        // if(win->dialogResult().canConvert(QVariant::Bool))
-        //{
-        //    result = std::make_shared<bool>(win->dialogResult().value<bool>());
-        //}
+    const QPoint topLeft(
+        avail.x() + (avail.width() - size.width()) / 2,
+        avail.y() + (avail.height() - size.height()) / 2
+        );
 
-        // loop.disconnect(win);
-
-        // if(win)
-        //     win->deleteLater();
-    }
-    else
-    {
-        qWarning() << component.errorString();
-        throw component.errorString().toStdString().c_str();
-    }
-
-    return result;
+    win->setPosition(topLeft);
 }
 
-void cpp_utility::showQmlWindow(QString qmlUrl, QObject* viewModel)
+void cpp_utility::centerQmlWindow2cursorScreen(QQuickWindow *win)
+{
+    s_centerQmlWindow2cursorScreen(win);
+}
+
+void cpp_utility::showQmlWindow(QString winUrl, QObject* viewModel)
 {
     QQuickWindow::setDefaultAlphaBuffer(true);
 
@@ -310,7 +288,7 @@ void cpp_utility::showQmlWindow(QString qmlUrl, QObject* viewModel)
     std::shared_ptr<QQuickWindow> mainWindow = prism::Container::get()->resolve_object<QQuickWindow>();
     QQmlComponent component(p_engine.get(), mainWindow->contentItem());
 
-    auto url = transUrl("qrc:/prism_qt_ui/PrismUI/window/QmlDebugWindow.qml");
+    auto url = transUrl(winUrl);
     component.loadUrl(url);
     if (component.isReady())
     {
@@ -318,11 +296,44 @@ void cpp_utility::showQmlWindow(QString qmlUrl, QObject* viewModel)
         qmlDebugWindow* win = reinterpret_cast<qmlDebugWindow*>(a);
         win->setViewModel(QVariant::fromValue(viewModel));
 
-        win->setLoadUrl(qmlUrl);
     }
     else
         qWarning() << component.errorString();
 }
+//void cpp_utility::showQmlWindow(QString winurl, QObject* viewModel)
+//{
+//    QQuickWindow::setDefaultAlphaBuffer(true);
+//
+//    std::shared_ptr<QQmlApplicationEngine> p_engine = Container::get()->resolve_object<QQmlApplicationEngine>();
+//    std::shared_ptr<QGuiApplication> app = prism::Container::get()->resolve_object<QGuiApplication>();
+//
+//    static QMetaObject::Connection connection = QObject::connect(
+//        p_engine.get(),
+//        &QQmlApplicationEngine::objectCreated,
+//        app.get(),
+//        [&](QObject* object, const QUrl& url) {
+//            if (url.toString() == winurl)
+//            {
+//                if (!object)
+//                {
+//                    app->exit(-1);
+//                }
+//
+//                auto* win = reinterpret_cast<qmlDebugWindow*>(object);
+//                if (win)
+//                {
+//                    QObject::disconnect(connection);
+//
+//                    std::shared_ptr<QQuickWindow> sp_win(win, [](QQuickWindow* p) { Q_UNUSED(p) });
+//                    prism::Container::get()->register_instance(sp_win);
+//
+//                    win->setViewModel(QVariant::fromValue(viewModel));
+//                }
+//            }
+//        },
+//        Qt::QueuedConnection);
+//        p_engine->load(winurl);
+//}
 
 bool cpp_utility::load_language_qm(QString filePath)
 {
@@ -524,6 +535,17 @@ QString cpp_utility::getAppBaseDir()
     return dir;
 }
 
+QString cpp_utility::base64Encode(const QString &input)
+{
+    return input.toUtf8().toBase64();
+}
+
+QString cpp_utility::base64Decode(const QString &base64)
+{
+    QByteArray decoded = QByteArray::fromBase64(base64.toUtf8());
+    return QString::fromUtf8(decoded);
+}
+
 bool cpp_utility::killProceById(int pid)
 {
 #if defined(Q_OS_WIN)
@@ -618,7 +640,7 @@ QJSValue cpp_utility::qsTr(const QString source)
     return result;
 }
 
-void cpp_utility::createFileAndWrite(const QString& path,const QString& content)
+void cpp_utility::s_createFileAndWrite(const QString &path, const QString &content)
 {
     QFileInfo fileInfo(path);
     QDir dir(fileInfo.dir().dirName());
@@ -642,9 +664,14 @@ void cpp_utility::createFileAndWrite(const QString& path,const QString& content)
     }
 }
 
+void cpp_utility::createFileAndWrite(const QString& path,const QString& content)
+{
+    return s_createFileAndWrite(path,content);
+}
+
 } // namespace prism::qt::ui
 
-#ifdef USING_PCL
+#ifdef PRISMUI_PCL
 void initVTK()
 {
     qDebug() << "set openGL version " << QString::fromStdString(prism::qt::ui::cpp_utility::openGLVersion);

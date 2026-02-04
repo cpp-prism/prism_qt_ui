@@ -14,17 +14,18 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControls2   REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControls2 ShaderTools  REQUIRED)
 find_package(prism COMPONENTS container qt::modular qt::core)
 
-option(USING_PCL "add pcl vtk " OFF)
-option(USING_OPENGL  "using opengl" OFF)
-option(USING_OPENGLES  "using opengl es" OFF)
-option(USING_VULKAN  "using vulkan" OFF)
+option(PRISMUI_PCL "add pcl vtk " OFF)
+option(PRISMUI_OPENGL  "using opengl" OFF)
+option(PRISMUI_OPENGLES  "using opengl es" OFF)
+option(PRISMUI_VULKAN  "using vulkan" OFF)
+option(PRISMUI_RHI  "using rhi (qt6)" OFF)
 
 
-if(USING_OPENGLES)
-    add_compile_definitions(USING_OPENGLES)
+if(PRISMUI_OPENGLES)
+    add_compile_definitions(PRISMUI_OPENGLES)
     set(OPENGL_SOURCE
             src/controls/opengl/logorenderer.h
             src/controls/opengl/logorenderer.cpp
@@ -33,8 +34,8 @@ if(USING_OPENGLES)
     )
 endif()
 
-if(USING_OPENGL)
-    add_compile_definitions(USING_OPENGL)
+if(PRISMUI_OPENGL)
+    add_compile_definitions(PRISMUI_OPENGL)
     set(OPENGL_SOURCE
             src/controls/opengl/logorenderer.h
             src/controls/opengl/logorenderer.cpp
@@ -43,8 +44,8 @@ if(USING_OPENGL)
     )
 endif()
 
-if(USING_VULKAN)
-    add_compile_definitions(USING_VULKAN)
+if(PRISMUI_VULKAN)
+    add_compile_definitions(PRISMUI_VULKAN)
     set(VULKAN_SOURCE
                 src/controls/vulkan/vulkanCustomTextureItem.cpp
                 src/controls/vulkan/vulkanCustomTextureItem.h
@@ -57,12 +58,22 @@ if(USING_VULKAN)
     set(VULKAN_LINKS
         rs_vk_engine
     )
+endif()
 
+if(PRISMUI_RHI)
+    add_compile_definitions(PRISMUI_RHI)
+    set(RHI_RENDERER_SOURCE
+          src/controls/rhi/rhi_video_render.cpp
+          src/controls/rhi/rhi_video_render.h
+    )
+    #find_package(rs_vk_engine)
+    set(VULKAN_LINKS
+    )
 
 endif()
 
 
-if(USING_PRISM_QT_UI_VNCITEM)
+if(PRISMUI_VNCITEM)
     find_package(ZLIB REQUIRED )
 
     set(VNCITEM_SOURCE
@@ -135,6 +146,7 @@ add_library(${PROJECT_NAME} SHARED
 
   ${OPENGL_SOURCE}
   ${VULKAN_SOURCE}
+  ${RHI_RENDERER_SOURCE}
 
 
   src/controls/window/qml_debug_window.h
@@ -164,13 +176,33 @@ get_filename_component(PARENT_DIR "${PROJECT_SOURCE_DIR}" DIRECTORY)
 target_compile_definitions(${PROJECT_NAME} PRIVATE PRISMQT_SOLUTION_SOURCEDIR="${PARENT_DIR}")
 
 
-if(USING_PCL)
+if(PRISMUI_PCL)
     find_package(VTK REQUIRED COMPONENTS GUISupportQtQuick)
     include("${VTK_USE_FILE}")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_PCL)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PRISMUI_PCL)
     target_link_libraries(${PROJECT_NAME} PRIVATE
         VTK::GUISupportQtQuick
     )
+endif()
+
+if(PRISMUI_RHI)
+        qt6_add_shaders(prism_qt_ui "shaders"
+            # gl_VertexId is in earliest OpenGL ES 3.00, and GLSL 130
+            GLSL "300 es,130"
+            PREFIX
+                "/shader"
+                ${PROJECT_SOURCE_DIR}/src/prism_qt_ui
+            FILES
+                "src/prism_qt_ui/Shaders/image_2d.vert"
+                "src/prism_qt_ui/Shaders/mono8.frag"
+                #"src/prism_qt_ui/Shaders/rgb24.frag"
+                "src/prism_qt_ui/Shaders/rgba32.frag"
+                #"src/prism_qt_ui/Shaders/bgr24.frag"
+                "src/prism_qt_ui/Shaders/bgra32.frag"
+                "src/prism_qt_ui/Shaders/nv12.frag"
+                "src/prism_qt_ui/Shaders/yuv420p.frag"
+
+        )
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

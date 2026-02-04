@@ -4,8 +4,6 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick 2.12
 import QtQuick.Window 2.12
-import QtQuick.Controls 1.4 as Q1
-import QtQuick.Controls.Styles 1.4
 import PrismCpp 1.0
 import PrismUI 1.0
 
@@ -16,6 +14,7 @@ Rectangle {
     property Component contentItemComponent
     property bool interactive: true
     property alias contentItem : draggable
+    property real zoomStep: 0.1
     onWidthChanged: resetZoom()
     onHeightChanged: resetZoom()
 
@@ -69,7 +68,7 @@ Rectangle {
         property bool dragging : false
         property real startX : 0
         property real startY : 0
-        onPressed: {
+        onPressed: function(mouse){
             dragging = true
             startX = mouse.x
             startY = mouse.y
@@ -77,17 +76,18 @@ Rectangle {
         onReleased:{
             dragging = false
         }
-        onPositionChanged: {
+        onPositionChanged: function(mouse){
             if(dragging)
             {
                 draggable.dx += mouse.x - startX
                 draggable.dy += mouse.y - startY
                 startX = mouse.x
                 startY = mouse.y
+
             }
         }
 
-        onWheel: {
+        onWheel: function(wheel) {
             if(wheel.angleDelta.y>0) {
                 var p = mapToItem(draggable,wheel.x,wheel.y)
                 var pre_ox =draggable.ox
@@ -95,7 +95,7 @@ Rectangle {
                 var pre_scale = draggable.scale
                 draggable.ox = p.x
                 draggable.oy = p.y
-                draggable.scale +=0.1
+                draggable.scale +=zoomStep
                 draggable.dx  -= (p.x - pre_ox) * (1 - pre_scale)
                 draggable.dy  -= (p.y - pre_oy) * (1 - pre_scale)
             }
@@ -108,7 +108,7 @@ Rectangle {
                 pre_scale = draggable.scale
                 draggable.ox = p.x
                 draggable.oy = p.y
-                draggable.scale -=0.1
+                draggable.scale -=zoomStep
                 draggable.dx  -= (p.x - pre_ox) * (1 - pre_scale)
                 draggable.dy  -= (p.y - pre_oy) * (1 - pre_scale)
             }

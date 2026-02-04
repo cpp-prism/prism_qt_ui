@@ -52,8 +52,9 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
 
     QModelIndex getInvalidQModelIndex();
 
-    std::shared_ptr<bool> showQmlDialog(QString qmlUrl, QObject* viewModel);
-    void showQmlWindow(QString qmlUrl, QObject* viewModel = nullptr);
+    static void s_centerQmlWindow2cursorScreen(QQuickWindow* win);
+    void centerQmlWindow2cursorScreen(QQuickWindow* win);
+    void showQmlWindow(QString winurl, QObject* viewModel);
 
     bool load_language_qm(QString filePath);
 
@@ -69,11 +70,16 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
     int getDialogResult(QDialog* d);
     QString qcolor2qstring(QColor color);
     QString getAppBaseDir();
+    QString base64Encode(const QString &input);
+    QString base64Decode(const QString &base64);
+
+
     bool killProceById(int pid);
     bool isForegroundShell(int pid);
     QQmlEngine* getqmlEngine();
     QJSValue qsTr(const QString source);
 
+    static void s_createFileAndWrite(const QString& file,const QString& content);
     void createFileAndWrite(const QString& file,const QString& content);
 
   private:
@@ -91,7 +97,7 @@ class PRISMQT_UI_EXPORT cpp_utility : public QObject
 
 } // namespace prism::qt::ui
 
-#ifdef USING_PCL
+#ifdef PRISMUI_PCL
 extern "C"
 {
     PRISMQT_UI_EXPORT void initVTK();

@@ -1,19 +1,22 @@
-#ifdef USING_PRISM_QT_UI_VNCITEM
+#ifdef PRISMUI_VNCITEM
 #include "src/controls/vnc/vncitem.h"
 #endif
 
 #include "prismQt_ui.h"
 #include "controls/forms/datepickercpp.h"
 
-#if defined(USING_OPENGL)  | defined(USING_OPENGLES)
+#if defined(PRISMUI_OPENGL)  | defined(PRISMUI_OPENGLES)
 #include "controls/opengl/logorenderer.h"
 #include "controls/opengl/threadrenderer.h"
 #endif
 
-#if defined(USING_VULKAN)
+#if defined(PRISMUI_VULKAN)
 #include "src/controls/vulkan/vulkanCustomTextureItem.h"
 #endif
 
+#if defined(PRISMUI_RHI)
+#include "src/controls/rhi/rhi_video_render.h"
+#endif
 
 #include "controls/shapes/video_roi_cpp.h"
 #include "controls/window/qml_debug_window.h"
@@ -54,18 +57,22 @@ bool prismQt_ui::register_types()
     //注册多平台无边框窗口
     registerBorderlessHleper();
 
-#ifdef USING_PRISM_QT_UI_VNCITEM
+#ifdef PRISMUI_VNCITEM
     //vncitem
     qmlRegisterType<VncItem>("PrismUI", 1, 0, "VncItem");
 #endif
     // opengl渲染器
-#if defined(USING_OPENGL)  | defined(USING_OPENGLES)
+#if defined(PRISMUI_OPENGL)  | defined(PRISMUI_OPENGLES)
     qmlRegisterType<ThreadRenderer>("PrismUI", 1, 0, "Renderer");
 #endif
 
-#if defined(USING_VULKAN)
+#if defined(PRISMUI_VULKAN)
     qmlRegisterType<VulkanCustomTextureItem>("PrismUI", 1, 0, "VulkanCustomTextureItem");
 
+#endif
+
+#if defined(PRISMUI_RHI)
+    qmlRegisterType<RhiVideoRender>("PrismUI", 1, 0, "RhiVideoRender");
 #endif
 
 
@@ -77,8 +84,8 @@ bool prismQt_ui::register_types()
     qRegisterMetaType<QString*>("QString*");
     qRegisterMetaType<std::string>("std::string");
     qRegisterMetaType<QImage*>("QImage*");
-    qRegisterMetaType<prism::qt::ui::img_frame_info>();
-    qRegisterMetaType<prismModelProxy<prism::qt::ui::img_frame_info>*>("prismModelProxy<prism::qt::ui::img_frame_info>*");
+    qRegisterMetaType<prism::qt::ui::ImgFrameInfo>();
+    qRegisterMetaType<prismModelProxy<prism::qt::ui::ImgFrameInfo>*>("prismModelProxy<prism::qt::ui::img_frame_info>*");
     qRegisterMetaType<std::shared_ptr<bool>>("std::shared_ptr<bool>");
     qRegisterMetaType<QQmlEngine*>("QQmlEngine*");
 
@@ -133,7 +140,7 @@ bool prismQt_ui::init()
 bool prismQt_ui::install()
 {
 // macos 使用metal
-#if _WIN32 || __linux
+#if _WIN32 || __linux && (defined(PRISMUI_OPENGL)  | defined(PRISMUI_OPENGLES))
     if (!QGuiApplicationPrivate::platform_integration->hasCapability(QPlatformIntegration::ThreadedOpenGL))
     {
         qDebug() << "QPlatformIntegration::ThreadedOpenGL 兼容检测不通过";
