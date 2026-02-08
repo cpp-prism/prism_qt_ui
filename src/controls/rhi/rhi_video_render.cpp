@@ -95,11 +95,11 @@ public:
     RenderingFlags flags() const override;
     QSGRenderNode::StateFlags changedStates() const override;
 
-    void set_video_width(int width) { m_video_width = width; }
-    void set_video_stride(int stride) { m_video_stride = stride; }
-    void set_video_height(int height) { m_video_height = height; }
-    void set_video_format(prism::qt::ui::ENUM_PixelType format){ m_video_format = format;}
-    void set_video_data(void* data){ m_video_data = data; }
+    void set_video_width(int width);
+    void set_video_stride(int stride);
+    void set_video_height(int height);
+    void set_video_format(prism::qt::ui::ENUM_PixelType format);
+    void set_video_data(void *data);
 
 protected:
     QQuickWindow *m_window;
@@ -125,7 +125,9 @@ protected:
     int m_video_stride = 300;
     int m_video_width = 300;
     int m_video_height = 168;
+    bool m_texture_dirty =true;
     void* m_video_data = nullptr;
+    bool m_needUploadData = true;
 
     std::unique_ptr<QRhiTexture> m_texture_1;
     std::unique_ptr<QRhiSampler> m_sampler_1;
@@ -135,11 +137,38 @@ protected:
 
     std::unique_ptr<QRhiTexture> m_texture_3;
     std::unique_ptr<QRhiSampler> m_sampler_3;
-
-
-
-
 };
+void RhiVideoRenderNode::set_video_data(void *data)
+{
+    m_video_data = data;
+}
+
+void RhiVideoRenderNode::set_video_format( prism::qt::ui::ENUM_PixelType format)
+{
+    m_video_format = format;
+}
+
+void RhiVideoRenderNode::set_video_height(int height)
+{
+    if(height != m_video_height)
+        m_texture_dirty = true;
+    m_video_height = height;
+}
+
+void RhiVideoRenderNode::set_video_stride(int stride)
+{
+    if(stride != m_video_stride)
+        m_texture_dirty = true;
+    m_video_stride = stride;
+}
+
+void RhiVideoRenderNode::set_video_width(int width)
+{
+    if(width != m_video_width)
+        m_texture_dirty = true;
+    m_video_width = width;
+}
+
 //![node]
 
 RhiVideoRenderNode::RhiVideoRenderNode(QQuickWindow *window)
@@ -252,7 +281,7 @@ void RhiVideoRenderNode::prepare()
     QRhi *rhi = m_window->rhi();
     QRhiResourceUpdateBatch *resourceUpdates = rhi->nextResourceUpdateBatch();
 
-    if(!m_texture_1)
+    if(!m_texture_1 || m_texture_dirty)
     {
         switch (m_video_format) {
         case prism::qt::ui::ENUM_PixelType::mono8:
@@ -281,7 +310,7 @@ void RhiVideoRenderNode::prepare()
             m_sampler_1->create();
         }
     }
-    if(!m_texture_2 &&( prism::qt::ui::ENUM_PixelType::nv12 == m_video_format || prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format ))
+    if( (!m_texture_2 || m_texture_dirty) &&( prism::qt::ui::ENUM_PixelType::nv12 == m_video_format || prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format ))
     {
         if (prism::qt::ui::ENUM_PixelType::nv12 ==m_video_format)
             m_texture_2.reset(rhi->newTexture(QRhiTexture::RG8, QSize(m_video_stride/2, m_video_height/2), 1));
@@ -298,7 +327,7 @@ void RhiVideoRenderNode::prepare()
             m_sampler_2->create();
         }
     }
-    if(!m_texture_3 && prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format )
+    if((!m_texture_3 || m_texture_dirty) && prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format )
     {
         m_texture_3.reset(rhi->newTexture(QRhiTexture::R8, QSize(m_video_stride/2, m_video_height/2), 1));
 
@@ -332,7 +361,7 @@ void RhiVideoRenderNode::prepare()
         m_uniformBuffer.reset(rhi->newBuffer(QRhiBuffer::Dynamic, QRhiBuffer::UniformBuffer, 64+8));
         m_uniformBuffer->create();
     }
-    if (!m_resourceBindings) {
+    if (!m_resourceBindings || m_texture_dirty) {
         m_resourceBindings.reset(rhi->newShaderResourceBindings());
         QList<QRhiShaderResourceBinding> shaderRbs;
         // binding = 0 : uniform buffer
@@ -353,7 +382,7 @@ void RhiVideoRenderNode::prepare()
         m_resourceBindings->create();
     }
 
-    if (!m_pipeline) {
+    if (!m_pipeline || m_texture_dirty) {
         m_pipeline.reset(rhi->newGraphicsPipeline());
 
         // If layer.enabled == true on our QQuickItem, the rendering face is flipped for
@@ -419,6 +448,8 @@ void RhiVideoRenderNode::prepare()
         //	qDebug() << "Fragment shader error:" << m_shaders.last().shader().stage();
     }
 
+    m_texture_dirty = false;
+
 
     QMatrix4x4 mvp = *projectionMatrix() * *matrix();
     double itemW = m_vertices[3].x();
@@ -471,6 +502,12 @@ void RhiVideoRenderNode::prepare()
     default:
         break;
     }
+    if(!m_needUploadData)
+    {
+        m_needUploadData = true;
+        return;
+    }
+    //qDebug()<< 111111;
 
     resourceUpdates->uploadTexture(
         m_texture_1.get(),
@@ -479,6 +516,7 @@ void RhiVideoRenderNode::prepare()
     if(prism::qt::ui::ENUM_PixelType::nv12 == m_video_format ||
         prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format)
     {
+    //qDebug()<< 111112;
         resourceUpdates->uploadTexture(
             m_texture_2.get(),
             QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,
@@ -487,6 +525,7 @@ void RhiVideoRenderNode::prepare()
     }
     if(prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format)
     {
+    //qDebug()<< 111113;
         resourceUpdates->uploadTexture(
             m_texture_3.get(),
             QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,
@@ -495,13 +534,13 @@ void RhiVideoRenderNode::prepare()
     }
 
     commandBuffer()->resourceUpdate(resourceUpdates);
-
 }
 
 //![node-render]
 void RhiVideoRenderNode::render(const RenderState * state)
 {
     QRhiCommandBuffer *cb = commandBuffer();
+
     cb->setGraphicsPipeline(m_pipeline.get());
     QSize renderTargetSize = renderTarget()->pixelSize();
     cb->setViewport(QRhiViewport(0, 0, renderTargetSize.width(), renderTargetSize.height()));
@@ -520,6 +559,7 @@ void RhiVideoRenderNode::render(const RenderState * state)
     QRhiCommandBuffer::VertexInput vertexBindings[] = { { m_vertexBuffer.get(), 0 } };
     cb->setVertexInput(0, 1, vertexBindings);
     cb->draw(m_vertices.count());
+
 }
 //![node-render]
 
@@ -587,8 +627,8 @@ QSGNode *RhiVideoRender::updatePaintNode(QSGNode *old, UpdatePaintNodeData *)
             frameinfo.width = 237;
             frameinfo.height = 213;
             frameinfo.stride = 238;
-            path = QString("raw_out/2_237_213_238_%1.raw").arg(STR(nv12));
-            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::nv12;
+            path = QString("raw_out/2_237_213_238_%1.raw").arg(STR(yuv420p));
+            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::yuv420p;
             frameinfo.pixelType = format;
             ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
         }
@@ -597,8 +637,8 @@ QSGNode *RhiVideoRender::updatePaintNode(QSGNode *old, UpdatePaintNodeData *)
             frameinfo.width = 187;
             frameinfo.height = 270;
             frameinfo.stride = 188;
-            path = QString("raw_out/3_187_270_188_%1.raw").arg(STR(yuv420p));
-            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::yuv420p;
+            path = QString("raw_out/3_187_270_188_%1.raw").arg(STR(nv12));
+            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::nv12;
             frameinfo.pixelType = format;
             ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
         }
