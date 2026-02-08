@@ -12,7 +12,7 @@
         <file>prism_qt_ui/PrismUI/window/DesktopMenuItem.qml</file>
         <file>prism_qt_ui/PrismUI/window/DesktopMenuSeparator.qml</file>
         <file>prism_qt_ui/PrismUI/window/DesktopPopup.qml</file>
-        <file>prism_qt_ui/PrismUI/shapes/CusCornersImage.qml</file>
+        <file>prism_qt_ui/PrismUI/shapes/CusCornersItem.qml</file>
         <file>prism_qt_ui/PrismUI/shapes/CusCornersRec.qml</file>
         <file>prism_qt_ui/PrismUI/shapes/SvgIcon.qml</file>
         <file>prism_qt_ui/PrismUI/etc/qt.conf</file>
@@ -67,8 +67,8 @@
         <file>prism_qt_ui/PrismUI/spinbox/DoubleSpinbox.qml</file>
         <file>prism_qt_ui/PrismUI/window/QmlDebugWindow.qml</file>
         <file>prism_qt_ui/PrismUI/window/QmlWindowRoot.qml</file>
-        <file>prism_qt_ui/PrismUI/forms/DatePicker.qml</file>
-        <file>prism_qt_ui/PrismUI/forms/DateTimePicker.qml</file>
+        <file>prism_qt_ui/PrismUI/input/DatePicker.qml</file>
+        <file>prism_qt_ui/PrismUI/input/DateTimePicker.qml</file>
         <file>prism_qt_ui/PrismUI/shapes/video_ROI.qml</file>
         <file>prism_qt_ui/PrismUI/shapes/ItemViewer.qml</file>
         <file>prism_qt_ui/PrismUI/shapes/video_ROI2.qml</file>
@@ -117,5 +117,22 @@
         <file>prism_qt_ui/Shaders/qsb/rgba32.frag.qsb</file>
         <file>prism_qt_ui/Shaders/qsb/yuv420.frag.qsb</file>
         <file>prism_qt_ui/Shaders/qsb/yuv420p.frag.qsb</file>
+        <file>prism_qt_ui/PrismUI/svg/wifi.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/lightning-cable-svgrepo-com.svg</file>
+        <file>prism_qt_ui/PrismUI/sprite/battery_sprite.png</file>
+        <file>prism_qt_ui/PrismUI/shapes/CornersMask.qml</file>
+        <file>prism_qt_ui/PrismUI/svg/toast/error.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/toast/error-white.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/toast/info.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/toast/info-white.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/toast/success.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/toast/success-white.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/toast/warning.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/toast/warning-white.svg</file>
+        <file>prism_qt_ui/PrismUI/window/Toastify.qml</file>
+        <file>prism_qt_ui/PrismUI/window/ToastifyDelegate.qml</file>
+        <file>prism_qt_ui/PrismUI/input/EightWayPtzDial.qml</file>
+        <file>prism_qt_ui/PrismUI/svg/user.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/lock-svgrepo-com.svg</file>
     </qresource>
 </RCC>

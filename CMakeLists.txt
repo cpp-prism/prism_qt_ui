@@ -186,23 +186,23 @@ if(PRISMUI_PCL)
 endif()
 
 if(PRISMUI_RHI)
-        qt6_add_shaders(prism_qt_ui "shaders"
-            # gl_VertexId is in earliest OpenGL ES 3.00, and GLSL 130
-            GLSL "300 es,130"
-            PREFIX
-                "/shader"
-                ${PROJECT_SOURCE_DIR}/src/prism_qt_ui
-            FILES
-                "src/prism_qt_ui/Shaders/image_2d.vert"
-                "src/prism_qt_ui/Shaders/mono8.frag"
-                #"src/prism_qt_ui/Shaders/rgb24.frag"
-                "src/prism_qt_ui/Shaders/rgba32.frag"
-                #"src/prism_qt_ui/Shaders/bgr24.frag"
-                "src/prism_qt_ui/Shaders/bgra32.frag"
-                "src/prism_qt_ui/Shaders/nv12.frag"
-                "src/prism_qt_ui/Shaders/yuv420p.frag"
+        #qt6_add_shaders(prism_qt_ui "shaders"
+        #    # gl_VertexId is in earliest OpenGL ES 3.00, and GLSL 130
+        #    GLSL "300 es,130"
+        #    PREFIX
+        #        "/shader"
+        #        ${PROJECT_SOURCE_DIR}/src/prism_qt_ui
+        #    FILES
+        #        "src/prism_qt_ui/Shaders/image_2d.vert"
+        #        "src/prism_qt_ui/Shaders/mono8.frag"
+        #        #"src/prism_qt_ui/Shaders/rgb24.frag"
+        #        "src/prism_qt_ui/Shaders/rgba32.frag"
+        #        #"src/prism_qt_ui/Shaders/bgr24.frag"
+        #        "src/prism_qt_ui/Shaders/bgra32.frag"
+        #        "src/prism_qt_ui/Shaders/nv12.frag"
+        #        "src/prism_qt_ui/Shaders/yuv420p.frag"
 
-        )
+        #)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

@@ -10,9 +10,9 @@ singleton   Style 1.0 theme/Style.qml
             BorderlessWindow_win 1.0 window/BorderlessWindow_win.qml
             BorderlessWindow_mac 1.0 window/BorderlessWindow_mac.qml
             BorderlessWindow_linux 1.0 window/BorderlessWindow_linux.qml
-
+            Toastify 1.0 window/Toastify.qml
             QmlWindowRoot  1.0 window/QmlWindowRoot.qml
-
+            QmlDebugWindow 1.0 window/QmlDebugWindow.qml
             DesktopPopup 1.0 window/DesktopPopup.qml
             DesktopMenuItem 1.0 window/DesktopMenuItem.qml
             DesktopMenuSeparator 1.0 window/DesktopMenuSeparator.qml
@@ -21,17 +21,17 @@ singleton   Style 1.0 theme/Style.qml
             DefaultPopup 1.0 window/DefaultPopup.qml
 
             CusCornersRec 1.0 shapes/CusCornersRec.qml
-            CusCornersImage 1.0 shapes/CusCornersImage.qml
-
+            CusCornersItem 1.0 shapes/CusCornersItem.qml
+            CornersMask 1.0 shapes/CornersMask.qml
             SvgIcon 1.0 shapes/SvgIcon.qml
-
-            DoubleSpinbox 1.0 spinbox/DoubleSpinbox.qml
-            DatePicker 1.0 forms/DatePicker.qml
-            DateTimePicker 1.0 forms/DateTimePicker.qml
-
             VideoROI 1.0 shapes/video_ROI.qml
             VideoROI2 1.0 shapes/video_ROI2.qml
             VideoCanvas 1.0 shapes/video_Canvas.qml
             VideoItem 1.0 shapes/Video_Item.qml
-
             ItemViewer 1.0 shapes/ItemViewer.qml
+
+            DoubleSpinbox 1.0 spinbox/DoubleSpinbox.qml
+            DatePicker 1.0 input/DatePicker.qml
+            DateTimePicker 1.0 input/DateTimePicker.qml
+            EightWayPtzDial 1.0 input/EightWayPtzDial.qml
+

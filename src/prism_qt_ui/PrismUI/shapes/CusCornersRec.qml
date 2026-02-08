@@ -9,10 +9,10 @@ Item {
     signal clicked(var mouse)
     property int radius: 0
     onRadiusChanged: canVas.requestPaint()
-    property bool topLeftCorner: false
-    property bool topRightCorner: false
-    property bool bottomRightCorner: false
-    property bool bottomLeftCorner: false
+    property bool topLeftCorner: true
+    property bool topRightCorner: true
+    property bool bottomRightCorner: true
+    property bool bottomLeftCorner: true
 
     onTopLeftCornerChanged: canVas.requestPaint()
     onTopRightCornerChanged: canVas.requestPaint()

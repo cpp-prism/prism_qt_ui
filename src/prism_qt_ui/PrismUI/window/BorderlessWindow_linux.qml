@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 import PrismUI 1.0
 import QtQuick.Shapes 1.15
 import QtQuick.Controls.Material
+import QtQuick.Effects
 
 QmlDebugWindow {
     id: window
@@ -19,7 +20,9 @@ QmlDebugWindow {
 
     property int frameBorderWidth: 0
     property color frameBorderColor: "lightgray"
+    property color titleColor: "#3F51B5"
     property  alias showReloadButton: window_rootLoader.showButton
+    property  alias titleReloader: title_rootLoader
 
     visible: true
     title: qsTr("prism")
@@ -30,10 +33,135 @@ QmlDebugWindow {
 
     Component.onCompleted: {
         opacity= 0
-        JsEx.delay(win,500,function(){
+        JsEx.delay(window,500,function(){
             CppUtility.centerQmlWindow2cursorScreen(win)
             opacity= 1
         })
+    }
+
+    property string titleUrl
+    property Component titleComponent:
+        Rectangle {
+        color:titleColor
+        MouseArea{
+            anchors.fill: parent
+            onPressed:  function(mouse){
+                if(mouse.button === Qt.LeftButton)
+                    window.startSystemMove()
+
+            }
+            onDoubleClicked: {
+                if(!showbtn_maxRes )
+                    return
+                if ( window.visibility === Window.Maximized)
+                    window.showNormal()
+                else
+                    window.showMaximized()
+            }
+        }
+        RowLayout{
+            anchors.fill: parent
+            spacing: 5
+            SvgIcon
+            {
+                Layout.preferredWidth:  25
+                Layout.preferredHeight:  25
+                visible: svgPath ==""?false:true
+                color: "transparent"
+                Layout.alignment: Qt.AlignVCenter
+                Layout.leftMargin: 5
+                mipmap: true
+                svgPath:"qrc:/rs_common/assets/icon.svg"
+            }
+
+            Text {
+                Layout.leftMargin:  svgPath =="" ? 5 :0
+                color:Style.white
+                text: title
+                font.pixelSize: 18
+                z:9999
+            }
+            Item {
+                Layout.fillWidth: true
+            }
+        }
+
+        Rectangle{
+            anchors.right: parent.right
+            height: titleHeight
+            width: titleBarBtnWidth
+            color: "#3F51B5"
+            //color: Material.Grey
+            RowLayout{
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                spacing: 0
+                //最小化按钮
+                IconButton {
+                    Layout.preferredHeight: 13
+                    Layout.preferredWidth: 13
+                    Layout.rightMargin: 16
+                    color: Style.lightblue100
+                    hoveredColor: Style.white
+                    icon: CppUtility.transUrl("qrc:/prism_qt_ui/PrismUI/svg/windowMinimize.svg")
+                    onClicked: function (mouse) {
+                        window.showMinimized()
+                    }
+                }
+                //最大化/还原
+                IconButton {
+                    id: btn_maxRes
+                    color: Style.lightblue100
+                    hoveredColor: Style.white
+                    visible: showbtn_maxRes
+                    states: [
+                        State {
+                            name: "maximized"
+                            when: window.visibility === Window.Maximized
+                            PropertyChanges {
+                                target: btn_maxRes
+                                Layout.rightMargin: 12
+                                Layout.preferredHeight: 18
+                                Layout.preferredWidth: 17
+                                icon: CppUtility.transUrl("qrc:/prism_qt_ui/PrismUI/svg/windowRestore.svg")
+                            }
+                        },
+                        State {
+                            when: window.visibility !== Window.Maximized
+                            name: "normal"
+                            PropertyChanges {
+                                target: btn_maxRes
+                                Layout.rightMargin: 12
+                                Layout.preferredHeight: 10
+                                Layout.preferredWidth: 13
+                                icon: CppUtility.transUrl("qrc:/prism_qt_ui/PrismUI/svg/windowMaximize.svg")
+                            }
+                        }
+                    ]
+                    onClicked: function (mouse) {
+                        if (window.visibility === Window.Maximized)
+                            window.showNormal()
+                        else
+                            window.showMaximized()
+                    }
+                }
+
+                //关闭
+                IconButton {
+                    Layout.preferredHeight: 20
+                    Layout.preferredWidth: 20
+                    Layout.rightMargin: 10
+                    color: Style.lightblue100
+                    hoveredColor: Style.white
+                    icon: CppUtility.transUrl("qrc:/prism_qt_ui/PrismUI/svg/windowClose.svg")
+                    onClicked: function (mouse) {
+                        window.close()
+                    }
+                }
+
+            }
+        }
     }
 
     Shape {
@@ -93,130 +221,15 @@ QmlDebugWindow {
         ColumnLayout {
             anchors.fill: parent
             spacing: 0
-            Rectangle {
+
+
+            LiveLoader {
+                id:title_rootLoader
                 Layout.preferredHeight: titleHeight
                 Layout.fillWidth: true
-                SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
-                color:"#3F51B5"
-                MouseArea{
-                    anchors.fill: parent
-                    onPressed:  function(mouse){
-                        if(mouse.button === Qt.LeftButton)
-                            window.startSystemMove()
-
-                    }
-                    onDoubleClicked: {
-                        if(!showbtn_maxRes )
-                            return
-                        if ( window.visibility === Window.Maximized)
-                            window.showNormal()
-                        else
-                            window.showMaximized()
-                    }
-                }
-                RowLayout{
-                    anchors.fill: parent
-                    spacing: 5
-                    SvgIcon
-                    {
-                        Layout.preferredWidth:  25
-                        Layout.preferredHeight:  25
-                        visible: svgPath ==""?false:true
-                        color: "transparent"
-                        Layout.alignment: Qt.AlignVCenter
-                        Layout.leftMargin: 5
-                        mipmap: true
-                        svgPath:"qrc:/rs_common/assets/icon.svg"
-                    }
-
-                    Text {
-                        Layout.leftMargin:  svgPath =="" ? 5 :0
-                        color:Style.white
-                        text: title
-                        font.pixelSize: 18
-                        z:9999
-                    }
-                    Item {
-                        Layout.fillWidth: true
-                    }
-                }
-
-                Rectangle{
-                    anchors.right: parent.right
-                    height: titleHeight
-                    width: titleBarBtnWidth
-                    color: "#3F51B5"
-                    //color: Material.Grey
-                    RowLayout{
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        anchors.right: parent.right
-                        spacing: 0
-                        //最小化按钮
-                        IconButton {
-                            Layout.preferredHeight: 13
-                            Layout.preferredWidth: 13
-                            Layout.rightMargin: 16
-                            color: Style.lightblue100
-                            hoveredColor: Style.white
-                            icon: CppUtility.transUrl("qrc:/prism_qt_ui/PrismUI/svg/windowMinimize.svg")
-                            onClicked: function (mouse) {
-                                window.showMinimized()
-                            }
-                        }
-                        //最大化/还原
-                        IconButton {
-                            id: btn_maxRes
-                            color: Style.lightblue100
-                            hoveredColor: Style.white
-                            visible: showbtn_maxRes
-                            states: [
-                                State {
-                                    name: "maximized"
-                                    when: window.visibility === Window.Maximized
-                                    PropertyChanges {
-                                        target: btn_maxRes
-                                        Layout.rightMargin: 12
-                                        Layout.preferredHeight: 18
-                                        Layout.preferredWidth: 17
-                                        icon: CppUtility.transUrl("qrc:/prism_qt_ui/PrismUI/svg/windowRestore.svg")
-                                    }
-                                },
-                                State {
-                                    when: window.visibility !== Window.Maximized
-                                    name: "normal"
-                                    PropertyChanges {
-                                        target: btn_maxRes
-                                        Layout.rightMargin: 12
-                                        Layout.preferredHeight: 10
-                                        Layout.preferredWidth: 13
-                                        icon: CppUtility.transUrl("qrc:/prism_qt_ui/PrismUI/svg/windowMaximize.svg")
-                                    }
-                                }
-                            ]
-                            onClicked: function (mouse) {
-                                if (window.visibility === Window.Maximized)
-                                    window.showNormal()
-                                else
-                                    window.showMaximized()
-                            }
-                        }
-
-                        //关闭
-                        IconButton {
-                            Layout.preferredHeight: 20
-                            Layout.preferredWidth: 20
-                            Layout.rightMargin: 10
-                            color: Style.lightblue100
-                            hoveredColor: Style.white
-                            icon: CppUtility.transUrl("qrc:/prism_qt_ui/PrismUI/svg/windowClose.svg")
-                            onClicked: function (mouse) {
-                                window.close()
-                            }
-                        }
-
-                    }
-                }
+                showButton: false
+                source: titleUrl
+                sourceComponent: titleUrl?null: titleComponent
             }
 
             LiveLoader{
