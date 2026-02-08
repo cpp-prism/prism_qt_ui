@@ -10,6 +10,7 @@ namespace prism::qt::ui{
 class qmlDebugWindow : public QQuickWindow
 {
     Q_OBJECT
+    QML_FOREIGN(QQuickWindow)
     Q_PROPERTY(QString loadUrl READ loadUrl WRITE setLoadUrl NOTIFY loadUrlChanged)
     Q_PROPERTY(QVariant dialogResult READ dialogResult WRITE setDialogResult NOTIFY dialogResultChanged)
     Q_PROPERTY(QVariant viewModel READ viewModel WRITE setViewModel NOTIFY viewModelChanged)
