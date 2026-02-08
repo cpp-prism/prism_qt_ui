@@ -13,6 +13,7 @@ Loader {
     {
         var url = rootLoader.source
         rootLoader.source = ""
+        rootLoader.sourceComponent =null
         CppUtility.clearQmlCache()
         rootLoader.source = url
     }
