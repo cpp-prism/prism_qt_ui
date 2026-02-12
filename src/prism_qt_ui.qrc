@@ -134,5 +134,9 @@
         <file>prism_qt_ui/PrismUI/input/EightWayPtzDial.qml</file>
         <file>prism_qt_ui/PrismUI/svg/user.svg</file>
         <file>prism_qt_ui/PrismUI/svg/lock-svgrepo-com.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/robot.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/retry.svg</file>
+        <file>prism_qt_ui/PrismUI/svg/transmission.svg</file>
+        <file>prism_qt_ui/PrismUI/sprite/battery_sprite2.png</file>
     </qresource>
 </RCC>

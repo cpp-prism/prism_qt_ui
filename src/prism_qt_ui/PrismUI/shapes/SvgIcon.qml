@@ -15,6 +15,7 @@ Item {
         source: root.svgPath
         anchors.fill: parent
         fillMode: Image.PreserveAspectFit
+        visible: false
     }
     MultiEffect {
         anchors.fill: img

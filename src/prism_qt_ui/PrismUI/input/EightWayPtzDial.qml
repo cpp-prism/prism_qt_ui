@@ -67,15 +67,15 @@ Item {
             anchors.verticalCenterOffset: 3
         }
 
-        layer.enabled: mouseArea.pressed
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            //shadowBlurRadius: 24
-            shadowColor: "white"
-            shadowHorizontalOffset: 0
-            shadowVerticalOffset: 0
+        //layer.enabled: mouseArea.pressed
+        //layer.effect: MultiEffect {
+        //    shadowEnabled: true
+        //    //shadowBlurRadius: 24
+        //    shadowColor: "white"
+        //    shadowHorizontalOffset: 0
+        //    shadowVerticalOffset: 0
 
-        }
+        //}
 
         Behavior on x { SpringAnimation { spring: 4; damping: 0.45 } }
         Behavior on y { SpringAnimation { spring: 4; damping: 0.45 } }
