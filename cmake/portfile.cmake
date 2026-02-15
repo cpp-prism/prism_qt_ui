@@ -3,7 +3,7 @@ string(JSON GIT_HEAD GET "${_contents}" git-head)
 
 vcpkg_from_git(
   OUT_SOURCE_PATH SOURCE_PATH
-  URL http://git1.deepvision-tech.net/PACKAGES/prism_qt_ui.git
+  URL https://github.com/cpp-prism/prism_qt_ui.git
   REF ${GIT_HEAD}
   HEAD_REF master
 )
