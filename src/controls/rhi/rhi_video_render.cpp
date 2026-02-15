@@ -278,6 +278,8 @@ QSGRenderNode::StateFlags RhiVideoRenderNode::changedStates() const
 //![node-prepare]
 void RhiVideoRenderNode::prepare()
 {
+    if(!m_video_data)
+        return;
     QRhi *rhi = m_window->rhi();
     QRhiResourceUpdateBatch *resourceUpdates = rhi->nextResourceUpdateBatch();
 
@@ -507,7 +509,6 @@ void RhiVideoRenderNode::prepare()
         m_needUploadData = true;
         return;
     }
-    //qDebug()<< 111111;
 
     resourceUpdates->uploadTexture(
         m_texture_1.get(),
@@ -516,7 +517,6 @@ void RhiVideoRenderNode::prepare()
     if(prism::qt::ui::ENUM_PixelType::nv12 == m_video_format ||
         prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format)
     {
-    //qDebug()<< 111112;
         resourceUpdates->uploadTexture(
             m_texture_2.get(),
             QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,
@@ -525,7 +525,6 @@ void RhiVideoRenderNode::prepare()
     }
     if(prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format)
     {
-    //qDebug()<< 111113;
         resourceUpdates->uploadTexture(
             m_texture_3.get(),
             QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,
@@ -539,6 +538,8 @@ void RhiVideoRenderNode::prepare()
 //![node-render]
 void RhiVideoRenderNode::render(const RenderState * state)
 {
+    if(!m_video_data)
+        return;
     QRhiCommandBuffer *cb = commandBuffer();
 
     cb->setGraphicsPipeline(m_pipeline.get());
@@ -595,89 +596,89 @@ QSGNode *RhiVideoRender::updatePaintNode(QSGNode *old, UpdatePaintNodeData *)
     if (!node)
         node = new RhiVideoRenderNode(window());
 
+    auto q = prism::qt::ui::ImgFrameQueue::getQueue(m_sn);
 
     //mock data
-    auto q = prism::qt::ui::ImgFrameQueue::getQueue(m_sn);
-    if(!q->size() )
-    {
-        prism::qt::ui::ImgFrameInfo frameinfo;
-        std::shared_ptr<QByteArray> data  = std::make_shared<QByteArray>();
-        QByteArray ba;
-        QString path;
-//#define PIXEL_TYPE  mono8
-//#define PIXEL_TYPE  rgb24
-//define PIXEL_TYPE  bgr24
-//#define PIXEL_TYPE  nv12
-//#define PIXEL_TYPE  yuv420p
-//#define PIXEL_TYPE  rgba32
-#define PIXEL_TYPE  bgra32
-        if(m_sn == "0")
-        {
-            frameinfo.width = 300;
-            frameinfo.height = 168;
-            frameinfo.stride = 300;
-            path = QString("raw_out/1_300_168_300_%1.raw").arg(STR(bgra32));
-
-            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::bgra32;
-            frameinfo.pixelType = format;
-            ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
-        }
-        else if(m_sn == "1")
-        {
-            frameinfo.width = 237;
-            frameinfo.height = 213;
-            frameinfo.stride = 238;
-            path = QString("raw_out/2_237_213_238_%1.raw").arg(STR(yuv420p));
-            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::yuv420p;
-            frameinfo.pixelType = format;
-            ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
-        }
-        else if(m_sn == "2")
-        {
-            frameinfo.width = 187;
-            frameinfo.height = 270;
-            frameinfo.stride = 188;
-            path = QString("raw_out/3_187_270_188_%1.raw").arg(STR(nv12));
-            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::nv12;
-            frameinfo.pixelType = format;
-            ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
-        }
-        else if(m_sn == "3")
-        {
-            frameinfo.width = 189;
-            frameinfo.height = 267;
-            frameinfo.stride = 190;
-            path = QString("raw_out/4_189_267_190_%1.raw").arg(STR(mono8));
-            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::mono8;
-            frameinfo.pixelType = format;
-            ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
-        }
-        switch (frameinfo.pixelType) {
-        case prism::qt::ui::ENUM_PixelType::mono8:
-        case prism::qt::ui::ENUM_PixelType::nv12:
-        case prism::qt::ui::ENUM_PixelType::yuv420p:
-        case prism::qt::ui::ENUM_PixelType::bgra32:
-        case prism::qt::ui::ENUM_PixelType::rgba32:
-            *data  = ba;
-            break;
-        case prism::qt::ui::ENUM_PixelType::bgr24:
-            bgr24_to_bgra32(ba,*data,frameinfo.stride,frameinfo.width,frameinfo.height);
-            frameinfo.pixelType =  prism::qt::ui::ENUM_PixelType::bgra32;
-            frameinfo.stride =  frameinfo.width ;
-            break;
-        case prism::qt::ui::ENUM_PixelType::rgb24:
-            bgr24_to_bgra32(ba,*data,frameinfo.stride,frameinfo.width,frameinfo.height);
-            frameinfo.pixelType =  prism::qt::ui::ENUM_PixelType::rgba32;
-            frameinfo.stride =  frameinfo.width ;
-            break;
-        default:
-            break;
-        }
-        frameinfo.buffer_handel = std::static_pointer_cast<void>(data);
-        frameinfo.buffer = (void*)data.get()->constData();
-        q->push(frameinfo);
-
-    }
+//    if(!q->size() )
+//    {
+//        prism::qt::ui::ImgFrameInfo frameinfo;
+//        std::shared_ptr<QByteArray> data  = std::make_shared<QByteArray>();
+//        QByteArray ba;
+//        QString path;
+////#define PIXEL_TYPE  mono8
+////#define PIXEL_TYPE  rgb24
+////define PIXEL_TYPE  bgr24
+////#define PIXEL_TYPE  nv12
+////#define PIXEL_TYPE  yuv420p
+////#define PIXEL_TYPE  rgba32
+//#define PIXEL_TYPE  bgra32
+//        if(m_sn == "0")
+//        {
+//            frameinfo.width = 300;
+//            frameinfo.height = 168;
+//            frameinfo.stride = 300;
+//            path = QString("raw_out/1_300_168_300_%1.raw").arg(STR(bgra32));
+//
+//            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::bgra32;
+//            frameinfo.pixelType = format;
+//            ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
+//        }
+//        else if(m_sn == "1")
+//        {
+//            frameinfo.width = 237;
+//            frameinfo.height = 213;
+//            frameinfo.stride = 238;
+//            path = QString("raw_out/2_237_213_238_%1.raw").arg(STR(yuv420p));
+//            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::yuv420p;
+//            frameinfo.pixelType = format;
+//            ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
+//        }
+//        else if(m_sn == "2")
+//        {
+//            frameinfo.width = 187;
+//            frameinfo.height = 270;
+//            frameinfo.stride = 188;
+//            path = QString("raw_out/3_187_270_188_%1.raw").arg(STR(nv12));
+//            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::nv12;
+//            frameinfo.pixelType = format;
+//            ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
+//        }
+//        else if(m_sn == "3")
+//        {
+//            frameinfo.width = 189;
+//            frameinfo.height = 267;
+//            frameinfo.stride = 190;
+//            path = QString("raw_out/4_189_267_190_%1.raw").arg(STR(mono8));
+//            prism::qt::ui::ENUM_PixelType format = prism::qt::ui::ENUM_PixelType::mono8;
+//            frameinfo.pixelType = format;
+//            ba = loadImgRaw(path, format,frameinfo.width, frameinfo.stride, frameinfo.height);
+//        }
+//        switch (frameinfo.pixelType) {
+//        case prism::qt::ui::ENUM_PixelType::mono8:
+//        case prism::qt::ui::ENUM_PixelType::nv12:
+//        case prism::qt::ui::ENUM_PixelType::yuv420p:
+//        case prism::qt::ui::ENUM_PixelType::bgra32:
+//        case prism::qt::ui::ENUM_PixelType::rgba32:
+//            *data  = ba;
+//            break;
+//        case prism::qt::ui::ENUM_PixelType::bgr24:
+//            bgr24_to_bgra32(ba,*data,frameinfo.stride,frameinfo.width,frameinfo.height);
+//            frameinfo.pixelType =  prism::qt::ui::ENUM_PixelType::bgra32;
+//            frameinfo.stride =  frameinfo.width ;
+//            break;
+//        case prism::qt::ui::ENUM_PixelType::rgb24:
+//            bgr24_to_bgra32(ba,*data,frameinfo.stride,frameinfo.width,frameinfo.height);
+//            frameinfo.pixelType =  prism::qt::ui::ENUM_PixelType::rgba32;
+//            frameinfo.stride =  frameinfo.width ;
+//            break;
+//        default:
+//            break;
+//        }
+//        frameinfo.buffer_handel = std::static_pointer_cast<void>(data);
+//        frameinfo.buffer = (void*)data.get()->constData();
+//        q->push(frameinfo);
+//
+//    }
     //popup data
     prism::qt::ui::ImgFrameInfo pop_info;
     if(q->tryPopLatest(pop_info))
