@@ -20,7 +20,7 @@
 
 #include "controls/shapes/video_roi_cpp.h"
 #include "controls/window/qml_debug_window.h"
-#include "helper/menuhelper.h"
+//#include "helper/menuhelper.h"
 #include "include/prism/qt/ui/helper/cpp_utility.h"
 #include "include/prism/qt/ui/img_buffer_Info.h"
 #include "include/prism/qt/ui/model/roi_info.h"
@@ -112,11 +112,11 @@ bool prismQt_ui::register_types()
     //注册单例 到qml engine  qt 5.15的语法
     // qmlRegisterSingletonInstance<MenuHelper>("PrismCpp", 1, 0, "MenuHelper", new MenuHelper());
     //注册单例 到qml engine  qt 5.12的语法
-    qmlRegisterSingletonType<MenuHelper>("PrismCpp", 1, 0, "MenuHelper", [](QQmlEngine* engine, QJSEngine* scriptEngine) -> QObject* {
-        Q_UNUSED(engine)
-        Q_UNUSED(scriptEngine)
-        return new MenuHelper();
-    });
+    //qmlRegisterSingletonType<MenuHelper>("PrismCpp", 1, 0, "MenuHelper", [](QQmlEngine* engine, QJSEngine* scriptEngine) -> QObject* {
+    //    Q_UNUSED(engine)
+    //    Q_UNUSED(scriptEngine)
+    //    return new MenuHelper();
+    //});
 
     return true;
 }

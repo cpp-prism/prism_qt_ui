@@ -149,8 +149,8 @@ add_library(${PROJECT_NAME} SHARED
   src/prism_qt_ui.qrc
   src/platform/i_borderless_window_helper.h
   src/helper/cpp_utility.cpp
-  src/helper/menuhelper.h
-  src/helper/menuhelper.cpp
+  #src/helper/menuhelper.h
+  #src/helper/menuhelper.cpp
   src/helper/img_buffer_Info.cpp
 
 
