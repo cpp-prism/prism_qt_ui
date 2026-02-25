@@ -17,6 +17,9 @@ Item {
     property string direction: "center"   // 方向
     property real strength: 0.0            // 0 ~ 1，距离比例
     property int directionCount: 8         // 方向数：4 或 8
+    property int ballsize:36         // 方向数：4 或 8
+
+    property bool hoverd : ma_btn.containsMouse | mouseArea.containsMouse
 
     readonly property real cx: width / 2
     readonly property real cy: height / 2
@@ -55,8 +58,8 @@ Item {
     /* ===== 中心小球 ===== */
     Rectangle {
         id: knob
-        width: 36
-        height: 36
+        width: ballsize
+        height: ballsize
         radius: width / 2
         color: (mouseArea.pressed || sectorBtns.pressedIdx >= 0) ? palette.active : palette.knob
         x: cx - width / 2
@@ -96,6 +99,7 @@ Item {
         z: 2
 
         property int pressedIdx: -1
+        property int hoveredIdx: -1
 
         readonly property var dirs: root.directionCount === 4
             ? ["right", "down", "left", "up"]
@@ -133,6 +137,8 @@ Item {
 
                     if (i === sectorBtns.pressedIdx) {
                         ctx.fillStyle = Qt.rgba(ac.r, ac.g, ac.b, 0.55)
+                    } else if (i === sectorBtns.hoveredIdx) {
+                        ctx.fillStyle = Qt.rgba(ac.r, ac.g, ac.b, 0.25)
                     } else {
                         ctx.fillStyle = Qt.rgba(kc.r, kc.g, kc.b, 0.10)
                     }
@@ -153,25 +159,28 @@ Item {
 
         Repeater {
             model: root.directionCount
-            Text {
+            SvgIcon {
                 required property int index
                 property real midA: sectorBtns.angles[index] * Math.PI / 180
                 property real midR: (sectorBtns.innerR + sectorBtns.outerR) / 2
                 x: root.cx + midR * Math.cos(midA) - width / 2
                 y: root.cy + midR * Math.sin(midA) - height / 2
-                text: "\u25B2"
-                font.pixelSize: (sectorBtns.outerR - sectorBtns.innerR) * 0.42
-                color: index === sectorBtns.pressedIdx ? Material.foreground : Material.accent
-                opacity: index === sectorBtns.pressedIdx ? 0.9 : 0.4
-                rotation: sectorBtns.angles[index] + 90
+                width: (sectorBtns.outerR - sectorBtns.innerR) * 0.42 * 1.5
+                height: width
+                svgPath: "qrc:/prism_qt_ui/PrismUI/svg/back.svg"
+                color: (index === sectorBtns.pressedIdx) ? palette.active : palette.knob
+                opacity: (index === sectorBtns.pressedIdx) ? 1.0 : 0.4
+                rotation: sectorBtns.angles[index] + 180
 
                 Behavior on opacity { NumberAnimation { duration: 100 } }
-                Behavior on color   { ColorAnimation  { duration: 100 } }
+                Behavior on color { ColorAnimation { duration: 100 } }
             }
         }
 
         MouseArea {
+            id:ma_btn
             anchors.fill: parent
+            hoverEnabled: true
 
             function hitSector(mx, my) {
                 var dx = mx - root.cx
@@ -196,6 +205,10 @@ Item {
                 return -1
             }
 
+
+
+
+
             onPressed: function(mouse) {
                 var idx = hitSector(mouse.x, mouse.y)
                 if (idx >= 0) {
@@ -219,6 +232,21 @@ Item {
                     root.direction = "center"
                     knob.x = root.cx - knob.width / 2
                     knob.y = root.cy - knob.height / 2
+                }
+            }
+
+            onPositionChanged: function(mouse) {
+                var idx = hitSector(mouse.x, mouse.y)
+                if (idx !== sectorBtns.hoveredIdx) {
+                    sectorBtns.hoveredIdx = idx
+                    sectorCanvas.requestPaint()
+                }
+            }
+
+            onExited: {
+                if (sectorBtns.hoveredIdx >= 0) {
+                    sectorBtns.hoveredIdx = -1
+                    sectorCanvas.requestPaint()
                 }
             }
         }

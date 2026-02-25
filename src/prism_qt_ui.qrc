@@ -138,5 +138,6 @@
         <file>prism_qt_ui/PrismUI/svg/retry.svg</file>
         <file>prism_qt_ui/PrismUI/svg/transmission.svg</file>
         <file>prism_qt_ui/PrismUI/sprite/battery_sprite2.png</file>
+        <file>prism_qt_ui/PrismUI/sprite/wifi_sprite.png</file>
     </qresource>
 </RCC>
