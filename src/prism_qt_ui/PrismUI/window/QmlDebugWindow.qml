@@ -7,7 +7,7 @@ import ".."
 
 QmlDebugWindowCPP {
     id: win
-
+    opacity: 0
     Component.onCompleted: {
         console.log("window created")
     }
