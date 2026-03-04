@@ -52,6 +52,9 @@ public:
     void push(const ImgFrameInfo& frame);
 
     bool tryPopLatest(ImgFrameInfo& out);
+    bool tryPopLatest_do(std::function<void(ImgFrameInfo& info)> f);
+    bool tryPeekLatest(ImgFrameInfo& out);
+    bool tryPeekLatest_do(std::function<void(ImgFrameInfo& info)> f);
 
     bool waitPop(ImgFrameInfo& out, int timeoutMs = -1);
 

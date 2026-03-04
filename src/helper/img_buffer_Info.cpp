@@ -17,18 +17,48 @@ void ImgFrameQueue::push(const ImgFrameInfo &frame) {
             m_frames.pop_front();
         }
 
-        m_frames.push_back(frame);
+        m_frames.push_front(frame);
     }
     m_cv.notify_one();
 }
 
+bool ImgFrameQueue::tryPeekLatest_do(std::function<void(ImgFrameInfo& info)> f) {
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (m_frames.empty())
+        return false;
+
+    auto out = m_frames.back();
+    f(out);
+    return true;
+}
+bool ImgFrameQueue::tryPeekLatest(ImgFrameInfo &out) {
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (m_frames.empty())
+        return false;
+
+    out = m_frames.back();
+    return true;
+}
+bool ImgFrameQueue::tryPopLatest_do(std::function<void(ImgFrameInfo& info)> f) {
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (m_frames.empty())
+        return false;
+
+    auto out = m_frames.back();
+    f(out);
+    m_frames.clear();   // 关键：丢掉旧帧
+    return true;
+}
 bool ImgFrameQueue::tryPopLatest(ImgFrameInfo &out) {
     std::lock_guard<std::mutex> lock(m_mutex);
 
     if (m_frames.empty())
         return false;
 
-    out = std::move(m_frames.back());
+    out = m_frames.back();
     m_frames.clear();   // 关键：丢掉旧帧
     return true;
 }
@@ -45,7 +75,7 @@ bool ImgFrameQueue::waitPop(ImgFrameInfo &out, int timeoutMs) {
             return false;
     }
 
-    out = std::move(m_frames.back());
+    out = m_frames.back();
     m_frames.clear();
     return true;
 }
@@ -62,12 +92,11 @@ size_t ImgFrameQueue::size() const {
 
 std::shared_ptr<ImgFrameQueue> ImgFrameQueue::getQueue(std::string sn)
 {
-    std::shared_ptr<ImgFrameQueue> q = queues[sn];
+    static std::mutex s_map_mutex;
+    std::lock_guard<std::mutex> lock(s_map_mutex);
+    std::shared_ptr<ImgFrameQueue>& q = queues[sn];
     if(!q)
-    {
-        queues[sn].reset(new ImgFrameQueue());
-        q=queues[sn];
-    }
+        q.reset(new ImgFrameQueue());
     return q;
 }
 

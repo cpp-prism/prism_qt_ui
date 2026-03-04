@@ -6,80 +6,81 @@
 #include <QSGTransformNode>
 #include <QQuickWindow>
 #include <QFile>
+#include <thread>
 
 #include <rhi/qrhi.h>
 #include "include/prism/qt/ui/img_buffer_Info.h"
 
-QByteArray loadImgRaw(const QString &path, prism::qt::ui::ENUM_PixelType format, int width,  int stride,int height)
-{
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
-        return {};
+//QByteArray loadImgRaw(const QString &path, prism::qt::ui::ENUM_PixelType format, int width,  int stride,int height)
+//{
+//    QFile file(path);
+//    if (!file.open(QIODevice::ReadOnly))
+//        return {};
+//
+//    QByteArray buffer;
+//    qint64 bytesRead=0;
+//
+//    switch (format) {
+//    case prism::qt::ui::ENUM_PixelType::mono8:
+//        buffer = QByteArray(stride * height, 0);
+//        bytesRead = file.read(buffer.data(), buffer.size());
+//        break;
+//
+//    case prism::qt::ui::ENUM_PixelType::bgr24:
+//    case prism::qt::ui::ENUM_PixelType::rgb24:
+//        buffer = QByteArray(stride * height * 3, 0);
+//        bytesRead = file.read(buffer.data(), buffer.size());
+//        break;
+//
+//    case prism::qt::ui::ENUM_PixelType::bgra32:
+//    case prism::qt::ui::ENUM_PixelType::rgba32:
+//        buffer = QByteArray(stride * height * 4, 0);
+//        bytesRead = file.read(buffer.data(), buffer.size());
+//        break;
+//
+//    case prism::qt::ui::ENUM_PixelType::nv12:
+//    case prism::qt::ui::ENUM_PixelType::yuv420p:
+//        buffer = QByteArray(stride * height * 1.5, 0);
+//        bytesRead = file.read(buffer.data(), buffer.size());
+//        break;
+//
+//    default:
+//        break;
+//    }
+//
+//    if (bytesRead != buffer.size()) {
+//        qWarning("Mono8 raw file size mismatch");
+//        return {};
+//    }
+//
+//    return buffer;
+//}
 
-    QByteArray buffer;
-    qint64 bytesRead=0;
-
-    switch (format) {
-    case prism::qt::ui::ENUM_PixelType::mono8:
-        buffer = QByteArray(stride * height, 0);
-        bytesRead = file.read(buffer.data(), buffer.size());
-        break;
-
-    case prism::qt::ui::ENUM_PixelType::bgr24:
-    case prism::qt::ui::ENUM_PixelType::rgb24:
-        buffer = QByteArray(stride * height * 3, 0);
-        bytesRead = file.read(buffer.data(), buffer.size());
-        break;
-
-    case prism::qt::ui::ENUM_PixelType::bgra32:
-    case prism::qt::ui::ENUM_PixelType::rgba32:
-        buffer = QByteArray(stride * height * 4, 0);
-        bytesRead = file.read(buffer.data(), buffer.size());
-        break;
-
-    case prism::qt::ui::ENUM_PixelType::nv12:
-    case prism::qt::ui::ENUM_PixelType::yuv420p:
-        buffer = QByteArray(stride * height * 1.5, 0);
-        bytesRead = file.read(buffer.data(), buffer.size());
-        break;
-
-    default:
-        break;
-    }
-
-    if (bytesRead != buffer.size()) {
-        qWarning("Mono8 raw file size mismatch");
-        return {};
-    }
-
-    return buffer;
-}
-
-void bgr24_to_bgra32(const QByteArray& rgb, QByteArray& rgba,  int s, int w, int h)
-{
-
-    rgba.resize(s * h * 4);
-
-    int srcStride = s * 3;   // 可能 > width * 3
-    int dstStride = w * 4;
-
-    rgba.resize(dstStride * h);
-
-    for (int y = 0; y < h; ++y) {
-        const uchar* srcLine =
-            reinterpret_cast<const uchar*>(rgb.constData()) + y * srcStride;
-        uchar* dstLine =
-            reinterpret_cast<uchar*>(rgba.data()) + y * dstStride;
-
-        for (int x = 0; x < w; ++x) {
-            dstLine[x*4 + 0] = srcLine[x*3 + 0];
-            dstLine[x*4 + 1] = srcLine[x*3 + 1];
-            dstLine[x*4 + 2] = srcLine[x*3 + 2];
-            dstLine[x*4 + 3] = 255;
-        }
-    }
-
-}
+//void bgr24_to_bgra32(const QByteArray& rgb, QByteArray& rgba,  int s, int w, int h)
+//{
+//
+//    rgba.resize(s * h * 4);
+//
+//    int srcStride = s * 3;   // 可能 > width * 3
+//    int dstStride = w * 4;
+//
+//    rgba.resize(dstStride * h);
+//
+//    for (int y = 0; y < h; ++y) {
+//        const uchar* srcLine =
+//            reinterpret_cast<const uchar*>(rgb.constData()) + y * srcStride;
+//        uchar* dstLine =
+//            reinterpret_cast<uchar*>(rgba.data()) + y * dstStride;
+//
+//        for (int x = 0; x < w; ++x) {
+//            dstLine[x*4 + 0] = srcLine[x*3 + 0];
+//            dstLine[x*4 + 1] = srcLine[x*3 + 1];
+//            dstLine[x*4 + 2] = srcLine[x*3 + 2];
+//            dstLine[x*4 + 3] = 255;
+//        }
+//    }
+//
+//}
 
 //![node]
 class RhiVideoRenderNode : public QSGRenderNode
@@ -94,12 +95,14 @@ public:
     void releaseResources() override;
     RenderingFlags flags() const override;
     QSGRenderNode::StateFlags changedStates() const override;
-
+    void set_video_frameNum(int num);
     void set_video_width(int width);
     void set_video_stride(int stride);
     void set_video_height(int height);
     void set_video_format(prism::qt::ui::ENUM_PixelType format);
-    void set_video_data(void *data);
+    void set_video_data(void *data, std::shared_ptr<void> handel);
+
+    std::string sn ;
 
 protected:
     QQuickWindow *m_window;
@@ -122,11 +125,14 @@ protected:
     QList<QVector4D> m_vertices;
 
     prism::qt::ui::ENUM_PixelType m_video_format = prism::qt::ui::ENUM_PixelType::mono8;
+    int m_pre_video_frameNum = 0;
+    int m_video_frameNum = 0;
     int m_video_stride = 300;
     int m_video_width = 300;
     int m_video_height = 168;
     bool m_texture_dirty =true;
     void* m_video_data = nullptr;
+    std::shared_ptr<void> m_frame_handel; // keeps buffer alive while m_video_data is in use
     bool m_needUploadData = true;
 
     std::unique_ptr<QRhiTexture> m_texture_1;
@@ -138,9 +144,10 @@ protected:
     std::unique_ptr<QRhiTexture> m_texture_3;
     std::unique_ptr<QRhiSampler> m_sampler_3;
 };
-void RhiVideoRenderNode::set_video_data(void *data)
+void RhiVideoRenderNode::set_video_data(void *data, std::shared_ptr<void> handel)
 {
     m_video_data = data;
+    m_frame_handel = std::move(handel);
 }
 
 void RhiVideoRenderNode::set_video_format( prism::qt::ui::ENUM_PixelType format)
@@ -167,6 +174,11 @@ void RhiVideoRenderNode::set_video_width(int width)
     if(width != m_video_width)
         m_texture_dirty = true;
     m_video_width = width;
+}
+void RhiVideoRenderNode::set_video_frameNum(int num)
+{
+    if(m_video_frameNum != num)
+        m_video_frameNum = num;
 }
 
 //![node]
@@ -510,29 +522,36 @@ void RhiVideoRenderNode::prepare()
         return;
     }
 
-    resourceUpdates->uploadTexture(
-        m_texture_1.get(),
-        QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,QRhiTextureSubresourceUploadDescription(m_video_data,texture_data_size_1))));
 
-    if(prism::qt::ui::ENUM_PixelType::nv12 == m_video_format ||
-        prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format)
+    if(m_pre_video_frameNum!= 0 && m_pre_video_frameNum != m_video_frameNum )
     {
-        resourceUpdates->uploadTexture(
-            m_texture_2.get(),
-            QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,
-                                                                QRhiTextureSubresourceUploadDescription(reinterpret_cast<uint8_t*>(m_video_data) + texture_data_size_1,
-                                                                                                        texture_data_size_2 ))));
-    }
-    if(prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format)
-    {
-        resourceUpdates->uploadTexture(
-            m_texture_3.get(),
-            QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,
-                                                                QRhiTextureSubresourceUploadDescription(reinterpret_cast<uint8_t*>(m_video_data) + texture_data_size_1 +texture_data_size_2 ,
-                                                                                                        texture_data_size_3 ))));
-    }
 
+        resourceUpdates->uploadTexture(
+            m_texture_1.get(),
+            QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,QRhiTextureSubresourceUploadDescription(m_video_data,texture_data_size_1))));
+
+        if(prism::qt::ui::ENUM_PixelType::nv12 == m_video_format ||
+            prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format)
+        {
+            resourceUpdates->uploadTexture(
+                m_texture_2.get(),
+                QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,
+                                                                    QRhiTextureSubresourceUploadDescription(reinterpret_cast<uint8_t*>(m_video_data) + texture_data_size_1,
+                                                                                                            texture_data_size_2 ))));
+        }
+        if(prism::qt::ui::ENUM_PixelType::yuv420p == m_video_format)
+        {
+            resourceUpdates->uploadTexture(
+                m_texture_3.get(),
+                QRhiTextureUploadDescription( QRhiTextureUploadEntry(0,0,
+                                                                    QRhiTextureSubresourceUploadDescription(reinterpret_cast<uint8_t*>(m_video_data) + texture_data_size_1 +texture_data_size_2 ,
+                                                                                                            texture_data_size_3 ))));
+        }
+    }
     commandBuffer()->resourceUpdate(resourceUpdates);
+    m_pre_video_frameNum = m_video_frameNum;
+
+
 }
 
 //![node-render]
@@ -561,6 +580,7 @@ void RhiVideoRenderNode::render(const RenderState * state)
     cb->setVertexInput(0, 1, vertexBindings);
     cb->draw(m_vertices.count());
 
+    //std::this_thread::sleep_for(std::chrono::milliseconds(60000));
 }
 //![node-render]
 
@@ -596,6 +616,7 @@ QSGNode *RhiVideoRender::updatePaintNode(QSGNode *old, UpdatePaintNodeData *)
     if (!node)
         node = new RhiVideoRenderNode(window());
 
+    node->sn = m_sn;
     auto q = prism::qt::ui::ImgFrameQueue::getQueue(m_sn);
 
     //mock data
@@ -680,16 +701,21 @@ QSGNode *RhiVideoRender::updatePaintNode(QSGNode *old, UpdatePaintNodeData *)
 //
 //    }
     //popup data
-    prism::qt::ui::ImgFrameInfo pop_info;
-    if(q->tryPopLatest(pop_info))
-    {
-        *this->frameInfo()->instance() = std::move(pop_info);
+
+    if(q->tryPopLatest_do([=](prism::qt::ui::ImgFrameInfo& pop_info){
+        *this->frameInfo()->instance() = pop_info;
         this->frameInfo()->update();
+
+        node->set_video_frameNum(pop_info.frameNum);
         node->set_video_width(pop_info.width);
         node->set_video_stride(pop_info.stride);
         node->set_video_height(pop_info.height);
         node->set_video_format(pop_info.pixelType);
-        node->set_video_data(pop_info.buffer);
+        node->set_video_data(this->frameInfo()->instance()->buffer,
+                             this->frameInfo()->instance()->buffer_handel);
+        }))
+    {
+
     }
 
 
