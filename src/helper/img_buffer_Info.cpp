@@ -28,7 +28,7 @@ bool ImgFrameQueue::tryPeekLatest_do(std::function<void(ImgFrameInfo& info)> f) 
     if (m_frames.empty())
         return false;
 
-    auto out = m_frames.back();
+    auto& out = m_frames.back();
     f(out);
     return true;
 }
@@ -47,7 +47,7 @@ bool ImgFrameQueue::tryPopLatest_do(std::function<void(ImgFrameInfo& info)> f) {
     if (m_frames.empty())
         return false;
 
-    auto out = m_frames.back();
+    auto& out = m_frames.back();
     f(out);
     m_frames.clear();   // 关键：丢掉旧帧
     return true;

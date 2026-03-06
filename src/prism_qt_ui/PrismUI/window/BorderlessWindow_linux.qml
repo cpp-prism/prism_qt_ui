@@ -258,9 +258,9 @@ QmlDebugWindow {
             const h = height
 
             const left   = x <= bw
-            const right  = x >= w - bw
+            const right  = x >= (w - bw)
             const top    = y <= bw
-            const bottom = y >= h - bw
+            const bottom = y >= (h - bw)
 
             var tmp =0
             if(top)
@@ -273,44 +273,47 @@ QmlDebugWindow {
                 tmp |= Qt.BottomEdge
             edge = tmp
 
-            if (top && left)     return Qt.TopLeftCorner
-            if (top && right)    return Qt.TopRightCorner
-            if (bottom && left)  return Qt.BottomLeftCorner
-            if (bottom && right) return Qt.BottomRightCorner
-            if (left)            return Qt.LeftEdge
-            if (right)           return Qt.RightEdge
-            if (top)             return Qt.TopEdge
-            if (bottom)          return Qt.BottomEdge
-            return 0
         }
-        onEntered: {
-            switch (hitTest(mouseX, mouseY)) {
-            case Qt.LeftEdge:
-            case Qt.RightEdge:
-                CppUtility.restoreCursor()
-                CppUtility.setCursor(Qt.SizeHorCursor)
-                return
-            case Qt.TopEdge:
-            case Qt.BottomEdge:
-                CppUtility.restoreCursor()
-                CppUtility.setCursor(Qt.SizeVerCursor)
-                return
-            case Qt.TopLeftCorner:
-            case Qt.BottomRightCorner:
+        onPositionChanged: {
+            hitTest(mouseX, mouseY)
+
+            const left   = edge & Qt.LeftEdge
+            const right  = edge & Qt.RightEdge
+            const top    = edge & Qt.TopEdge
+            const bottom = edge & Qt.BottomEdge
+            if((top && left) || (bottom && right))
+            {
                 CppUtility.restoreCursor()
                 CppUtility.setCursor(Qt.SizeFDiagCursor)
                 return
-            case Qt.TopRightCorner:
-            case Qt.BottomLeftCorner:
+            }
+            else if(( top && right)||( bottom && left))
+            {
                 CppUtility.restoreCursor()
                 CppUtility.setCursor(Qt.SizeBDiagCursor)
                 return
-            default:
+            }
+            else if(left || right)
+            {
+                CppUtility.restoreCursor()
+                CppUtility.setCursor(Qt.SizeHorCursor)
+                return
+            }
+            else if(top || bottom)
+            {
+                CppUtility.restoreCursor()
+                CppUtility.setCursor(Qt.SizeVerCursor)
+                return
+            }
+            else
+            {
                 CppUtility.restoreCursor()
                 CppUtility.setCursor(Qt.ArrowCursor)
             }
         }
+        onEntered:  hitTest(mouseX, mouseY)
         onExited: {
+            hitTest(mouseX, mouseY)
             CppUtility.restoreCursor()
         }
         onPressed: {

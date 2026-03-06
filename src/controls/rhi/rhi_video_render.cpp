@@ -262,6 +262,8 @@ void RhiVideoRenderNode::releaseResources()
     m_texture_1.reset();
     m_texture_2.reset();
     m_texture_3.reset();
+    m_video_data = nullptr;
+    m_frame_handel.reset();
 }
 //![node-release]
 
@@ -703,8 +705,10 @@ QSGNode *RhiVideoRender::updatePaintNode(QSGNode *old, UpdatePaintNodeData *)
     //popup data
 
     if(q->tryPopLatest_do([=](prism::qt::ui::ImgFrameInfo& pop_info){
-        *this->frameInfo()->instance() = pop_info;
-        this->frameInfo()->update();
+        *this->frameInfo()->instance() = std::move(pop_info);
+        //直接通知bind有性能问题,在tick事件中 tb_info.text = frameInfo.get("prop")...
+        //if(!(pop_info.frameNum%30))
+        //    this->frameInfo()->update();
 
         node->set_video_frameNum(pop_info.frameNum);
         node->set_video_width(pop_info.width);

@@ -295,7 +295,7 @@ void cpp_utility::showQmlWindow(QString winUrl, QObject* viewModel)
         auto a = component.create();
         qmlDebugWindow* win = reinterpret_cast<qmlDebugWindow*>(a);
         win->setViewModel(QVariant::fromValue(viewModel));
-        win->setPersistentGraphics(false);
+        win->setPersistentGraphics(true);
 
     }
     else
