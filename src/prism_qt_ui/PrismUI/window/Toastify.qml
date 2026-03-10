@@ -61,14 +61,17 @@ Item {
         spacing: 0
     }
 
-    function createMessage( message, options = {} ){
+    function createMessage( message, options = {}){
         try{
             if(!message){
                 throw new Error("Invalid message")
             }
 
-            const { type, position, theme, closeOnClick, autoClose, hideProgressBar, clickAction } = options;
-            var component = Qt.createComponent("qrc:/prism_qt_ui/PrismUI/window/ToastifyDelegate.qml")
+            const { type, position, theme, closeOnClick, autoClose, hideProgressBar, clickAction, delegate } = options;
+            if(!delegate)
+                var component = Qt.createComponent("qrc:/prism_qt_ui/PrismUI/window/ToastifyDelegate.qml")
+            else
+                component = Qt.createComponent(delegate)
             var messageContainer = component.createObject(determinePosition(position), {
                                                               message,
                                                               type,
